@@ -112,10 +112,10 @@ export function QrForm({ qrCode }: QrFormProps) {
         redirectUrl = reserveResult.redirectUrl
       }
 
-      // Generate QR code image client-side with the redirect URL
-      // Uses the same shared function as preview for consistency
+      // Generate QR code image client-side with the DESTINATION URL
+      // This matches exactly what the preview shows
       const qrImageDataUrl = await generateQrDataUrl(QRCodeStyling, {
-        url: redirectUrl,
+        url: destinationUrl,
         style,
         size: style.width,
         logoUrl: logoUrl || undefined,
