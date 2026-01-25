@@ -40,8 +40,8 @@ export const qrStyleSchema = z.object({
   cornersSquareColor: hexColorSchema.nullable(),
   cornersSquareGradient: gradientOptionsSchema,
 
-  // Styl wewnętrznych kropek narożników
-  cornersDotType: z.enum(['square', 'dot', 'rounded']),
+  // Styl wewnętrznych kropek narożników (only 'square' and 'dot' are supported by qr-code-styling)
+  cornersDotType: z.enum(['square', 'dot']),
   cornersDotColor: hexColorSchema.nullable(),
   cornersDotGradient: gradientOptionsSchema,
 

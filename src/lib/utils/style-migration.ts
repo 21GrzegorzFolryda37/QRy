@@ -28,10 +28,12 @@ export function migrateQrStyle(style: LegacyQrStyle | QrStyle | unknown): QrStyl
   // Jeśli już w nowym formacie, zastosuj poprawki i zwróć
   if (isNewStyle(style)) {
     // Migrate any 'rounded' cornersDotType to 'dot' (not supported by qr-code-styling)
-    const cornersDotType = style.cornersDotType === 'rounded' ? 'dot' : style.cornersDotType
+    // Use string comparison for backward compatibility with old database values
+    const rawCornersDotType = style.cornersDotType as string
+    const cornersDotType = rawCornersDotType === 'rounded' ? 'dot' : style.cornersDotType
     return {
       ...style,
-      cornersDotType: cornersDotType as 'square' | 'dot',
+      cornersDotType,
     }
   }
 

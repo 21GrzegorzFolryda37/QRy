@@ -50,12 +50,13 @@ export interface QrCodeOptions {
  */
 function createBaseOptions(
   opts: QrCodeOptions
-): Omit<ConstructorParameters<typeof QRCodeStylingType>[0], 'type'> {
+): ConstructorParameters<typeof QRCodeStylingType>[0] {
   const { url, style, size, logoUrl, logoSize } = opts
   const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
   const frameShape = finalStyle.frameShape || 'square'
 
-  const options: Omit<ConstructorParameters<typeof QRCodeStylingType>[0], 'type'> = {
+  const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
+    type: 'canvas', // Default, will be overridden
     width: size,
     height: size,
     data: url || 'https://example.com',
