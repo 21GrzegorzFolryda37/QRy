@@ -150,8 +150,8 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
 ]
 
 // Opcje dla wewnętrznych kropek narożników
+// qr-code-styling obsługuje tylko 'square' i 'dot' dla cornersDotOptions
 export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <DotsSquareIcon /> },
   { id: 'dot', label: 'Kropka', icon: <DotsCircleIcon /> },
-  { id: 'rounded', label: 'Zaokrąglony', icon: <DotsRoundedIcon /> },
 ]

@@ -68,7 +68,31 @@ function convertGradient(gradient: GradientOptions | null | undefined) {
 }
 
 /**
+ * Map cornersDotType to valid qr-code-styling values
+ * qr-code-styling only accepts: 'dot' | 'square' | undefined for cornersDotOptions.type
+ */
+function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
+  if (type === 'dot') return 'dot'
+  if (type === 'square') return 'square'
+  // 'rounded' and other values default to 'dot' as it looks most similar
+  return 'dot'
+}
+
+/**
+ * Map cornersSquareType to valid qr-code-styling values
+ * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
+ */
+function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
+  if (type === 'dot') return 'dot'
+  if (type === 'square') return 'square'
+  if (type === 'extra-rounded') return 'extra-rounded'
+  if (type === 'rounded') return 'extra-rounded'
+  return 'square'
+}
+
+/**
  * Generate QR code image as data URL using qr-code-styling (client-side)
+ * Uses SVG rendering for consistency with preview, then converts to PNG
  */
 async function generateQrImageDataUrl(
   QRCodeStyling: typeof QRCodeStylingType,
@@ -83,7 +107,7 @@ async function generateQrImageDataUrl(
   const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
     width: size,
     height: size,
-    type: 'canvas',
+    type: 'svg', // Use SVG for consistent rendering with preview
     data: url,
     margin: style.margin * 10,
 
@@ -98,13 +122,13 @@ async function generateQrImageDataUrl(
     },
 
     cornersSquareOptions: {
-      type: style.cornersSquareType === 'rounded' ? 'extra-rounded' : style.cornersSquareType,
+      type: mapCornersSquareType(style.cornersSquareType),
       color: style.cornersSquareColor || style.foregroundColor,
       gradient: convertGradient(style.cornersSquareGradient),
     },
 
     cornersDotOptions: {
-      type: style.cornersDotType,
+      type: mapCornersDotType(style.cornersDotType),
       color: style.cornersDotColor || style.foregroundColor,
       gradient: convertGradient(style.cornersDotGradient),
     },

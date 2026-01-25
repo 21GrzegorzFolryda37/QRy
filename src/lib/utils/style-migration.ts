@@ -25,9 +25,14 @@ function isNewStyle(style: unknown): style is QrStyle {
  * Zachowuje kompatybilność wsteczną - istniejące kody QR będą działać
  */
 export function migrateQrStyle(style: LegacyQrStyle | QrStyle | unknown): QrStyle {
-  // Jeśli już w nowym formacie, zwróć bez zmian
+  // Jeśli już w nowym formacie, zastosuj poprawki i zwróć
   if (isNewStyle(style)) {
-    return style
+    // Migrate any 'rounded' cornersDotType to 'dot' (not supported by qr-code-styling)
+    const cornersDotType = style.cornersDotType === 'rounded' ? 'dot' : style.cornersDotType
+    return {
+      ...style,
+      cornersDotType: cornersDotType as 'square' | 'dot',
+    }
   }
 
   // Jeśli styl jest pusty lub nieprawidłowy, zwróć domyślny

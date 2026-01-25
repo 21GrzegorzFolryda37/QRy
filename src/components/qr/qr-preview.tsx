@@ -26,6 +26,29 @@ function convertGradient(gradient: GradientOptions | null | undefined) {
   }
 }
 
+/**
+ * Map cornersDotType to valid qr-code-styling values
+ * qr-code-styling only accepts: 'dot' | 'square' | undefined for cornersDotOptions.type
+ */
+function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
+  if (type === 'dot') return 'dot'
+  if (type === 'square') return 'square'
+  // 'rounded' and other values default to 'dot' as it looks most similar
+  return 'dot'
+}
+
+/**
+ * Map cornersSquareType to valid qr-code-styling values
+ * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
+ */
+function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
+  if (type === 'dot') return 'dot'
+  if (type === 'square') return 'square'
+  if (type === 'extra-rounded') return 'extra-rounded'
+  if (type === 'rounded') return 'extra-rounded'
+  return 'square'
+}
+
 export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
@@ -82,13 +105,13 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       },
 
       cornersSquareOptions: {
-        type: finalStyle.cornersSquareType === 'rounded' ? 'extra-rounded' : finalStyle.cornersSquareType,
+        type: mapCornersSquareType(finalStyle.cornersSquareType),
         color: finalStyle.cornersSquareColor || finalStyle.foregroundColor,
         gradient: convertGradient(finalStyle.cornersSquareGradient),
       },
 
       cornersDotOptions: {
-        type: finalStyle.cornersDotType,
+        type: mapCornersDotType(finalStyle.cornersDotType),
         color: finalStyle.cornersDotColor || finalStyle.foregroundColor,
         gradient: convertGradient(finalStyle.cornersDotGradient),
       },

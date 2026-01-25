@@ -46,7 +46,7 @@ export type DotsType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounde
 // Kształt całego kodu QR (maska/ramka)
 export type FrameShape = 'square' | 'circle' | 'rounded' | 'heart' | 'hexagon' | 'star' | 'diamond'
 export type CornersSquareType = 'square' | 'dot' | 'rounded' | 'extra-rounded'
-export type CornersDotType = 'square' | 'dot' | 'rounded'
+export type CornersDotType = 'square' | 'dot'
 export type GradientType = 'linear' | 'radial'
 
 export interface GradientColorStop {
