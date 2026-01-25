@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import type QRCodeStylingType from 'qr-code-styling'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
-import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, FrameShape } from '@/types/database'
+import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, GradientOptions } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
-import { createQrCode, updateQrCode } from '@/actions/qr'
+import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
+import { getRedirectUrl } from '@/lib/utils'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
@@ -53,10 +55,100 @@ function CollapsibleSection({
   )
 }
 
+/**
+ * Convert gradient options for qr-code-styling
+ */
+function convertGradient(gradient: GradientOptions | null | undefined) {
+  if (!gradient) return undefined
+  return {
+    type: gradient.type,
+    rotation: (gradient.rotation * Math.PI) / 180,
+    colorStops: gradient.colorStops,
+  }
+}
+
+/**
+ * Generate QR code image as data URL using qr-code-styling (client-side)
+ */
+async function generateQrImageDataUrl(
+  QRCodeStyling: typeof QRCodeStylingType,
+  url: string,
+  style: QrStyle,
+  logoUrl: string | undefined,
+  logoSize: number
+): Promise<string | null> {
+  const size = style.width
+  const frameShape = style.frameShape || 'square'
+
+  const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
+    width: size,
+    height: size,
+    type: 'canvas',
+    data: url,
+    margin: style.margin * 10,
+
+    qrOptions: {
+      errorCorrectionLevel: style.errorCorrectionLevel,
+    },
+
+    dotsOptions: {
+      type: style.dotsType,
+      color: style.foregroundColor,
+      gradient: convertGradient(style.dotsGradient),
+    },
+
+    cornersSquareOptions: {
+      type: style.cornersSquareType === 'rounded' ? 'extra-rounded' : style.cornersSquareType,
+      color: style.cornersSquareColor || style.foregroundColor,
+      gradient: convertGradient(style.cornersSquareGradient),
+    },
+
+    cornersDotOptions: {
+      type: style.cornersDotType,
+      color: style.cornersDotColor || style.foregroundColor,
+      gradient: convertGradient(style.cornersDotGradient),
+    },
+
+    backgroundOptions: {
+      color: frameShape === 'square' ? style.backgroundColor : 'transparent',
+      gradient: frameShape === 'square' ? convertGradient(style.backgroundGradient) : undefined,
+    },
+  }
+
+  // Add logo if provided
+  if (logoUrl) {
+    const isDataUrl = logoUrl.startsWith('data:')
+    options.image = logoUrl
+    options.imageOptions = {
+      hideBackgroundDots: true,
+      imageSize: logoSize / size,
+      margin: 5,
+      ...(isDataUrl ? {} : { crossOrigin: 'anonymous' }),
+    }
+  }
+
+  try {
+    const qrCode = new QRCodeStyling(options)
+    const blob = await qrCode.getRawData('png')
+
+    if (!blob) return null
+
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.readAsDataURL(blob as Blob)
+    })
+  } catch (error) {
+    console.error('Error generating QR code:', error)
+    return null
+  }
+}
+
 export function QrForm({ qrCode }: QrFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
 
   const [name, setName] = useState(qrCode?.name || '')
   const [destinationUrl, setDestinationUrl] = useState(qrCode?.destination_url || '')
@@ -69,34 +161,92 @@ export function QrForm({ qrCode }: QrFormProps) {
 
   const isEditing = !!qrCode
 
+  // Load qr-code-styling library
+  useEffect(() => {
+    import('qr-code-styling').then((module) => {
+      setQRCodeStyling(() => module.default)
+    })
+  }, [])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setIsLoading(true)
-    setError(null)
 
-    const formData = new FormData()
-    formData.set('name', name)
-    formData.set('destinationUrl', destinationUrl)
-    formData.set('style', JSON.stringify(style))
-    // Always send logoUrl (even empty) so server knows when logo is removed
-    formData.set('logoUrl', logoUrl)
-    if (logoUrl) {
-      formData.set('logoSize', logoSize.toString())
-    }
-
-    const result = isEditing
-      ? await updateQrCode(qrCode.id, formData)
-      : await createQrCode(formData)
-
-    setIsLoading(false)
-
-    if (result.error) {
-      setError(result.error)
+    if (!QRCodeStyling) {
+      setError('QR code library not loaded yet. Please wait.')
       return
     }
 
-    router.push('/qr-codes')
-    router.refresh()
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      let shortCode: string
+      let redirectUrl: string
+
+      if (isEditing) {
+        // Use existing short code for updates
+        shortCode = qrCode.short_code
+        redirectUrl = getRedirectUrl(shortCode)
+      } else {
+        // Reserve a new short code for new QR codes
+        const reserveResult = await reserveShortCode()
+        if (reserveResult.error || !reserveResult.shortCode || !reserveResult.redirectUrl) {
+          setError(reserveResult.error || 'Failed to reserve short code')
+          setIsLoading(false)
+          return
+        }
+        shortCode = reserveResult.shortCode
+        redirectUrl = reserveResult.redirectUrl
+      }
+
+      // Generate QR code image client-side with the redirect URL
+      const qrImageDataUrl = await generateQrImageDataUrl(
+        QRCodeStyling,
+        redirectUrl,
+        style,
+        logoUrl || undefined,
+        logoSize
+      )
+
+      if (!qrImageDataUrl) {
+        setError('Failed to generate QR code image')
+        setIsLoading(false)
+        return
+      }
+
+      // Build form data
+      const formData = new FormData()
+      formData.set('name', name)
+      formData.set('destinationUrl', destinationUrl)
+      formData.set('style', JSON.stringify(style))
+      formData.set('logoUrl', logoUrl)
+      formData.set('qrImageDataUrl', qrImageDataUrl)
+
+      if (logoUrl) {
+        formData.set('logoSize', logoSize.toString())
+      }
+
+      if (!isEditing) {
+        formData.set('shortCode', shortCode)
+      }
+
+      const result = isEditing
+        ? await updateQrCode(qrCode.id, formData)
+        : await createQrCode(formData)
+
+      if (result.error) {
+        setError(result.error)
+        setIsLoading(false)
+        return
+      }
+
+      router.push('/qr-codes')
+      router.refresh()
+    } catch (err) {
+      console.error('Error:', err)
+      setError('An unexpected error occurred')
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -392,7 +542,7 @@ export function QrForm({ qrCode }: QrFormProps) {
         )}
 
         <div className="flex gap-4">
-          <Button type="submit" isLoading={isLoading}>
+          <Button type="submit" isLoading={isLoading} disabled={!QRCodeStyling}>
             {isEditing ? 'Update QR Code' : 'Create QR Code'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>

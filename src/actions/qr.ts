@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { createQrSchema, updateQrSchema } from '@/lib/validations/qr'
-import { generateQrCode, getQrImageFileName } from '@/lib/qr/generator'
 import { generateShortCode } from '@/lib/utils/short-code'
 import { getRedirectUrl } from '@/lib/utils'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
@@ -20,6 +19,40 @@ export type QrListResponse = {
   error?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any[]
+}
+
+export type ReserveShortCodeResponse = {
+  error?: string
+  shortCode?: string
+  redirectUrl?: string
+}
+
+/**
+ * Reserve a short code for a new QR code (step 1 of client-side generation)
+ */
+export async function reserveShortCode(): Promise<ReserveShortCodeResponse> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const shortCode = generateShortCode()
+  const redirectUrl = getRedirectUrl(shortCode)
+
+  return { shortCode, redirectUrl }
+}
+
+/**
+ * Convert data URL to Buffer
+ */
+function dataUrlToBuffer(dataUrl: string): Buffer {
+  const base64Data = dataUrl.split(',')[1]
+  return Buffer.from(base64Data, 'base64')
 }
 
 async function uploadQrImage(buffer: Buffer, fileName: string): Promise<string | null> {
@@ -40,6 +73,10 @@ async function uploadQrImage(buffer: Buffer, fileName: string): Promise<string |
   const { data: urlData } = adminClient.storage.from('qr-images').getPublicUrl(fileName)
 
   return urlData.publicUrl
+}
+
+function getQrImageFileName(shortCode: string): string {
+  return `qr-${shortCode}-${Date.now()}.png`
 }
 
 export async function createQrCode(formData: FormData): Promise<QrActionResponse> {
@@ -90,19 +127,16 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
     return { error: 'You have reached your QR code limit. Please upgrade your plan.' }
   }
 
-  // Generate short code
-  const shortCode = generateShortCode()
-  const redirectUrl = getRedirectUrl(shortCode)
+  // Get short code and image from form data (client-side generated)
+  const shortCode = formData.get('shortCode') as string
+  const qrImageDataUrl = formData.get('qrImageDataUrl') as string
 
-  // Generate QR code image
-  const qrBuffer = await generateQrCode({
-    url: redirectUrl,
-    style: finalStyle,
-    logoUrl,
-    logoSize,
-  })
+  if (!shortCode || !qrImageDataUrl) {
+    return { error: 'Missing QR code data' }
+  }
 
-  // Upload to storage
+  // Upload image to storage
+  const qrBuffer = dataUrlToBuffer(qrImageDataUrl)
   const fileName = getQrImageFileName(shortCode)
   const qrImageUrl = await uploadQrImage(qrBuffer, fileName)
 
@@ -177,23 +211,13 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
   const migratedExistingStyle = migrateQrStyle(existingQr.style)
   const finalStyle: QrStyle = { ...migratedExistingStyle, ...updates.style }
 
-  // Check if we need to regenerate the QR code image
-  const needsRegeneration =
-    updates.style !== undefined ||
-    updates.logoUrl !== undefined ||
-    updates.logoSize !== undefined
-
+  // Check if client sent a new QR image
+  const qrImageDataUrl = formData.get('qrImageDataUrl') as string | null
   let qrImageUrl = existingQr.qr_image_url
 
-  if (needsRegeneration) {
-    const redirectUrl = getRedirectUrl(existingQr.short_code)
-    const qrBuffer = await generateQrCode({
-      url: redirectUrl,
-      style: finalStyle,
-      logoUrl: updates.logoUrl !== undefined ? updates.logoUrl : existingQr.logo_url,
-      logoSize: updates.logoSize !== undefined ? updates.logoSize : existingQr.logo_size || undefined,
-    })
-
+  if (qrImageDataUrl) {
+    // Upload new image
+    const qrBuffer = dataUrlToBuffer(qrImageDataUrl)
     const fileName = getQrImageFileName(existingQr.short_code)
     qrImageUrl = await uploadQrImage(qrBuffer, fileName)
   }
