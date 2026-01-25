@@ -45,22 +45,21 @@ export interface QrCodeOptions {
 }
 
 /**
- * Create qr-code-styling options - shared between preview and generation
- * This ensures both use EXACTLY the same configuration
+ * Create base qr-code-styling options (without type)
+ * This is shared between preview (SVG) and generation (canvas)
  */
-export function createQrCodeStylingOptions(
+function createBaseOptions(
   opts: QrCodeOptions
-): ConstructorParameters<typeof QRCodeStylingType>[0] {
+): Omit<ConstructorParameters<typeof QRCodeStylingType>[0], 'type'> {
   const { url, style, size, logoUrl, logoSize } = opts
   const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
   const frameShape = finalStyle.frameShape || 'square'
 
-  const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
+  const options: Omit<ConstructorParameters<typeof QRCodeStylingType>[0], 'type'> = {
     width: size,
     height: size,
-    type: 'svg',
     data: url || 'https://example.com',
-    margin: Math.round(finalStyle.margin * (size / 40)), // Scale margin proportionally
+    margin: Math.round(finalStyle.margin * (size / 40)),
 
     qrOptions: {
       errorCorrectionLevel: finalStyle.errorCorrectionLevel,
@@ -107,14 +106,39 @@ export function createQrCodeStylingOptions(
 }
 
 /**
- * Generate QR code as data URL
+ * Create qr-code-styling options for preview (SVG for smooth display)
+ */
+export function createQrCodeStylingOptions(
+  opts: QrCodeOptions
+): ConstructorParameters<typeof QRCodeStylingType>[0] {
+  return {
+    ...createBaseOptions(opts),
+    type: 'svg',
+  }
+}
+
+/**
+ * Create qr-code-styling options for export (canvas for proper PNG)
+ */
+export function createQrCodeExportOptions(
+  opts: QrCodeOptions
+): ConstructorParameters<typeof QRCodeStylingType>[0] {
+  return {
+    ...createBaseOptions(opts),
+    type: 'canvas',
+  }
+}
+
+/**
+ * Generate QR code as data URL (uses canvas for proper PNG export)
  */
 export async function generateQrDataUrl(
   QRCodeStyling: typeof QRCodeStylingType,
   opts: QrCodeOptions
 ): Promise<string | null> {
   try {
-    const options = createQrCodeStylingOptions(opts)
+    // Use canvas type for proper PNG export
+    const options = createQrCodeExportOptions(opts)
     const qrCode = new QRCodeStyling(options)
     const blob = await qrCode.getRawData('png')
 
