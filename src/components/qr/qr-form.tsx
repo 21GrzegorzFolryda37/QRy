@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type QRCodeStylingType from 'qr-code-styling'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
-import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, GradientOptions } from '@/types/database'
+import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
 import { getRedirectUrl } from '@/lib/utils'
+import { generateQrDataUrl } from '@/lib/qr/options'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
@@ -55,118 +56,6 @@ function CollapsibleSection({
   )
 }
 
-/**
- * Convert gradient options for qr-code-styling
- */
-function convertGradient(gradient: GradientOptions | null | undefined) {
-  if (!gradient) return undefined
-  return {
-    type: gradient.type,
-    rotation: (gradient.rotation * Math.PI) / 180,
-    colorStops: gradient.colorStops,
-  }
-}
-
-/**
- * Map cornersDotType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | undefined for cornersDotOptions.type
- */
-function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  // 'rounded' and other values default to 'dot' as it looks most similar
-  return 'dot'
-}
-
-/**
- * Map cornersSquareType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
- */
-function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  if (type === 'extra-rounded') return 'extra-rounded'
-  if (type === 'rounded') return 'extra-rounded'
-  return 'square'
-}
-
-/**
- * Generate QR code image as data URL using qr-code-styling (client-side)
- * Uses SVG rendering for consistency with preview, then converts to PNG
- */
-async function generateQrImageDataUrl(
-  QRCodeStyling: typeof QRCodeStylingType,
-  url: string,
-  style: QrStyle,
-  logoUrl: string | undefined,
-  logoSize: number
-): Promise<string | null> {
-  const size = style.width
-  const frameShape = style.frameShape || 'square'
-
-  const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
-    width: size,
-    height: size,
-    type: 'svg', // Use SVG for consistent rendering with preview
-    data: url,
-    margin: style.margin * 10,
-
-    qrOptions: {
-      errorCorrectionLevel: style.errorCorrectionLevel,
-    },
-
-    dotsOptions: {
-      type: style.dotsType,
-      color: style.foregroundColor,
-      gradient: convertGradient(style.dotsGradient),
-    },
-
-    cornersSquareOptions: {
-      type: mapCornersSquareType(style.cornersSquareType),
-      color: style.cornersSquareColor || style.foregroundColor,
-      gradient: convertGradient(style.cornersSquareGradient),
-    },
-
-    cornersDotOptions: {
-      type: mapCornersDotType(style.cornersDotType),
-      color: style.cornersDotColor || style.foregroundColor,
-      gradient: convertGradient(style.cornersDotGradient),
-    },
-
-    backgroundOptions: {
-      color: frameShape === 'square' ? style.backgroundColor : 'transparent',
-      gradient: frameShape === 'square' ? convertGradient(style.backgroundGradient) : undefined,
-    },
-  }
-
-  // Add logo if provided
-  if (logoUrl) {
-    const isDataUrl = logoUrl.startsWith('data:')
-    options.image = logoUrl
-    options.imageOptions = {
-      hideBackgroundDots: true,
-      imageSize: logoSize / size,
-      margin: 5,
-      ...(isDataUrl ? {} : { crossOrigin: 'anonymous' }),
-    }
-  }
-
-  try {
-    const qrCode = new QRCodeStyling(options)
-    const blob = await qrCode.getRawData('png')
-
-    if (!blob) return null
-
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result as string)
-      reader.readAsDataURL(blob as Blob)
-    })
-  } catch (error) {
-    console.error('Error generating QR code:', error)
-    return null
-  }
-}
 
 export function QrForm({ qrCode }: QrFormProps) {
   const router = useRouter()
@@ -224,13 +113,14 @@ export function QrForm({ qrCode }: QrFormProps) {
       }
 
       // Generate QR code image client-side with the redirect URL
-      const qrImageDataUrl = await generateQrImageDataUrl(
-        QRCodeStyling,
-        redirectUrl,
+      // Uses the same shared function as preview for consistency
+      const qrImageDataUrl = await generateQrDataUrl(QRCodeStyling, {
+        url: redirectUrl,
         style,
-        logoUrl || undefined,
-        logoSize
-      )
+        size: style.width,
+        logoUrl: logoUrl || undefined,
+        logoSize,
+      })
 
       if (!qrImageDataUrl) {
         setError('Failed to generate QR code image')

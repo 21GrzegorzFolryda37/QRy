@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, useId } from 'react'
 import type QRCodeStylingType from 'qr-code-styling'
-import { QrStyle, GradientOptions } from '@/types/database'
+import { QrStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
+import { createQrCodeStylingOptions } from '@/lib/qr/options'
 import { frameShapePaths } from './frame-shapes'
 
 interface QrPreviewProps {
@@ -13,54 +14,17 @@ interface QrPreviewProps {
   logoSize?: number
 }
 
-/**
- * Konwertuje GradientOptions na format wymagany przez qr-code-styling
- */
-function convertGradient(gradient: GradientOptions | null | undefined) {
-  if (!gradient) return undefined
-
-  return {
-    type: gradient.type,
-    rotation: (gradient.rotation * Math.PI) / 180,
-    colorStops: gradient.colorStops,
-  }
-}
-
-/**
- * Map cornersDotType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | undefined for cornersDotOptions.type
- */
-function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  // 'rounded' and other values default to 'dot' as it looks most similar
-  return 'dot'
-}
-
-/**
- * Map cornersSquareType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
- */
-function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  if (type === 'extra-rounded') return 'extra-rounded'
-  if (type === 'rounded') return 'extra-rounded'
-  return 'square'
-}
-
 export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
   const clipId = useId()
 
-  const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
+  const finalStyle: QrStyle = { ...DEFAULT_QR_STYLE, ...style }
   const frameShape = finalStyle.frameShape || 'square'
   const size = 280
 
   // Reset QR code instance when frameShape changes
-  // to avoid DOM manipulation errors on different JSX structures
   const prevFrameShapeRef = useRef(frameShape)
   const prevHasLogoRef = useRef(!!logoUrl)
   useEffect(() => {
@@ -68,7 +32,6 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       qrCodeRef.current = null
       prevFrameShapeRef.current = frameShape
     }
-    // Also reset when logo is added or removed (not just changed)
     const hasLogo = !!logoUrl
     if (prevHasLogoRef.current !== hasLogo) {
       qrCodeRef.current = null
@@ -76,77 +39,36 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
     }
   }, [frameShape, logoUrl])
 
-  // Dynamiczny import biblioteki (tylko client-side)
+  // Dynamic import of library (client-side only)
   useEffect(() => {
     import('qr-code-styling').then((module) => {
       setQRCodeStyling(() => module.default)
     })
   }, [])
 
-  // Generowanie/aktualizacja kodu QR
+  // Generate/update QR code
   useEffect(() => {
     if (!QRCodeStyling || !containerRef.current) return
 
-    const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
-      width: size,
-      height: size,
-      type: 'svg',
-      data: url || 'https://example.com',
-      margin: finalStyle.margin * 7, // skalowanie dla preview
+    // Use shared options function for consistency
+    const options = createQrCodeStylingOptions({
+      url,
+      style: finalStyle,
+      size,
+      logoUrl,
+      logoSize,
+    })
 
-      qrOptions: {
-        errorCorrectionLevel: finalStyle.errorCorrectionLevel,
-      },
-
-      dotsOptions: {
-        type: finalStyle.dotsType,
-        color: finalStyle.foregroundColor,
-        gradient: convertGradient(finalStyle.dotsGradient),
-      },
-
-      cornersSquareOptions: {
-        type: mapCornersSquareType(finalStyle.cornersSquareType),
-        color: finalStyle.cornersSquareColor || finalStyle.foregroundColor,
-        gradient: convertGradient(finalStyle.cornersSquareGradient),
-      },
-
-      cornersDotOptions: {
-        type: mapCornersDotType(finalStyle.cornersDotType),
-        color: finalStyle.cornersDotColor || finalStyle.foregroundColor,
-        gradient: convertGradient(finalStyle.cornersDotGradient),
-      },
-
-      backgroundOptions: {
-        color: frameShape === 'square' ? finalStyle.backgroundColor : 'transparent',
-        gradient: frameShape === 'square' ? convertGradient(finalStyle.backgroundGradient) : undefined,
-      },
-    }
-
-    // Dodaj logo jeśli podane
-    if (logoUrl) {
-      // Data URLs don't need CORS, only external URLs do
-      const isDataUrl = logoUrl.startsWith('data:')
-      options.image = logoUrl
-      options.imageOptions = {
-        hideBackgroundDots: true,
-        imageSize: logoSize ? logoSize / size : 0.2,
-        margin: 5,
-        ...(isDataUrl ? {} : { crossOrigin: 'anonymous' }),
-      }
-    }
-
-    // Jeśli QR code już istnieje, zaktualizuj opcje
     if (qrCodeRef.current) {
       qrCodeRef.current.update(options)
     } else {
-      // Utwórz nowy QR code
       qrCodeRef.current = new QRCodeStyling(options)
       containerRef.current.innerHTML = ''
       qrCodeRef.current.append(containerRef.current)
     }
   }, [QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, size])
 
-  // Dla kwadratu - bez maski
+  // For square - no mask
   if (frameShape === 'square') {
     return (
       <div className="flex justify-center">
@@ -159,11 +81,10 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
     )
   }
 
-  // Dla innych kształtów - z maską SVG
+  // For other shapes - with SVG mask
   return (
     <div className="flex justify-center">
       <div className="relative" style={{ width: size, height: size }}>
-        {/* SVG z definicją clipPath */}
         <svg
           width={size}
           height={size}
@@ -178,7 +99,6 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
           </defs>
         </svg>
 
-        {/* Tło w kształcie */}
         <svg
           width={size}
           height={size}
@@ -189,7 +109,6 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
           <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
         </svg>
 
-        {/* QR code z przyciętym kształtem */}
         <div
           ref={containerRef}
           className="absolute inset-0"
