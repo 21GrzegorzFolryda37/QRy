@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { extractUtmParams, appendUtmParams } from '@/lib/utils'
 import { UAParser } from 'ua-parser-js'
 
+// Use Edge Runtime for faster redirects worldwide
+export const runtime = 'edge'
+
 interface QrCodeRecord {
   id: string
   user_id: string
