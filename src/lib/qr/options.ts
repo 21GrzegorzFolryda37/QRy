@@ -1,5 +1,5 @@
 import type QRCodeStylingType from 'qr-code-styling'
-import { QrStyle, GradientOptions } from '@/types/database'
+import { QrStyle, GradientOptions, FrameOptions, FrameStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 
 /**
@@ -149,25 +149,321 @@ export function createQrCodeExportOptions(
   }
 }
 
+// Frame dimensions
+const FRAME_PADDING_RATIO = 0.08
+const TEXT_AREA_HEIGHT_RATIO = 0.12
+
+/**
+ * Calculate frame dimensions
+ */
+function getFrameDimensions(qrSize: number, frame: FrameOptions | null) {
+  if (!frame || frame.style === 'none') {
+    return { width: qrSize, height: qrSize, padding: 0, textHeight: 0 }
+  }
+
+  const padding = Math.round(qrSize * FRAME_PADDING_RATIO)
+  const textHeight = frame.showText ? Math.round(qrSize * TEXT_AREA_HEIGHT_RATIO) : 0
+
+  return {
+    width: qrSize + padding * 2,
+    height: qrSize + padding * 2 + textHeight,
+    padding,
+    textHeight,
+  }
+}
+
+/**
+ * Draw decorative frame on canvas
+ */
+function drawFrameOnCanvas(
+  ctx: CanvasRenderingContext2D,
+  frame: FrameOptions,
+  width: number,
+  height: number,
+  padding: number,
+  textHeight: number
+) {
+  const qrSize = width - padding * 2
+
+  ctx.save()
+
+  switch (frame.style) {
+    case 'simple':
+      // Background
+      ctx.fillStyle = frame.color
+      roundRect(ctx, 0, 0, width, height, 8)
+      ctx.fill()
+      // QR area
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 4, padding - 4, qrSize + 8, qrSize + 8, 4)
+      ctx.fill()
+      break
+
+    case 'rounded':
+      ctx.fillStyle = frame.color
+      roundRect(ctx, 0, 0, width, height, 24)
+      ctx.fill()
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 4, padding - 4, qrSize + 8, qrSize + 8, 16)
+      ctx.fill()
+      break
+
+    case 'fancy':
+      ctx.fillStyle = frame.color
+      roundRect(ctx, 0, 0, width, height, 8)
+      ctx.fill()
+      // Dashed border
+      ctx.strokeStyle = 'white'
+      ctx.lineWidth = 2
+      ctx.setLineDash([6, 4])
+      roundRect(ctx, 4, 4, width - 8, height - 8, 6)
+      ctx.stroke()
+      ctx.setLineDash([])
+      // QR area
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
+      ctx.fill()
+      break
+
+    case 'ticket':
+      drawTicketFrame(ctx, frame.color, width, height)
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
+      ctx.fill()
+      break
+
+    case 'balloon':
+      drawBalloonFrame(ctx, frame.color, width, height)
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
+      ctx.fill()
+      break
+
+    case 'badge':
+      // Circle background
+      ctx.fillStyle = frame.color
+      ctx.beginPath()
+      ctx.arc(width / 2, width / 2, width / 2 - 2, 0, Math.PI * 2)
+      ctx.fill()
+      // Ribbon
+      const ribbonWidth = width * 0.35
+      const ribbonHeight = height * 0.15
+      ctx.fillRect((width - ribbonWidth) / 2, height - ribbonHeight - 4, ribbonWidth, ribbonHeight)
+      ctx.beginPath()
+      ctx.moveTo((width - ribbonWidth) / 2, height - ribbonHeight - 4)
+      ctx.lineTo(width / 2, height - ribbonHeight / 2 - 4)
+      ctx.lineTo((width + ribbonWidth) / 2, height - ribbonHeight - 4)
+      ctx.fill()
+      // White circle for QR
+      ctx.fillStyle = 'white'
+      ctx.beginPath()
+      ctx.arc(width / 2, width / 2, qrSize / 2 + 4, 0, Math.PI * 2)
+      ctx.fill()
+      break
+
+    case 'banner':
+      const foldSize = 10
+      ctx.fillStyle = frame.color
+      ctx.fillRect(0, foldSize, width, height - foldSize)
+      // Shadow folds
+      ctx.fillStyle = adjustColor(frame.color, -30)
+      ctx.beginPath()
+      ctx.moveTo(0, height)
+      ctx.lineTo(foldSize, height - foldSize)
+      ctx.lineTo(0, height - foldSize)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(width, height)
+      ctx.lineTo(width - foldSize, height - foldSize)
+      ctx.lineTo(width, height - foldSize)
+      ctx.fill()
+      // QR area
+      ctx.fillStyle = 'white'
+      roundRect(ctx, padding - 2, padding + foldSize - 2, qrSize + 4, qrSize + 4, 4)
+      ctx.fill()
+      break
+
+    case 'minimal':
+      const cornerLength = 20
+      const cornerWidth = 4
+      ctx.strokeStyle = frame.color
+      ctx.lineWidth = cornerWidth
+      ctx.lineCap = 'round'
+      // Top-left
+      ctx.beginPath()
+      ctx.moveTo(padding - 8, padding - 8 + cornerLength)
+      ctx.lineTo(padding - 8, padding - 8)
+      ctx.lineTo(padding - 8 + cornerLength, padding - 8)
+      ctx.stroke()
+      // Top-right
+      ctx.beginPath()
+      ctx.moveTo(width - padding + 8 - cornerLength, padding - 8)
+      ctx.lineTo(width - padding + 8, padding - 8)
+      ctx.lineTo(width - padding + 8, padding - 8 + cornerLength)
+      ctx.stroke()
+      // Bottom-left
+      ctx.beginPath()
+      ctx.moveTo(padding - 8, padding + qrSize + 8 - cornerLength)
+      ctx.lineTo(padding - 8, padding + qrSize + 8)
+      ctx.lineTo(padding - 8 + cornerLength, padding + qrSize + 8)
+      ctx.stroke()
+      // Bottom-right
+      ctx.beginPath()
+      ctx.moveTo(width - padding + 8 - cornerLength, padding + qrSize + 8)
+      ctx.lineTo(width - padding + 8, padding + qrSize + 8)
+      ctx.lineTo(width - padding + 8, padding + qrSize + 8 - cornerLength)
+      ctx.stroke()
+      break
+  }
+
+  // Draw text
+  if (frame.showText && frame.text && textHeight > 0) {
+    const fontSize = Math.round(textHeight * 0.5)
+    ctx.fillStyle = frame.textColor
+    ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(frame.text, width / 2, qrSize + padding * 2 + textHeight / 2)
+  }
+
+  ctx.restore()
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
+}
+
+function drawTicketFrame(ctx: CanvasRenderingContext2D, color: string, width: number, height: number) {
+  const notchSize = 12
+  ctx.fillStyle = color
+  ctx.beginPath()
+  ctx.moveTo(notchSize, 0)
+  ctx.lineTo(width - notchSize, 0)
+  ctx.quadraticCurveTo(width, 0, width, notchSize)
+  ctx.lineTo(width, height * 0.4 - notchSize)
+  ctx.quadraticCurveTo(width - notchSize, height * 0.4 - notchSize, width - notchSize, height * 0.4)
+  ctx.quadraticCurveTo(width - notchSize, height * 0.4 + notchSize, width, height * 0.4 + notchSize)
+  ctx.lineTo(width, height - notchSize)
+  ctx.quadraticCurveTo(width, height, width - notchSize, height)
+  ctx.lineTo(notchSize, height)
+  ctx.quadraticCurveTo(0, height, 0, height - notchSize)
+  ctx.lineTo(0, height * 0.4 + notchSize)
+  ctx.quadraticCurveTo(notchSize, height * 0.4 + notchSize, notchSize, height * 0.4)
+  ctx.quadraticCurveTo(notchSize, height * 0.4 - notchSize, 0, height * 0.4 - notchSize)
+  ctx.lineTo(0, notchSize)
+  ctx.quadraticCurveTo(0, 0, notchSize, 0)
+  ctx.closePath()
+  ctx.fill()
+}
+
+function drawBalloonFrame(ctx: CanvasRenderingContext2D, color: string, width: number, height: number) {
+  const arrowSize = 16
+  ctx.fillStyle = color
+  ctx.beginPath()
+  ctx.moveTo(12, 0)
+  ctx.lineTo(width - 12, 0)
+  ctx.quadraticCurveTo(width, 0, width, 12)
+  ctx.lineTo(width, height - arrowSize - 12)
+  ctx.quadraticCurveTo(width, height - arrowSize, width - 12, height - arrowSize)
+  ctx.lineTo(width / 2 + arrowSize, height - arrowSize)
+  ctx.lineTo(width / 2, height)
+  ctx.lineTo(width / 2 - arrowSize, height - arrowSize)
+  ctx.lineTo(12, height - arrowSize)
+  ctx.quadraticCurveTo(0, height - arrowSize, 0, height - arrowSize - 12)
+  ctx.lineTo(0, 12)
+  ctx.quadraticCurveTo(0, 0, 12, 0)
+  ctx.closePath()
+  ctx.fill()
+}
+
+function adjustColor(color: string, amount: number): string {
+  const hex = color.replace('#', '')
+  const r = Math.max(0, Math.min(255, parseInt(hex.slice(0, 2), 16) + amount))
+  const g = Math.max(0, Math.min(255, parseInt(hex.slice(2, 4), 16) + amount))
+  const b = Math.max(0, Math.min(255, parseInt(hex.slice(4, 6), 16) + amount))
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+}
+
 /**
  * Generate QR code as data URL (uses canvas for proper PNG export)
+ * Includes decorative frame if set in style
  */
 export async function generateQrDataUrl(
   QRCodeStyling: typeof QRCodeStylingType,
   opts: QrCodeOptions
 ): Promise<string | null> {
   try {
-    // Use canvas type for proper PNG export
+    const finalStyle = { ...DEFAULT_QR_STYLE, ...opts.style }
+    const frame = finalStyle.frame
+
+    // Generate QR code
     const options = createQrCodeExportOptions(opts)
     const qrCode = new QRCodeStyling(options)
-    const blob = await qrCode.getRawData('png')
+    const qrBlob = await qrCode.getRawData('png')
 
-    if (!blob) return null
+    if (!qrBlob) return null
 
-    return new Promise((resolve) => {
+    // If no decorative frame, return QR code directly
+    if (!frame || frame.style === 'none') {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(qrBlob as Blob)
+      })
+    }
+
+    // Create canvas with frame
+    const { width, height, padding, textHeight } = getFrameDimensions(opts.size, frame)
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) return null
+
+    // Draw white background for non-minimal frames
+    if (frame.style !== 'minimal') {
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, width, height)
+    }
+
+    // Draw frame
+    drawFrameOnCanvas(ctx, frame, width, height, padding, textHeight)
+
+    // Load and draw QR code image
+    const qrImage = new Image()
+    const qrDataUrl = await new Promise<string>((resolve) => {
       const reader = new FileReader()
       reader.onloadend = () => resolve(reader.result as string)
-      reader.readAsDataURL(blob as Blob)
+      reader.readAsDataURL(qrBlob as Blob)
+    })
+
+    return new Promise((resolve) => {
+      qrImage.onload = () => {
+        // Adjust position for banner style
+        const yOffset = frame.style === 'banner' ? 10 : 0
+        ctx.drawImage(qrImage, padding, padding + yOffset, opts.size, opts.size)
+        resolve(canvas.toDataURL('image/png'))
+      }
+      qrImage.onerror = () => resolve(null)
+      qrImage.src = qrDataUrl
     })
   } catch (error) {
     console.error('Error generating QR code:', error)

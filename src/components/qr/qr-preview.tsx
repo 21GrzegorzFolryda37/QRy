@@ -6,6 +6,7 @@ import { QrStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCodeExportOptions } from '@/lib/qr/options'
 import { frameShapePaths } from './frame-shapes'
+import { FrameRenderer, getFrameDimensions } from './frame-renderer'
 
 interface QrPreviewProps {
   url: string
@@ -24,7 +25,11 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const styleString = useMemo(() => JSON.stringify(style), [style])
   const finalStyle: QrStyle = useMemo(() => ({ ...DEFAULT_QR_STYLE, ...style }), [styleString, style])
   const frameShape = finalStyle.frameShape || 'square'
-  const size = 280
+  const frame = finalStyle.frame
+  const qrSize = 280
+
+  // Calculate total dimensions including frame
+  const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
 
   // Reset QR code instance when frameShape changes
   const prevFrameShapeRef = useRef(frameShape)
@@ -56,7 +61,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
     const options = createQrCodeExportOptions({
       url,
       style: finalStyle,
-      size,
+      size: qrSize,
       logoUrl,
       logoSize,
     })
@@ -68,59 +73,68 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       containerRef.current.innerHTML = ''
       qrCodeRef.current.append(containerRef.current)
     }
-  }, [QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, size])
+  }, [QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, qrSize])
 
-  // For square - no mask
-  if (frameShape === 'square') {
+  // QR code content (used in both cases)
+  const qrContent = frameShape === 'square' ? (
+    <div
+      ref={containerRef}
+      className="rounded-lg overflow-hidden bg-white"
+      style={{ width: qrSize, height: qrSize }}
+    />
+  ) : (
+    <div className="relative" style={{ width: qrSize, height: qrSize }}>
+      <svg
+        width={qrSize}
+        height={qrSize}
+        viewBox="0 0 100 100"
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 1 }}
+      >
+        <defs>
+          <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
+            <path d={frameShapePaths[frameShape]} />
+          </clipPath>
+        </defs>
+      </svg>
+
+      <svg
+        width={qrSize}
+        height={qrSize}
+        viewBox="0 0 100 100"
+        className="absolute inset-0"
+        style={{ zIndex: 0 }}
+      >
+        <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
+      </svg>
+
+      <div
+        ref={containerRef}
+        className="absolute inset-0"
+        style={{
+          clipPath: `url(#${clipId})`,
+          WebkitClipPath: `url(#${clipId})`,
+          zIndex: 2,
+        }}
+      />
+    </div>
+  )
+
+  // Wrap with decorative frame if enabled
+  if (frame && frame.style !== 'none') {
     return (
       <div className="flex justify-center">
-        <div
-          ref={containerRef}
-          className="rounded-lg overflow-hidden bg-white"
-          style={{ width: size, height: size }}
-        />
+        <FrameRenderer frame={frame} size={qrSize} className="relative">
+          {qrContent}
+        </FrameRenderer>
       </div>
     )
   }
 
-  // For other shapes - with SVG mask
+  // No decorative frame
   return (
     <div className="flex justify-center">
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg
-          width={size}
-          height={size}
-          viewBox="0 0 100 100"
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 1 }}
-        >
-          <defs>
-            <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
-              <path d={frameShapePaths[frameShape]} />
-            </clipPath>
-          </defs>
-        </svg>
-
-        <svg
-          width={size}
-          height={size}
-          viewBox="0 0 100 100"
-          className="absolute inset-0"
-          style={{ zIndex: 0 }}
-        >
-          <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
-        </svg>
-
-        <div
-          ref={containerRef}
-          className="absolute inset-0"
-          style={{
-            clipPath: `url(#${clipId})`,
-            WebkitClipPath: `url(#${clipId})`,
-            zIndex: 2,
-          }}
-        />
-      </div>
+      {qrContent}
     </div>
   )
 }
