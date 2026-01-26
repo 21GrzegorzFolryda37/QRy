@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useId, useMemo } from 'react'
 import type QRCodeStylingType from 'qr-code-styling'
 import { QrStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
-import { createQrCodeExportOptions } from '@/lib/qr/options'
+import { createQrCodeStylingOptions } from '@/lib/qr/options'
 import { frameShapePaths } from './frame-shapes'
 import { FrameRenderer, getFrameDimensions } from './frame-renderer'
 
@@ -57,8 +57,8 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   useEffect(() => {
     if (!QRCodeStyling || !containerRef.current) return
 
-    // Use canvas options for consistency with exported PNG
-    const options = createQrCodeExportOptions({
+    // Use SVG for smooth preview without grid artifacts
+    const options = createQrCodeStylingOptions({
       url,
       style: finalStyle,
       size: qrSize,

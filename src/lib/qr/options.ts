@@ -173,6 +173,64 @@ function getFrameDimensions(qrSize: number, frame: FrameOptions | null) {
 }
 
 /**
+ * Create canvas gradient from GradientOptions
+ */
+function createCanvasGradient(
+  ctx: CanvasRenderingContext2D,
+  gradient: GradientOptions,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): CanvasGradient {
+  let canvasGradient: CanvasGradient
+
+  if (gradient.type === 'linear') {
+    // Calculate gradient endpoints based on rotation
+    const angle = (gradient.rotation * Math.PI) / 180
+    const centerX = x + width / 2
+    const centerY = y + height / 2
+    const length = Math.sqrt(width * width + height * height) / 2
+
+    const x1 = centerX - Math.cos(angle) * length
+    const y1 = centerY - Math.sin(angle) * length
+    const x2 = centerX + Math.cos(angle) * length
+    const y2 = centerY + Math.sin(angle) * length
+
+    canvasGradient = ctx.createLinearGradient(x1, y1, x2, y2)
+  } else {
+    // Radial gradient
+    const centerX = x + width / 2
+    const centerY = y + height / 2
+    const radius = Math.max(width, height) / 2
+
+    canvasGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius)
+  }
+
+  // Add color stops
+  for (const stop of gradient.colorStops) {
+    canvasGradient.addColorStop(stop.offset, stop.color)
+  }
+
+  return canvasGradient
+}
+
+/**
+ * Get fill style (color or gradient) for frame
+ */
+function getFrameFillStyle(
+  ctx: CanvasRenderingContext2D,
+  frame: FrameOptions,
+  width: number,
+  height: number
+): string | CanvasGradient {
+  if (frame.gradient) {
+    return createCanvasGradient(ctx, frame.gradient, 0, 0, width, height)
+  }
+  return frame.color
+}
+
+/**
  * Draw decorative frame on canvas
  */
 function drawFrameOnCanvas(
@@ -184,13 +242,14 @@ function drawFrameOnCanvas(
   textHeight: number
 ) {
   const qrSize = width - padding * 2
+  const fillStyle = getFrameFillStyle(ctx, frame, width, height)
 
   ctx.save()
 
   switch (frame.style) {
     case 'simple':
       // Background
-      ctx.fillStyle = frame.color
+      ctx.fillStyle = fillStyle
       roundRect(ctx, 0, 0, width, height, 8)
       ctx.fill()
       // QR area
@@ -200,7 +259,7 @@ function drawFrameOnCanvas(
       break
 
     case 'rounded':
-      ctx.fillStyle = frame.color
+      ctx.fillStyle = fillStyle
       roundRect(ctx, 0, 0, width, height, 24)
       ctx.fill()
       ctx.fillStyle = 'white'
@@ -209,7 +268,7 @@ function drawFrameOnCanvas(
       break
 
     case 'fancy':
-      ctx.fillStyle = frame.color
+      ctx.fillStyle = fillStyle
       roundRect(ctx, 0, 0, width, height, 8)
       ctx.fill()
       // Dashed border
@@ -226,14 +285,14 @@ function drawFrameOnCanvas(
       break
 
     case 'ticket':
-      drawTicketFrame(ctx, frame.color, width, height)
+      drawTicketFrame(ctx, fillStyle, width, height)
       ctx.fillStyle = 'white'
       roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
       ctx.fill()
       break
 
     case 'balloon':
-      drawBalloonFrame(ctx, frame.color, width, height)
+      drawBalloonFrame(ctx, fillStyle, width, height)
       ctx.fillStyle = 'white'
       roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
       ctx.fill()
@@ -241,7 +300,7 @@ function drawFrameOnCanvas(
 
     case 'badge':
       // Circle background
-      ctx.fillStyle = frame.color
+      ctx.fillStyle = fillStyle
       ctx.beginPath()
       ctx.arc(width / 2, width / 2, width / 2 - 2, 0, Math.PI * 2)
       ctx.fill()
@@ -263,7 +322,7 @@ function drawFrameOnCanvas(
 
     case 'banner':
       const foldSize = 10
-      ctx.fillStyle = frame.color
+      ctx.fillStyle = fillStyle
       ctx.fillRect(0, foldSize, width, height - foldSize)
       // Shadow folds
       ctx.fillStyle = adjustColor(frame.color, -30)
@@ -286,7 +345,7 @@ function drawFrameOnCanvas(
     case 'minimal':
       const cornerLength = 20
       const cornerWidth = 4
-      ctx.strokeStyle = frame.color
+      ctx.strokeStyle = fillStyle
       ctx.lineWidth = cornerWidth
       ctx.lineCap = 'round'
       // Top-left
@@ -350,9 +409,9 @@ function roundRect(
   ctx.closePath()
 }
 
-function drawTicketFrame(ctx: CanvasRenderingContext2D, color: string, width: number, height: number) {
+function drawTicketFrame(ctx: CanvasRenderingContext2D, fillStyle: string | CanvasGradient, width: number, height: number) {
   const notchSize = 12
-  ctx.fillStyle = color
+  ctx.fillStyle = fillStyle
   ctx.beginPath()
   ctx.moveTo(notchSize, 0)
   ctx.lineTo(width - notchSize, 0)
@@ -373,9 +432,9 @@ function drawTicketFrame(ctx: CanvasRenderingContext2D, color: string, width: nu
   ctx.fill()
 }
 
-function drawBalloonFrame(ctx: CanvasRenderingContext2D, color: string, width: number, height: number) {
+function drawBalloonFrame(ctx: CanvasRenderingContext2D, fillStyle: string | CanvasGradient, width: number, height: number) {
   const arrowSize = 16
-  ctx.fillStyle = color
+  ctx.fillStyle = fillStyle
   ctx.beginPath()
   ctx.moveTo(12, 0)
   ctx.lineTo(width - 12, 0)

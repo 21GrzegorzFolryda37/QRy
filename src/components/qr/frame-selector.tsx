@@ -1,8 +1,9 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { FrameStyle, FrameOptions } from '@/types/database'
+import { FrameStyle, FrameOptions, GradientOptions } from '@/types/database'
 import { Input } from '@/components/ui'
+import { GradientEditor } from './gradient-editor'
 
 interface FrameStyleOption {
   id: FrameStyle
@@ -134,6 +135,7 @@ interface FrameSelectorProps {
 export function FrameSelector({ value, onChange }: FrameSelectorProps) {
   const currentStyle = value?.style || 'none'
   const currentColor = value?.color || '#000000'
+  const currentGradient = value?.gradient || null
   const currentTextColor = value?.textColor || '#ffffff'
   const currentText = value?.text || 'Zeskanuj mnie'
   const showText = value?.showText ?? true
@@ -145,6 +147,7 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
       onChange({
         style,
         color: currentColor,
+        gradient: currentGradient,
         textColor: currentTextColor,
         text: currentText,
         showText,
@@ -157,6 +160,20 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
       onChange({
         style: currentStyle,
         color,
+        gradient: currentGradient,
+        textColor: currentTextColor,
+        text: currentText,
+        showText,
+      })
+    }
+  }
+
+  const handleGradientChange = (gradient: GradientOptions | null) => {
+    if (currentStyle !== 'none') {
+      onChange({
+        style: currentStyle,
+        color: currentColor,
+        gradient,
         textColor: currentTextColor,
         text: currentText,
         showText,
@@ -169,6 +186,7 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
       onChange({
         style: currentStyle,
         color: currentColor,
+        gradient: currentGradient,
         textColor,
         text: currentText,
         showText,
@@ -181,6 +199,7 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
       onChange({
         style: currentStyle,
         color: currentColor,
+        gradient: currentGradient,
         textColor: currentTextColor,
         text,
         showText,
@@ -193,6 +212,7 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
       onChange({
         style: currentStyle,
         color: currentColor,
+        gradient: currentGradient,
         textColor: currentTextColor,
         text: currentText,
         showText,
@@ -228,42 +248,48 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
 
       {currentStyle !== 'none' && (
         <>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Kolor ramki
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={currentColor}
-                  onChange={(e) => handleColorChange(e.target.value)}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={currentColor}
-                  onChange={(e) => handleColorChange(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kolor ramki
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentColor}
+                onChange={(e) => handleColorChange(e.target.value)}
+                className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+              />
+              <Input
+                value={currentColor}
+                onChange={(e) => handleColorChange(e.target.value)}
+                className="flex-1"
+              />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Kolor tekstu
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={currentTextColor}
-                  onChange={(e) => handleTextColorChange(e.target.value)}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={currentTextColor}
-                  onChange={(e) => handleTextColorChange(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
+          </div>
+
+          <GradientEditor
+            label="Gradient ramki"
+            value={currentGradient}
+            onChange={handleGradientChange}
+            baseColor={currentColor}
+          />
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kolor tekstu
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentTextColor}
+                onChange={(e) => handleTextColorChange(e.target.value)}
+                className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+              />
+              <Input
+                value={currentTextColor}
+                onChange={(e) => handleTextColorChange(e.target.value)}
+                className="flex-1"
+              />
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { FrameOptions, FrameStyle } from '@/types/database'
+import { useId } from 'react'
+import { FrameOptions, FrameStyle, GradientOptions } from '@/types/database'
 
 interface FrameRendererProps {
   children: React.ReactNode
@@ -14,6 +15,8 @@ const FRAME_PADDING = 0.08 // 8% padding around QR
 const TEXT_AREA_HEIGHT = 0.12 // 12% for text area
 
 export function FrameRenderer({ children, frame, size, className }: FrameRendererProps) {
+  const gradientId = useId()
+
   if (!frame || frame.style === 'none') {
     return <div className={className}>{children}</div>
   }
@@ -23,7 +26,8 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
   const totalWidth = size + padding * 2
   const totalHeight = size + padding * 2 + textHeight
 
-  const frameStyle = getFrameStyle(frame.style, frame.color, totalWidth, totalHeight, padding)
+  const fillValue = frame.gradient ? `url(#${gradientId})` : frame.color
+  const frameStyle = getFrameStyle(frame.style, fillValue, frame.color, totalWidth, totalHeight, padding)
 
   return (
     <div className={className} style={{ width: totalWidth, height: totalHeight }}>
@@ -33,6 +37,27 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
         viewBox={`0 0 ${totalWidth} ${totalHeight}`}
         className="absolute inset-0"
       >
+        {/* Gradient definition */}
+        {frame.gradient && (
+          <defs>
+            {frame.gradient.type === 'linear' ? (
+              <linearGradient
+                id={gradientId}
+                gradientTransform={`rotate(${frame.gradient.rotation}, 0.5, 0.5)`}
+              >
+                {frame.gradient.colorStops.map((stop, i) => (
+                  <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
+                ))}
+              </linearGradient>
+            ) : (
+              <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
+                {frame.gradient.colorStops.map((stop, i) => (
+                  <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
+                ))}
+              </radialGradient>
+            )}
+          </defs>
+        )}
         {frameStyle.background}
         {frameStyle.decoration}
         {frame.showText && frame.text && (
@@ -71,7 +96,8 @@ interface FrameStyleResult {
 
 function getFrameStyle(
   style: FrameStyle,
-  color: string,
+  fill: string,
+  solidColor: string,
   width: number,
   height: number,
   padding: number
@@ -82,7 +108,7 @@ function getFrameStyle(
     case 'simple':
       return {
         background: (
-          <rect x={0} y={0} width={width} height={height} fill={color} rx={8} />
+          <rect x={0} y={0} width={width} height={height} fill={fill} rx={8} />
         ),
         decoration: (
           <rect
@@ -99,7 +125,7 @@ function getFrameStyle(
     case 'rounded':
       return {
         background: (
-          <rect x={0} y={0} width={width} height={height} fill={color} rx={24} />
+          <rect x={0} y={0} width={width} height={height} fill={fill} rx={24} />
         ),
         decoration: (
           <rect
@@ -117,7 +143,7 @@ function getFrameStyle(
       return {
         background: (
           <>
-            <rect x={0} y={0} width={width} height={height} fill={color} rx={8} />
+            <rect x={0} y={0} width={width} height={height} fill={fill} rx={8} />
             <rect
               x={4}
               y={4}
@@ -166,7 +192,7 @@ function getFrameStyle(
               Q 0 0 ${notchSize} 0
               Z
             `}
-            fill={color}
+            fill={fill}
           />
         ),
         decoration: (
@@ -201,7 +227,7 @@ function getFrameStyle(
               Q 0 0 12 0
               Z
             `}
-            fill={color}
+            fill={fill}
           />
         ),
         decoration: (
@@ -222,14 +248,14 @@ function getFrameStyle(
       return {
         background: (
           <>
-            <circle cx={width / 2} cy={width / 2} r={width / 2 - 2} fill={color} />
+            <circle cx={width / 2} cy={width / 2} r={width / 2 - 2} fill={fill} />
             {/* Ribbon */}
             <rect
               x={(width - ribbonWidth) / 2}
               y={height - ribbonHeight - 4}
               width={ribbonWidth}
               height={ribbonHeight}
-              fill={color}
+              fill={fill}
             />
             <polygon
               points={`
@@ -237,7 +263,7 @@ function getFrameStyle(
                 ${width / 2},${height - ribbonHeight / 2 - 4}
                 ${(width + ribbonWidth) / 2},${height - ribbonHeight - 4}
               `}
-              fill={color}
+              fill={fill}
             />
           </>
         ),
@@ -251,15 +277,15 @@ function getFrameStyle(
       return {
         background: (
           <>
-            <rect x={0} y={foldSize} width={width} height={height - foldSize} fill={color} />
+            <rect x={0} y={foldSize} width={width} height={height - foldSize} fill={fill} />
             {/* Shadow folds */}
             <polygon
               points={`0,${height} ${foldSize},${height - foldSize} 0,${height - foldSize}`}
-              fill={adjustColor(color, -30)}
+              fill={adjustColor(solidColor, -30)}
             />
             <polygon
               points={`${width},${height} ${width - foldSize},${height - foldSize} ${width},${height - foldSize}`}
-              fill={adjustColor(color, -30)}
+              fill={adjustColor(solidColor, -30)}
             />
           </>
         ),
@@ -285,7 +311,7 @@ function getFrameStyle(
             {/* Top-left corner */}
             <path
               d={`M ${padding - 8} ${padding - 8} L ${padding - 8} ${padding - 8 + cornerLength} M ${padding - 8} ${padding - 8} L ${padding - 8 + cornerLength} ${padding - 8}`}
-              stroke={color}
+              stroke={fill}
               strokeWidth={cornerWidth}
               strokeLinecap="round"
               fill="none"
@@ -293,7 +319,7 @@ function getFrameStyle(
             {/* Top-right corner */}
             <path
               d={`M ${width - padding + 8} ${padding - 8} L ${width - padding + 8} ${padding - 8 + cornerLength} M ${width - padding + 8} ${padding - 8} L ${width - padding + 8 - cornerLength} ${padding - 8}`}
-              stroke={color}
+              stroke={fill}
               strokeWidth={cornerWidth}
               strokeLinecap="round"
               fill="none"
@@ -301,7 +327,7 @@ function getFrameStyle(
             {/* Bottom-left corner */}
             <path
               d={`M ${padding - 8} ${padding + qrSize + 8} L ${padding - 8} ${padding + qrSize + 8 - cornerLength} M ${padding - 8} ${padding + qrSize + 8} L ${padding - 8 + cornerLength} ${padding + qrSize + 8}`}
-              stroke={color}
+              stroke={fill}
               strokeWidth={cornerWidth}
               strokeLinecap="round"
               fill="none"
@@ -309,7 +335,7 @@ function getFrameStyle(
             {/* Bottom-right corner */}
             <path
               d={`M ${width - padding + 8} ${padding + qrSize + 8} L ${width - padding + 8} ${padding + qrSize + 8 - cornerLength} M ${width - padding + 8} ${padding + qrSize + 8} L ${width - padding + 8 - cornerLength} ${padding + qrSize + 8}`}
-              stroke={color}
+              stroke={fill}
               strokeWidth={cornerWidth}
               strokeLinecap="round"
               fill="none"

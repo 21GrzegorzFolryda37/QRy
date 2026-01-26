@@ -84,6 +84,7 @@ export type FrameStyle =
 export interface FrameOptions {
   style: FrameStyle
   color: string
+  gradient: GradientOptions | null
   textColor: string
   text: string
   showText: boolean

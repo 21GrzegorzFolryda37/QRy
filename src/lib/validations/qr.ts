@@ -22,6 +22,7 @@ const frameOptionsSchema = z
   .object({
     style: z.enum(['none', 'simple', 'rounded', 'fancy', 'ticket', 'balloon', 'badge', 'banner', 'minimal']),
     color: hexColorSchema,
+    gradient: gradientOptionsSchema,
     textColor: hexColorSchema,
     text: z.string().max(30),
     showText: z.boolean(),
