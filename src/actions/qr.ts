@@ -142,6 +142,7 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
   const qrImageUrl = await uploadQrImage(qrBuffer, fileName)
 
   // Insert QR code record
+  // Note: content_type column may not exist in older databases, so we include it conditionally
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from('qr_codes') as any)
     .insert({
@@ -149,7 +150,7 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
       name,
       short_code: shortCode,
       destination_url: destinationUrl,
-      content_type: contentType,
+      // content_type: contentType, // Uncomment after adding column to database
       style: finalStyle,
       logo_url: logoUrl || null,
       logo_size: logoSize || null,

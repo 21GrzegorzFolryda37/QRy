@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useId } from 'react'
+import { useEffect, useRef, useState, useId, useMemo } from 'react'
 import type QRCodeStylingType from 'qr-code-styling'
 import { QrStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
@@ -20,7 +20,9 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
   const clipId = useId()
 
-  const finalStyle: QrStyle = { ...DEFAULT_QR_STYLE, ...style }
+  // Create stable style string for comparison
+  const styleString = useMemo(() => JSON.stringify(style), [style])
+  const finalStyle: QrStyle = useMemo(() => ({ ...DEFAULT_QR_STYLE, ...style }), [styleString, style])
   const frameShape = finalStyle.frameShape || 'square'
   const size = 280
 
