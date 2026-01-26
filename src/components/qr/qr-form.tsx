@@ -496,7 +496,7 @@ export function QrForm({ qrCode }: QrFormProps) {
       </form>
 
       {/* Sticky Preview */}
-      <div className="lg:sticky lg:top-6 lg:self-start">
+      <div className="lg:sticky lg:top-20 lg:self-start">
         <Card>
           <CardHeader>
             <CardTitle>Podglad</CardTitle>
