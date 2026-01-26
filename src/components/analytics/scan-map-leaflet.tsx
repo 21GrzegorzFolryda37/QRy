@@ -22,8 +22,8 @@ function aggregateByLocation(data: ScanLocation[]) {
   }> = {}
 
   data.forEach((scan) => {
-    // Round to ~1km precision for grouping nearby scans
-    const key = `${scan.latitude.toFixed(2)}_${scan.longitude.toFixed(2)}`
+    // Round to ~10km precision for grouping nearby scans (prevents overlapping circles)
+    const key = `${scan.latitude.toFixed(1)}_${scan.longitude.toFixed(1)}`
 
     if (!aggregated[key]) {
       aggregated[key] = {
@@ -53,8 +53,8 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
   // Get center point
   const center = bounds.getCenter()
 
-  // Calculate radius based on count (min 8, max 30)
-  const getRadius = (count: number) => Math.min(8 + Math.log2(count) * 6, 30)
+  // Fixed radius for consistent appearance
+  const CIRCLE_RADIUS = 10
 
   return (
     <MapContainer
@@ -77,7 +77,7 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
         <CircleMarker
           key={index}
           center={[location.latitude, location.longitude]}
-          radius={getRadius(location.count)}
+          radius={CIRCLE_RADIUS}
           pathOptions={{
             color: '#3b82f6',
             fillColor: '#3b82f6',
