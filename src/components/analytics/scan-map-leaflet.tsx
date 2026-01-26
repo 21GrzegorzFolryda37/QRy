@@ -1,27 +1,50 @@
 'use client'
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import { Icon, LatLngBounds } from 'leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
+import { LatLngBounds } from 'leaflet'
 import { ScanLocation } from '@/types/analytics'
 import { formatDistanceToNow } from 'date-fns'
 import 'leaflet/dist/leaflet.css'
-
-// Fix for default marker icon in Leaflet with webpack
-const markerIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-})
 
 interface ScanMapLeafletProps {
   data: ScanLocation[]
 }
 
+// Aggregate scans by location (city level) for clustering effect
+function aggregateByLocation(data: ScanLocation[]) {
+  const aggregated: Record<string, {
+    latitude: number
+    longitude: number
+    city: string | null
+    country: string | null
+    count: number
+    scans: ScanLocation[]
+  }> = {}
+
+  data.forEach((scan) => {
+    // Round to ~1km precision for grouping nearby scans
+    const key = `${scan.latitude.toFixed(2)}_${scan.longitude.toFixed(2)}`
+
+    if (!aggregated[key]) {
+      aggregated[key] = {
+        latitude: scan.latitude,
+        longitude: scan.longitude,
+        city: scan.city,
+        country: scan.country,
+        count: 0,
+        scans: [],
+      }
+    }
+    aggregated[key].count++
+    aggregated[key].scans.push(scan)
+  })
+
+  return Object.values(aggregated)
+}
+
 export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
+  const aggregatedData = aggregateByLocation(data)
+
   // Calculate bounds to fit all markers
   const bounds = new LatLngBounds(
     data.map((scan) => [scan.latitude, scan.longitude] as [number, number])
@@ -30,36 +53,63 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
   // Get center point
   const center = bounds.getCenter()
 
+  // Calculate radius based on count (min 8, max 30)
+  const getRadius = (count: number) => Math.min(8 + Math.log2(count) * 6, 30)
+
   return (
     <MapContainer
       center={[center.lat, center.lng]}
-      zoom={data.length === 1 ? 10 : 4}
+      zoom={data.length === 1 ? 6 : 3}
       bounds={data.length > 1 ? bounds : undefined}
-      style={{ height: '400px', width: '100%', borderRadius: '8px' }}
+      style={{ height: '400px', width: '100%', borderRadius: '8px', background: '#f8f9fa' }}
       scrollWheelZoom={true}
     >
+      {/* Clean, minimal map style - CartoDB Positron (no labels version for even cleaner look) */}
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
       />
-      {data.map((scan) => (
-        <Marker
-          key={scan.id}
-          position={[scan.latitude, scan.longitude]}
-          icon={markerIcon}
+      {/* Add country labels on top */}
+      <TileLayer
+        url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
+      />
+      {aggregatedData.map((location, index) => (
+        <CircleMarker
+          key={index}
+          center={[location.latitude, location.longitude]}
+          radius={getRadius(location.count)}
+          pathOptions={{
+            color: '#3b82f6',
+            fillColor: '#3b82f6',
+            fillOpacity: 0.5,
+            weight: 2,
+          }}
         >
           <Popup>
-            <div className="text-sm">
-              <p className="font-semibold">{scan.qrCodeName}</p>
-              <p className="text-gray-600">
-                {scan.city || 'Unknown'}, {scan.country || 'Unknown'}
+            <div className="text-sm min-w-[150px]">
+              <p className="font-semibold text-gray-900">
+                {location.city || 'Unknown'}, {location.country || 'Unknown'}
               </p>
-              <p className="text-gray-400 text-xs mt-1">
-                {formatDistanceToNow(new Date(scan.scannedAt), { addSuffix: true })}
+              <p className="text-blue-600 font-medium">
+                {location.count} {location.count === 1 ? 'scan' : 'scans'}
               </p>
+              <div className="mt-2 pt-2 border-t border-gray-100 max-h-[120px] overflow-y-auto">
+                {location.scans.slice(0, 5).map((scan) => (
+                  <div key={scan.id} className="text-xs text-gray-500 py-0.5">
+                    <span className="font-medium text-gray-700">{scan.qrCodeName}</span>
+                    <span className="mx-1">·</span>
+                    {formatDistanceToNow(new Date(scan.scannedAt), { addSuffix: true })}
+                  </div>
+                ))}
+                {location.scans.length > 5 && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    +{location.scans.length - 5} more
+                  </p>
+                )}
+              </div>
             </div>
           </Popup>
-        </Marker>
+        </CircleMarker>
       ))}
     </MapContainer>
   )
