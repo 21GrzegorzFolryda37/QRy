@@ -16,11 +16,12 @@ export function formatNumber(num: number): string {
 }
 
 export function getBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    return window.location.origin
-  }
+  // For QR codes, prefer explicit APP_URL to ensure production URLs
   if (process.env.NEXT_PUBLIC_APP_URL) {
     return process.env.NEXT_PUBLIC_APP_URL
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin
   }
   return 'http://localhost:3000'
 }
