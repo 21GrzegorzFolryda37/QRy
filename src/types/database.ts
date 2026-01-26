@@ -30,7 +30,7 @@ export interface QrCode {
   name: string
   short_code: string
   destination_url: string
-  content_type: QrCodeContentType
+  content_type?: QrCodeContentType // Optional until database column is added
   style: QrStyle
   logo_url: string | null
   logo_size: number | null
