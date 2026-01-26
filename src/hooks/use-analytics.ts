@@ -7,6 +7,7 @@ import {
   getGeographicData,
   getDeviceBreakdown,
   getTopQrCodes,
+  getScanLocations,
 } from '@/actions/analytics'
 import {
   OverviewStats,
@@ -16,6 +17,7 @@ import {
   BrowserBreakdown,
   OsBreakdown,
   TopQrCode,
+  ScanLocation,
   DateRange,
 } from '@/types/analytics'
 
@@ -130,6 +132,29 @@ export function useTopQrCodes(dateRange: DateRange, limit = 5) {
     }
     setLoading(false)
   }, [dateRange, limit])
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { data, loading, error, refetch }
+}
+
+export function useScanLocations(dateRange: DateRange, qrCodeId?: string) {
+  const [data, setData] = useState<ScanLocation[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    const result = await getScanLocations(dateRange, qrCodeId)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setData(result.data || [])
+    }
+    setLoading(false)
+  }, [dateRange, qrCodeId])
 
   useEffect(() => {
     refetch()

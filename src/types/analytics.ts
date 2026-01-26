@@ -43,4 +43,14 @@ export interface TopQrCode {
   scanCount: number
 }
 
+export interface ScanLocation {
+  id: string
+  city: string | null
+  country: string | null
+  latitude: number
+  longitude: number
+  scannedAt: string
+  qrCodeName: string
+}
+
 export type DateRange = '7d' | '30d' | '90d' | '12m' | 'all'

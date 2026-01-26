@@ -3,13 +3,14 @@
 import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, GeoChart, DateRangeSelect } from '@/components/analytics'
+import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
   useDeviceBreakdown,
   useGeographicData,
   useTopQrCodes,
+  useScanLocations,
 } from '@/hooks/use-analytics'
 import { useScansRealtime } from '@/hooks/use-scans-realtime'
 import { useUser } from '@/hooks/use-user'
@@ -25,6 +26,7 @@ export default function AnalyticsPage() {
   const { devices, browsers, os, loading: devicesLoading, refetch: refetchDevices } = useDeviceBreakdown(dateRange)
   const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange)
   const { data: topQrCodes, loading: topLoading, refetch: refetchTop } = useTopQrCodes(dateRange)
+  const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange)
 
   // Handler for new scans - refetch all analytics data
   const handleNewScan = useCallback(() => {
@@ -33,7 +35,8 @@ export default function AnalyticsPage() {
     refetchDevices()
     refetchGeo()
     refetchTop()
-  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop])
+    refetchLocations()
+  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop, refetchLocations])
 
   // Subscribe to realtime scan updates
   const { connectionStatus } = useScansRealtime({
@@ -112,6 +115,21 @@ export default function AnalyticsPage() {
             </div>
           ) : (
             <ScansChart data={scansData} />
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Scan Locations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {locationsLoading ? (
+            <div className="flex h-[400px] items-center justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <ScanMap data={scanLocations} />
           )}
         </CardContent>
       </Card>

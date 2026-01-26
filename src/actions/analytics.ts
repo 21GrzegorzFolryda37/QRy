@@ -10,6 +10,7 @@ import {
   BrowserBreakdown,
   OsBreakdown,
   TopQrCode,
+  ScanLocation,
   DateRange,
 } from '@/types/analytics'
 
@@ -359,6 +360,83 @@ export async function getTopQrCodes(
       scanCount: scanCounts[id],
     }
   })
+
+  return { data: result }
+}
+
+export async function getScanLocations(
+  dateRange: DateRange,
+  qrCodeId?: string
+): Promise<{ error?: string; data?: ScanLocation[] }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const { start, end } = getDateRangeFilter(dateRange)
+
+  // Get scans with location data
+  let query = supabase
+    .from('scans')
+    .select('id, city, country, latitude, longitude, scanned_at, qr_code_id')
+    .eq('user_id', user.id)
+    .not('latitude', 'is', null)
+    .not('longitude', 'is', null)
+    .gte('scanned_at', start.toISOString())
+    .lte('scanned_at', end.toISOString())
+    .order('scanned_at', { ascending: false })
+    .limit(100)
+
+  if (qrCodeId) {
+    query = query.eq('qr_code_id', qrCodeId)
+  }
+
+  const { data: scans, error } = await query
+
+  if (error) {
+    console.error('Error fetching scan locations:', error)
+    return { error: 'Failed to fetch scan locations' }
+  }
+
+  const scansData = (scans || []) as {
+    id: string
+    city: string | null
+    country: string | null
+    latitude: number
+    longitude: number
+    scanned_at: string
+    qr_code_id: string
+  }[]
+
+  // Get QR code names
+  const qrCodeIds = [...new Set(scansData.map((s) => s.qr_code_id))]
+
+  let qrCodeNames: Record<string, string> = {}
+
+  if (qrCodeIds.length > 0) {
+    const { data: qrCodes } = await supabase
+      .from('qr_codes')
+      .select('id, name')
+      .in('id', qrCodeIds)
+
+    const qrCodesData = (qrCodes || []) as { id: string; name: string }[]
+    qrCodeNames = Object.fromEntries(qrCodesData.map((q) => [q.id, q.name]))
+  }
+
+  const result: ScanLocation[] = scansData.map((scan) => ({
+    id: scan.id,
+    city: scan.city,
+    country: scan.country,
+    latitude: scan.latitude,
+    longitude: scan.longitude,
+    scannedAt: scan.scanned_at,
+    qrCodeName: qrCodeNames[scan.qr_code_id] || 'Unknown',
+  }))
 
   return { data: result }
 }
