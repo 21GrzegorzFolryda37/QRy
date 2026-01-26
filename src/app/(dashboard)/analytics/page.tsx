@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
 import { ScansChart, DeviceChart, GeoChart, DateRangeSelect } from '@/components/analytics'
@@ -11,17 +11,36 @@ import {
   useGeographicData,
   useTopQrCodes,
 } from '@/hooks/use-analytics'
+import { useScansRealtime } from '@/hooks/use-scans-realtime'
+import { useUser } from '@/hooks/use-user'
 import { DateRange } from '@/types/analytics'
 import Link from 'next/link'
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState<DateRange>('30d')
+  const { user } = useUser()
 
-  const { stats, loading: statsLoading } = useOverviewStats()
-  const { data: scansData, loading: scansLoading } = useScansOverTime(dateRange)
-  const { devices, browsers, os, loading: devicesLoading } = useDeviceBreakdown(dateRange)
-  const { data: geoData, loading: geoLoading } = useGeographicData(dateRange)
-  const { data: topQrCodes, loading: topLoading } = useTopQrCodes(dateRange)
+  const { stats, loading: statsLoading, refetch: refetchStats } = useOverviewStats()
+  const { data: scansData, loading: scansLoading, refetch: refetchScans } = useScansOverTime(dateRange)
+  const { devices, browsers, os, loading: devicesLoading, refetch: refetchDevices } = useDeviceBreakdown(dateRange)
+  const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange)
+  const { data: topQrCodes, loading: topLoading, refetch: refetchTop } = useTopQrCodes(dateRange)
+
+  // Handler for new scans - refetch all analytics data
+  const handleNewScan = useCallback(() => {
+    refetchStats()
+    refetchScans()
+    refetchDevices()
+    refetchGeo()
+    refetchTop()
+  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop])
+
+  // Subscribe to realtime scan updates
+  const { connectionStatus } = useScansRealtime({
+    userId: user?.id,
+    onNewScan: handleNewScan,
+    enabled: !!user?.id,
+  })
 
   return (
     <div className="space-y-6">
@@ -30,7 +49,33 @@ export default function AnalyticsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
           <p className="text-gray-500">Track your QR code performance</p>
         </div>
-        <DateRangeSelect value={dateRange} onChange={setDateRange} />
+        <div className="flex items-center gap-4">
+          {connectionStatus === 'connected' && (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              Live
+            </span>
+          )}
+          {connectionStatus === 'connecting' && (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+              Connecting...
+            </span>
+          )}
+          {connectionStatus === 'error' && (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              Error
+            </span>
+          )}
+          {connectionStatus === 'disconnected' && (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-gray-400" />
+              Offline
+            </span>
+          )}
+          <DateRangeSelect value={dateRange} onChange={setDateRange} />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

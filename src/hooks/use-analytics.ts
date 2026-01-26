@@ -24,22 +24,22 @@ export function useOverviewStats() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchStats() {
-      setLoading(true)
-      const result = await getOverviewStats()
-      if (result.error) {
-        setError(result.error)
-      } else {
-        setStats(result.data || null)
-      }
-      setLoading(false)
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    const result = await getOverviewStats()
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setStats(result.data || null)
     }
-
-    fetchStats()
+    setLoading(false)
   }, [])
 
-  return { stats, loading, error }
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { stats, loading, error, refetch }
 }
 
 export function useScansOverTime(dateRange: DateRange, qrCodeId?: string) {
