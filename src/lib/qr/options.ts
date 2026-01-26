@@ -17,23 +17,42 @@ function convertGradient(gradient: GradientOptions | null | undefined) {
 /**
  * Map cornersDotType to valid qr-code-styling values
  * qr-code-styling only accepts: 'dot' | 'square' | undefined
+ * Custom shapes (heart, star, diamond) are mapped to closest match
  */
 function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  return 'dot'
+  switch (type) {
+    case 'dot':
+    case 'heart':
+    case 'star':
+    case 'diamond':
+      return 'dot' // Custom shapes render as dots
+    case 'square':
+      return 'square'
+    default:
+      return 'dot'
+  }
 }
 
 /**
  * Map cornersSquareType to valid qr-code-styling values
  * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
+ * Custom shapes are mapped to closest match
  */
 function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
-  if (type === 'dot') return 'dot'
-  if (type === 'square') return 'square'
-  if (type === 'extra-rounded') return 'extra-rounded'
-  if (type === 'rounded') return 'extra-rounded'
-  return 'square'
+  switch (type) {
+    case 'dot':
+    case 'dotted':
+      return 'dot'
+    case 'square':
+    case 'classy':
+      return 'square'
+    case 'extra-rounded':
+    case 'rounded':
+    case 'classy-rounded':
+      return 'extra-rounded'
+    default:
+      return 'square'
+  }
 }
 
 export interface QrCodeOptions {

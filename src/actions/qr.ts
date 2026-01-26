@@ -7,7 +7,7 @@ import { createQrSchema, updateQrSchema } from '@/lib/validations/qr'
 import { generateShortCode } from '@/lib/utils/short-code'
 import { getRedirectUrl } from '@/lib/utils'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
-import { QrCode, QrStyle } from '@/types/database'
+import { QrCode, QrStyle, QrCodeContentType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 
 export type QrActionResponse = {
@@ -108,6 +108,7 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
 
   const { name, destinationUrl, logoUrl, logoSize } = validatedFields.data
   const finalStyle: QrStyle = { ...DEFAULT_QR_STYLE, ...validatedFields.data.style }
+  const contentType = (formData.get('contentType') as QrCodeContentType) || 'website'
 
   // Check QR limit
   const { data: profile } = await supabase
@@ -148,6 +149,7 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
       name,
       short_code: shortCode,
       destination_url: destinationUrl,
+      content_type: contentType,
       style: finalStyle,
       logo_url: logoUrl || null,
       logo_size: logoSize || null,

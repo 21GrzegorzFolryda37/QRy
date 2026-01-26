@@ -25,7 +25,7 @@ export function ShapeSelector<T extends string>({
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">{label}</label>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
         {options.map((option) => (
           <button
             key={option.id}
@@ -105,14 +105,14 @@ const DotsExtraRoundedIcon = () => (
 // Opcje dla kształtów modułów
 export const dotsTypeOptions: ShapeOption<DotsType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <DotsSquareIcon /> },
-  { id: 'rounded', label: 'Zaokrąglony', icon: <DotsRoundedIcon /> },
+  { id: 'rounded', label: 'Zaokraglony', icon: <DotsRoundedIcon /> },
   { id: 'dots', label: 'Kropki', icon: <DotsCircleIcon /> },
   { id: 'classy', label: 'Classy', icon: <DotsClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <DotsClassyRoundedIcon /> },
   { id: 'extra-rounded', label: 'Extra Round', icon: <DotsExtraRoundedIcon /> },
 ]
 
-// Ikony dla narożników
+// Ikony dla narożników zewnętrznych (corners square)
 const CornerSquareIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <rect x="2" y="2" width="20" height="20" strokeWidth="4" stroke="currentColor" fill="none" />
@@ -127,13 +127,6 @@ const CornerDotIcon = () => (
   </svg>
 )
 
-const CornerRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="2" y="2" width="20" height="20" rx="4" strokeWidth="4" stroke="currentColor" fill="none" />
-    <rect x="7" y="7" width="10" height="10" rx="2" />
-  </svg>
-)
-
 const CornerExtraRoundedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <rect x="2" y="2" width="20" height="20" rx="6" strokeWidth="4" stroke="currentColor" fill="none" />
@@ -141,17 +134,80 @@ const CornerExtraRoundedIcon = () => (
   </svg>
 )
 
-// Opcje dla narożników kwadratowych
+const CornerClassyIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M2 2 L22 2 L22 22 L18 22 L18 6 L2 6 Z" strokeWidth="0" />
+    <rect x="7" y="7" width="10" height="10" />
+  </svg>
+)
+
+const CornerClassyRoundedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M2 6 Q2 2 6 2 L22 2 L22 22 L18 22 Q18 10 10 6 L2 6 Z" strokeWidth="0" />
+    <rect x="7" y="7" width="10" height="10" rx="2" />
+  </svg>
+)
+
+const CornerDottedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <circle cx="4" cy="4" r="2" />
+    <circle cx="12" cy="4" r="2" />
+    <circle cx="20" cy="4" r="2" />
+    <circle cx="4" cy="12" r="2" />
+    <circle cx="4" cy="20" r="2" />
+    <circle cx="20" cy="12" r="2" />
+    <circle cx="12" cy="20" r="2" />
+    <circle cx="20" cy="20" r="2" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+
+// Opcje dla narożników zewnętrznych
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
-  { id: 'dot', label: 'Okrągły', icon: <CornerDotIcon /> },
-  { id: 'rounded', label: 'Zaokrąglony', icon: <CornerRoundedIcon /> },
+  { id: 'dot', label: 'Okragly', icon: <CornerDotIcon /> },
   { id: 'extra-rounded', label: 'Extra Round', icon: <CornerExtraRoundedIcon /> },
+  { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
+  { id: 'classy-rounded', label: 'Classy Round', icon: <CornerClassyRoundedIcon /> },
+  { id: 'dotted', label: 'Kropkowany', icon: <CornerDottedIcon /> },
 ]
 
+// Ikony dla wewnętrznych kropek narożników
+const InnerSquareIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" />
+  </svg>
+)
+
+const InnerDotIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <circle cx="12" cy="12" r="6" />
+  </svg>
+)
+
+const InnerHeartIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+  </svg>
+)
+
+const InnerStarIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
+)
+
+const InnerDiamondIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M12 2 L22 12 L12 22 L2 12 Z" />
+  </svg>
+)
+
 // Opcje dla wewnętrznych kropek narożników
-// qr-code-styling obsługuje tylko 'square' i 'dot' dla cornersDotOptions
 export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
-  { id: 'square', label: 'Kwadrat', icon: <DotsSquareIcon /> },
-  { id: 'dot', label: 'Kropka', icon: <DotsCircleIcon /> },
+  { id: 'square', label: 'Kwadrat', icon: <InnerSquareIcon /> },
+  { id: 'dot', label: 'Kropka', icon: <InnerDotIcon /> },
+  { id: 'heart', label: 'Serce', icon: <InnerHeartIcon /> },
+  { id: 'star', label: 'Gwiazda', icon: <InnerStarIcon /> },
+  { id: 'diamond', label: 'Diament', icon: <InnerDiamondIcon /> },
 ]

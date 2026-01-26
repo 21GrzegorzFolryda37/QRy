@@ -30,6 +30,7 @@ export interface QrCode {
   name: string
   short_code: string
   destination_url: string
+  content_type: QrCodeContentType
   style: QrStyle
   logo_url: string | null
   logo_size: number | null
@@ -40,14 +41,53 @@ export interface QrCode {
   scan_count?: number
 }
 
+// Typy kodów QR (kategorie URL)
+export type QrCodeContentType =
+  | 'website'
+  | 'facebook'
+  | 'instagram'
+  | 'youtube'
+  | 'tiktok'
+  | 'linkedin'
+  | 'twitter'
+  | 'whatsapp'
+  | 'email'
+  | 'phone'
+  | 'sms'
+  | 'wifi'
+  | 'vcard'
+  | 'location'
+  | 'pdf'
+  | 'menu'
+
 // Typy kształtów modułów QR
 export type DotsType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'
 
 // Kształt całego kodu QR (maska/ramka)
 export type FrameShape = 'square' | 'circle' | 'rounded' | 'heart' | 'hexagon' | 'star' | 'diamond'
-export type CornersSquareType = 'square' | 'dot' | 'rounded' | 'extra-rounded'
-export type CornersDotType = 'square' | 'dot'
+export type CornersSquareType = 'square' | 'dot' | 'extra-rounded' | 'classy' | 'classy-rounded' | 'dotted'
+export type CornersDotType = 'square' | 'dot' | 'heart' | 'star' | 'diamond'
 export type GradientType = 'linear' | 'radial'
+
+// Ramki dekoracyjne wokół kodu QR
+export type FrameStyle =
+  | 'none'
+  | 'simple'
+  | 'rounded'
+  | 'fancy'
+  | 'ticket'
+  | 'balloon'
+  | 'badge'
+  | 'banner'
+  | 'minimal'
+
+export interface FrameOptions {
+  style: FrameStyle
+  color: string
+  textColor: string
+  text: string
+  showText: boolean
+}
 
 export interface GradientColorStop {
   offset: number
@@ -89,6 +129,9 @@ export interface QrStyle {
 
   // Gradient tła
   backgroundGradient: GradientOptions | null
+
+  // Ramka dekoracyjna
+  frame: FrameOptions | null
 }
 
 export interface Scan {

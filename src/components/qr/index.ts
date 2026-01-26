@@ -1,3 +1,7 @@
 export { QrForm } from './qr-form'
 export { QrPreview } from './qr-preview'
 export { QrCard } from './qr-card'
+export { ContentTypeSelector, contentTypeOptions, getContentTypeOption } from './content-type-selector'
+export { FrameSelector } from './frame-selector'
+export { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
+export { FrameShapeSelector, frameShapePaths, frameShapeLabels } from './frame-shapes'

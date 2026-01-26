@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type QRCodeStylingType from 'qr-code-styling'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
-import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
+import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
@@ -15,6 +15,8 @@ import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTyp
 import { GradientEditor } from './gradient-editor'
 import { FrameShapeSelector } from './frame-shapes'
 import { LogoUploader } from './logo-uploader'
+import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
+import { FrameSelector } from './frame-selector'
 
 interface QrFormProps {
   qrCode?: QrCode
@@ -65,12 +67,16 @@ export function QrForm({ qrCode }: QrFormProps) {
 
   const [name, setName] = useState(qrCode?.name || '')
   const [destinationUrl, setDestinationUrl] = useState(qrCode?.destination_url || '')
+  const [contentType, setContentType] = useState<QrCodeContentType>(qrCode?.content_type || 'website')
   const [logoUrl, setLogoUrl] = useState(qrCode?.logo_url || '')
   const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 60)
 
   // Migruj stary styl do nowego formatu
   const initialStyle = qrCode?.style ? migrateQrStyle(qrCode.style) : DEFAULT_QR_STYLE
   const [style, setStyle] = useState<QrStyle>(initialStyle)
+
+  // Get current content type info for placeholder
+  const contentTypeInfo = getContentTypeOption(contentType)
 
   const isEditing = !!qrCode
 
@@ -132,6 +138,7 @@ export function QrForm({ qrCode }: QrFormProps) {
       const formData = new FormData()
       formData.set('name', name)
       formData.set('destinationUrl', destinationUrl)
+      formData.set('contentType', contentType)
       formData.set('style', JSON.stringify(style))
       formData.set('logoUrl', logoUrl)
       formData.set('qrImageDataUrl', qrImageDataUrl)
@@ -166,35 +173,58 @@ export function QrForm({ qrCode }: QrFormProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Typ kodu QR */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Typ kodu QR</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ContentTypeSelector value={contentType} onChange={setContentType} />
+          </CardContent>
+        </Card>
+
         {/* Podstawowe informacje */}
         <Card>
           <CardHeader>
-            <CardTitle>QR Code Details</CardTitle>
+            <CardTitle>Szczegoly kodu QR</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
-              label="Name"
+              label="Nazwa"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="My QR Code"
+              placeholder="Moj kod QR"
               required
             />
-            <Input
-              label="Destination URL"
-              type="url"
-              value={destinationUrl}
-              onChange={(e) => setDestinationUrl(e.target.value)}
-              placeholder="https://example.com"
-              required
-            />
+            <div>
+              <Input
+                label="Adres URL"
+                type="url"
+                value={destinationUrl}
+                onChange={(e) => setDestinationUrl(e.target.value)}
+                placeholder={contentTypeInfo.placeholder}
+                required
+              />
+              {contentTypeInfo.hint && (
+                <p className="mt-1 text-xs text-gray-500">{contentTypeInfo.hint}</p>
+              )}
+            </div>
           </CardContent>
         </Card>
 
         {/* Kształt kodu QR */}
-        <CollapsibleSection title="QR Shape" defaultOpen={true}>
+        <CollapsibleSection title="Ksztalt kodu QR" defaultOpen={true}>
           <FrameShapeSelector
             value={style.frameShape}
             onChange={(value) => setStyle({ ...style, frameShape: value })}
+          />
+        </CollapsibleSection>
+
+        {/* Ramka dekoracyjna */}
+        <CollapsibleSection title="Ramka dekoracyjna" defaultOpen={false}>
+          <FrameSelector
+            value={style.frame}
+            onChange={(value) => setStyle({ ...style, frame: value })}
           />
         </CollapsibleSection>
 

@@ -44,4 +44,7 @@ export const DEFAULT_QR_STYLE: QrStyle = {
 
   // Gradient tła
   backgroundGradient: null,
+
+  // Ramka dekoracyjna
+  frame: null,
 }

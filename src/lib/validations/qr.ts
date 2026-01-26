@@ -17,6 +17,17 @@ const gradientOptionsSchema = z
   })
   .nullable()
 
+// Schema for decorative frame options
+const frameOptionsSchema = z
+  .object({
+    style: z.enum(['none', 'simple', 'rounded', 'fancy', 'ticket', 'balloon', 'badge', 'banner', 'minimal']),
+    color: hexColorSchema,
+    textColor: hexColorSchema,
+    text: z.string().max(30),
+    showText: z.boolean(),
+  })
+  .nullable()
+
 // Główny schemat stylu QR
 export const qrStyleSchema = z.object({
   // Podstawowe kolory
@@ -36,17 +47,20 @@ export const qrStyleSchema = z.object({
   dotsGradient: gradientOptionsSchema,
 
   // Styl narożników
-  cornersSquareType: z.enum(['square', 'dot', 'rounded', 'extra-rounded']),
+  cornersSquareType: z.enum(['square', 'dot', 'extra-rounded', 'classy', 'classy-rounded', 'dotted']),
   cornersSquareColor: hexColorSchema.nullable(),
   cornersSquareGradient: gradientOptionsSchema,
 
-  // Styl wewnętrznych kropek narożników (only 'square' and 'dot' are supported by qr-code-styling)
-  cornersDotType: z.enum(['square', 'dot']),
+  // Styl wewnętrznych kropek narożników
+  cornersDotType: z.enum(['square', 'dot', 'heart', 'star', 'diamond']),
   cornersDotColor: hexColorSchema.nullable(),
   cornersDotGradient: gradientOptionsSchema,
 
   // Gradient tła
   backgroundGradient: gradientOptionsSchema,
+
+  // Ramka dekoracyjna
+  frame: frameOptionsSchema,
 })
 
 // Logo URL can be a valid URL, empty string, or null

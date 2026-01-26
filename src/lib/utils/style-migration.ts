@@ -34,6 +34,8 @@ export function migrateQrStyle(style: LegacyQrStyle | QrStyle | unknown): QrStyl
     return {
       ...style,
       cornersDotType,
+      // Ensure frame property exists (for older records)
+      frame: style.frame ?? null,
     }
   }
 
@@ -65,6 +67,9 @@ export function migrateQrStyle(style: LegacyQrStyle | QrStyle | unknown): QrStyl
     cornersDotColor: null,
     cornersDotGradient: null,
     backgroundGradient: null,
+
+    // Ramka dekoracyjna
+    frame: null,
   }
 }
 
