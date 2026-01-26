@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap } from '@/components/analytics'
+import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
@@ -81,6 +81,17 @@ export default function AnalyticsPage() {
             </span>
           )}
           <DateRangeSelect value={dateRange} onChange={setDateRange} />
+          <ExportButtons
+            stats={stats}
+            scansOverTime={scansData}
+            geographic={geoData}
+            devices={devices}
+            browsers={browsers}
+            os={os}
+            topQrCodes={topQrCodes}
+            timePatterns={timePatterns}
+            dateRange={dateRange}
+          />
         </div>
       </div>
 
