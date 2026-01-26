@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap } from '@/components/analytics'
+import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
@@ -11,6 +11,7 @@ import {
   useGeographicData,
   useTopQrCodes,
   useScanLocations,
+  useTimePatterns,
 } from '@/hooks/use-analytics'
 import { useScansRealtime } from '@/hooks/use-scans-realtime'
 import { useUser } from '@/hooks/use-user'
@@ -27,6 +28,7 @@ export default function AnalyticsPage() {
   const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange)
   const { data: topQrCodes, loading: topLoading, refetch: refetchTop } = useTopQrCodes(dateRange)
   const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange)
+  const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange)
 
   // Handler for new scans - refetch all analytics data
   const handleNewScan = useCallback(() => {
@@ -36,7 +38,8 @@ export default function AnalyticsPage() {
     refetchGeo()
     refetchTop()
     refetchLocations()
-  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop, refetchLocations])
+    refetchTimePatterns()
+  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns])
 
   // Subscribe to realtime scan updates
   const { connectionStatus } = useScansRealtime({
@@ -130,6 +133,21 @@ export default function AnalyticsPage() {
             </div>
           ) : (
             <ScanMap data={scanLocations} />
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Time Patterns</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {timePatternsLoading ? (
+            <div className="flex h-[300px] items-center justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <TimeHeatmap data={timePatterns} />
           )}
         </CardContent>
       </Card>

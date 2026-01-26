@@ -8,6 +8,7 @@ import {
   getDeviceBreakdown,
   getTopQrCodes,
   getScanLocations,
+  getTimePatterns,
 } from '@/actions/analytics'
 import {
   OverviewStats,
@@ -18,6 +19,7 @@ import {
   OsBreakdown,
   TopQrCode,
   ScanLocation,
+  TimePatternData,
   DateRange,
 } from '@/types/analytics'
 
@@ -152,6 +154,29 @@ export function useScanLocations(dateRange: DateRange, qrCodeId?: string) {
       setError(result.error)
     } else {
       setData(result.data || [])
+    }
+    setLoading(false)
+  }, [dateRange, qrCodeId])
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { data, loading, error, refetch }
+}
+
+export function useTimePatterns(dateRange: DateRange, qrCodeId?: string) {
+  const [data, setData] = useState<TimePatternData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    const result = await getTimePatterns(dateRange, qrCodeId)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setData(result.data || null)
     }
     setLoading(false)
   }, [dateRange, qrCodeId])

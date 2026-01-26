@@ -11,8 +11,10 @@ import {
   OsBreakdown,
   TopQrCode,
   ScanLocation,
+  TimePatternData,
   DateRange,
 } from '@/types/analytics'
+import { getDay, getHours } from 'date-fns'
 
 function getDateRangeFilter(dateRange: DateRange): { start: Date; end: Date } {
   const now = new Date()
@@ -439,4 +441,97 @@ export async function getScanLocations(
   }))
 
   return { data: result }
+}
+
+const DAY_NAMES = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
+
+export async function getTimePatterns(
+  dateRange: DateRange,
+  qrCodeId?: string
+): Promise<{ error?: string; data?: TimePatternData }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const { start, end } = getDateRangeFilter(dateRange)
+
+  let query = supabase
+    .from('scans')
+    .select('scanned_at')
+    .eq('user_id', user.id)
+    .gte('scanned_at', start.toISOString())
+    .lte('scanned_at', end.toISOString())
+
+  if (qrCodeId) {
+    query = query.eq('qr_code_id', qrCodeId)
+  }
+
+  const { data: scans, error } = await query
+
+  if (error) {
+    console.error('Error fetching time patterns:', error)
+    return { error: 'Failed to fetch time patterns' }
+  }
+
+  const scansData = (scans || []) as { scanned_at: string }[]
+
+  // Initialize counters
+  const hourlyCount: Record<number, number> = {}
+  const dailyCount: Record<number, number> = {}
+  const heatmapCount: Record<string, number> = {}
+
+  // Initialize all hours and days with 0
+  for (let h = 0; h < 24; h++) {
+    hourlyCount[h] = 0
+  }
+  for (let d = 0; d < 7; d++) {
+    dailyCount[d] = 0
+  }
+  for (let d = 0; d < 7; d++) {
+    for (let h = 0; h < 24; h++) {
+      heatmapCount[`${d}-${h}`] = 0
+    }
+  }
+
+  // Aggregate scans
+  scansData.forEach((scan) => {
+    const date = new Date(scan.scanned_at)
+    const hour = getHours(date)
+    const day = getDay(date) // 0 = Sunday, 1 = Monday, etc.
+
+    hourlyCount[hour]++
+    dailyCount[day]++
+    heatmapCount[`${day}-${hour}`]++
+  })
+
+  // Format results
+  const hourly = Object.entries(hourlyCount).map(([hour, count]) => ({
+    hour: parseInt(hour),
+    count,
+  }))
+
+  const daily = Object.entries(dailyCount).map(([day, count]) => ({
+    day: parseInt(day),
+    dayName: DAY_NAMES[parseInt(day)],
+    count,
+  }))
+
+  const heatmap = Object.entries(heatmapCount).map(([key, count]) => {
+    const [day, hour] = key.split('-').map(Number)
+    return { day, hour, count }
+  })
+
+  return {
+    data: {
+      hourly,
+      daily,
+      heatmap,
+    },
+  }
 }

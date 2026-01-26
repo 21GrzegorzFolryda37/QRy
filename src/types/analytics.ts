@@ -53,4 +53,10 @@ export interface ScanLocation {
   qrCodeName: string
 }
 
+export interface TimePatternData {
+  hourly: { hour: number; count: number }[]
+  daily: { day: number; dayName: string; count: number }[]
+  heatmap: { day: number; hour: number; count: number }[]
+}
+
 export type DateRange = '7d' | '30d' | '90d' | '12m' | 'all'
