@@ -54,7 +54,7 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
   const center = bounds.getCenter()
 
   // Fixed radius for consistent appearance
-  const CIRCLE_RADIUS = 10
+  const CIRCLE_RADIUS = 18
 
   return (
     <MapContainer
