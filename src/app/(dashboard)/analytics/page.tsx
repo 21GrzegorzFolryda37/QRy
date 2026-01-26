@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons } from '@/components/analytics'
+import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
@@ -94,6 +94,18 @@ export default function AnalyticsPage() {
           />
         </div>
       </div>
+
+      <Card className="border-green-200 bg-green-50/30">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <CardTitle className="text-lg">W czasie rzeczywistym</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <RealtimeCard userId={user?.id} />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard

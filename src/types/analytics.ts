@@ -60,3 +60,16 @@ export interface TimePatternData {
 }
 
 export type DateRange = '7d' | '30d' | '90d' | '12m' | 'all'
+
+export interface RecentScan {
+  id: string
+  city: string | null
+  country: string | null
+  countryCode: string | null
+  deviceType: string | null
+  browser: string | null
+  os: string | null
+  scannedAt: string
+  qrCodeName: string
+  qrCodeId: string
+}

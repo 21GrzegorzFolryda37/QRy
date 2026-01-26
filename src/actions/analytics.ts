@@ -13,6 +13,7 @@ import {
   ScanLocation,
   TimePatternData,
   DateRange,
+  RecentScan,
 } from '@/types/analytics'
 import { getDay, getHours } from 'date-fns'
 
@@ -533,5 +534,73 @@ export async function getTimePatterns(
       daily,
       heatmap,
     },
+  }
+}
+
+export async function getRecentScans(minutes = 30): Promise<{ error?: string; data?: RecentScan[] }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const cutoff = new Date(Date.now() - minutes * 60 * 1000).toISOString()
+
+  const { data: scans, error } = await supabase
+    .from('scans')
+    .select('id, city, country, country_code, device_type, browser, os, scanned_at, qr_code_id')
+    .eq('user_id', user.id)
+    .gte('scanned_at', cutoff)
+    .order('scanned_at', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Error fetching recent scans:', error)
+    return { error: 'Failed to fetch recent scans' }
+  }
+
+  const scansData = (scans || []) as {
+    id: string
+    city: string | null
+    country: string | null
+    country_code: string | null
+    device_type: string | null
+    browser: string | null
+    os: string | null
+    scanned_at: string
+    qr_code_id: string
+  }[]
+
+  // Get QR code names
+  const qrCodeIds = [...new Set(scansData.map((s) => s.qr_code_id))]
+  let qrCodeNames: Record<string, string> = {}
+
+  if (qrCodeIds.length > 0) {
+    const { data: qrCodes } = await supabase
+      .from('qr_codes')
+      .select('id, name')
+      .in('id', qrCodeIds)
+
+    const qrCodesData = (qrCodes || []) as { id: string; name: string }[]
+    qrCodeNames = Object.fromEntries(qrCodesData.map((q) => [q.id, q.name]))
+  }
+
+  return {
+    data: scansData.map((s) => ({
+      id: s.id,
+      city: s.city,
+      country: s.country,
+      countryCode: s.country_code,
+      deviceType: s.device_type,
+      browser: s.browser,
+      os: s.os,
+      scannedAt: s.scanned_at,
+      qrCodeName: qrCodeNames[s.qr_code_id] || 'Unknown',
+      qrCodeId: s.qr_code_id,
+    })),
   }
 }

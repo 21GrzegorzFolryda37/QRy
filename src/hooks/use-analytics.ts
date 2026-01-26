@@ -9,6 +9,7 @@ import {
   getTopQrCodes,
   getScanLocations,
   getTimePatterns,
+  getRecentScans,
 } from '@/actions/analytics'
 import {
   OverviewStats,
@@ -21,6 +22,7 @@ import {
   ScanLocation,
   TimePatternData,
   DateRange,
+  RecentScan,
 } from '@/types/analytics'
 
 export function useOverviewStats() {
@@ -180,6 +182,29 @@ export function useTimePatterns(dateRange: DateRange, qrCodeId?: string) {
     }
     setLoading(false)
   }, [dateRange, qrCodeId])
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { data, loading, error, refetch }
+}
+
+export function useRecentScans(minutes = 30) {
+  const [data, setData] = useState<RecentScan[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    const result = await getRecentScans(minutes)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setData(result.data || [])
+    }
+    setLoading(false)
+  }, [minutes])
 
   useEffect(() => {
     refetch()

@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://engageqr.com/sitemap.xml
+
+# Disallow private areas
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /qr-codes/
+Disallow: /analytics/
