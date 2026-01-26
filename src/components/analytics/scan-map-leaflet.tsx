@@ -63,6 +63,8 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
       bounds={data.length > 1 ? bounds : undefined}
       style={{ height: '400px', width: '100%', borderRadius: '8px', background: '#f8f9fa' }}
       scrollWheelZoom={true}
+      maxZoom={12}
+      minZoom={2}
     >
       {/* Clean, minimal map style - CartoDB Positron (no labels version for even cleaner look) */}
       <TileLayer
