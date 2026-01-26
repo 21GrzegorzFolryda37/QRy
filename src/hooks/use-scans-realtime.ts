@@ -7,11 +7,12 @@ import { Scan } from '@/types/database'
 
 interface UseScansRealtimeOptions {
   userId: string | undefined
+  qrCodeId?: string
   onNewScan?: (scan: Scan) => void
   enabled?: boolean
 }
 
-export function useScansRealtime({ userId, onNewScan, enabled = true }: UseScansRealtimeOptions) {
+export function useScansRealtime({ userId, qrCodeId, onNewScan, enabled = true }: UseScansRealtimeOptions) {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected')
   const channelRef = useRef<RealtimeChannel | null>(null)
   const onNewScanRef = useRef(onNewScan)
@@ -28,7 +29,9 @@ export function useScansRealtime({ userId, onNewScan, enabled = true }: UseScans
     }
 
     const supabase = createClient()
-    const channelName = `scans-realtime-${userId}`
+    const channelName = qrCodeId
+      ? `scans-realtime-${userId}-${qrCodeId}`
+      : `scans-realtime-${userId}`
 
     const channel = supabase
       .channel(channelName)
@@ -41,8 +44,13 @@ export function useScansRealtime({ userId, onNewScan, enabled = true }: UseScans
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
+          const newScan = payload.new as Scan
+          // Filter by qrCodeId if specified
           if (payload.new.user_id === userId) {
-            onNewScanRef.current?.(payload.new as Scan)
+            if (qrCodeId && newScan.qr_code_id !== qrCodeId) {
+              return // Skip scans for other QR codes
+            }
+            onNewScanRef.current?.(newScan)
           }
         }
       )
@@ -65,7 +73,7 @@ export function useScansRealtime({ userId, onNewScan, enabled = true }: UseScans
         channelRef.current = null
       }
     }
-  }, [userId, enabled])
+  }, [userId, qrCodeId, enabled])
 
   return { connectionStatus }
 }
