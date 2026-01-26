@@ -91,7 +91,7 @@ export function QrForm({ qrCode }: QrFormProps) {
     e.preventDefault()
 
     if (!QRCodeStyling) {
-      setError('QR code library not loaded yet. Please wait.')
+      setError('Biblioteka QR nie zostala jeszcze zaladowana. Prosze czekac.')
       return
     }
 
@@ -110,7 +110,7 @@ export function QrForm({ qrCode }: QrFormProps) {
         // Reserve a new short code for new QR codes
         const reserveResult = await reserveShortCode()
         if (reserveResult.error || !reserveResult.shortCode || !reserveResult.redirectUrl) {
-          setError(reserveResult.error || 'Failed to reserve short code')
+          setError(reserveResult.error || 'Nie udalo sie zarezerwowac kodu')
           setIsLoading(false)
           return
         }
@@ -129,7 +129,7 @@ export function QrForm({ qrCode }: QrFormProps) {
       })
 
       if (!qrImageDataUrl) {
-        setError('Failed to generate QR code image')
+        setError('Nie udalo sie wygenerowac obrazu kodu QR')
         setIsLoading(false)
         return
       }
@@ -165,13 +165,13 @@ export function QrForm({ qrCode }: QrFormProps) {
       router.refresh()
     } catch (err) {
       console.error('Error:', err)
-      setError('An unexpected error occurred')
+      setError('Wystapil nieoczekiwany blad')
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2 items-start">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Typ kodu QR */}
         <Card>
@@ -229,18 +229,18 @@ export function QrForm({ qrCode }: QrFormProps) {
         </CollapsibleSection>
 
         {/* Styl modułów */}
-        <CollapsibleSection title="Module Style" defaultOpen={false}>
+        <CollapsibleSection title="Styl modulow" defaultOpen={false}>
           <ShapeSelector<DotsType>
             value={style.dotsType}
             onChange={(value) => setStyle({ ...style, dotsType: value })}
             options={dotsTypeOptions}
-            label="Module Shape"
+            label="Ksztalt modulow"
           />
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Module Color
+                Kolor modulow
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -258,7 +258,7 @@ export function QrForm({ qrCode }: QrFormProps) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Background Color
+                Kolor tla
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -277,14 +277,14 @@ export function QrForm({ qrCode }: QrFormProps) {
           </div>
 
           <GradientEditor
-            label="Module Gradient"
+            label="Gradient modulow"
             value={style.dotsGradient}
             onChange={(value) => setStyle({ ...style, dotsGradient: value })}
             baseColor={style.foregroundColor}
           />
 
           <GradientEditor
-            label="Background Gradient"
+            label="Gradient tla"
             value={style.backgroundGradient}
             onChange={(value) => setStyle({ ...style, backgroundGradient: value })}
             baseColor={style.backgroundColor}
@@ -292,17 +292,17 @@ export function QrForm({ qrCode }: QrFormProps) {
         </CollapsibleSection>
 
         {/* Styl narożników */}
-        <CollapsibleSection title="Corner Style">
+        <CollapsibleSection title="Styl naroznikow">
           <ShapeSelector<CornersSquareType>
             value={style.cornersSquareType}
             onChange={(value) => setStyle({ ...style, cornersSquareType: value })}
             options={cornersSquareTypeOptions}
-            label="Corner Square Shape"
+            label="Ksztalt zewnetrzny"
           />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Corner Square Color (optional)
+              Kolor zewnetrzny (opcjonalnie)
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -332,13 +332,13 @@ export function QrForm({ qrCode }: QrFormProps) {
                 </>
               )}
               {style.cornersSquareColor === null && (
-                <span className="text-sm text-gray-500">Uses module color</span>
+                <span className="text-sm text-gray-500">Uzywa koloru modulow</span>
               )}
             </div>
           </div>
 
           <GradientEditor
-            label="Corner Square Gradient"
+            label="Gradient zewnetrzny"
             value={style.cornersSquareGradient}
             onChange={(value) => setStyle({ ...style, cornersSquareGradient: value })}
             baseColor={style.cornersSquareColor || style.foregroundColor}
@@ -349,13 +349,13 @@ export function QrForm({ qrCode }: QrFormProps) {
               value={style.cornersDotType}
               onChange={(value) => setStyle({ ...style, cornersDotType: value })}
               options={cornersDotTypeOptions}
-              label="Corner Dot Shape"
+              label="Ksztalt wewnetrzny"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Corner Dot Color (optional)
+              Kolor wewnetrzny (opcjonalnie)
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -385,13 +385,13 @@ export function QrForm({ qrCode }: QrFormProps) {
                 </>
               )}
               {style.cornersDotColor === null && (
-                <span className="text-sm text-gray-500">Uses module color</span>
+                <span className="text-sm text-gray-500">Uzywa koloru modulow</span>
               )}
             </div>
           </div>
 
           <GradientEditor
-            label="Corner Dot Gradient"
+            label="Gradient wewnetrzny"
             value={style.cornersDotGradient}
             onChange={(value) => setStyle({ ...style, cornersDotGradient: value })}
             baseColor={style.cornersDotColor || style.foregroundColor}
@@ -399,10 +399,10 @@ export function QrForm({ qrCode }: QrFormProps) {
         </CollapsibleSection>
 
         {/* Ustawienia zaawansowane */}
-        <CollapsibleSection title="Advanced Settings">
+        <CollapsibleSection title="Ustawienia zaawansowane">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Error Correction Level
+              Poziom korekcji bledow
             </label>
             <select
               value={style.errorCorrectionLevel}
@@ -414,20 +414,20 @@ export function QrForm({ qrCode }: QrFormProps) {
               }
               className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-1"
             >
-              <option value="L">Low (7%)</option>
-              <option value="M">Medium (15%)</option>
-              <option value="Q">Quartile (25%)</option>
-              <option value="H">High (30%)</option>
+              <option value="L">Niski (7%)</option>
+              <option value="M">Sredni (15%)</option>
+              <option value="Q">Wysoki (25%)</option>
+              <option value="H">Maksymalny (30%)</option>
             </select>
             <p className="mt-1 text-xs text-gray-500">
-              Higher levels allow more damage but result in denser codes. Use H if adding a logo.
+              Wyzszy poziom pozwala na wieksze uszkodzenia, ale kod jest gestszy. Uzyj H jesli dodajesz logo.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Margin: {style.margin}
+                Margines: {style.margin}
               </label>
               <input
                 type="range"
@@ -440,7 +440,7 @@ export function QrForm({ qrCode }: QrFormProps) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Size: {style.width}px
+                Rozmiar: {style.width}px
               </label>
               <input
                 type="range"
@@ -456,7 +456,7 @@ export function QrForm({ qrCode }: QrFormProps) {
         </CollapsibleSection>
 
         {/* Logo */}
-        <CollapsibleSection title="Logo (Optional)">
+        <CollapsibleSection title="Logo (opcjonalnie)">
           <LogoUploader
             value={logoUrl}
             onChange={setLogoUrl}
@@ -465,7 +465,7 @@ export function QrForm({ qrCode }: QrFormProps) {
           {logoUrl && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Logo Size: {logoSize}px
+                Rozmiar logo: {logoSize}px
               </label>
               <input
                 type="range"
@@ -487,18 +487,19 @@ export function QrForm({ qrCode }: QrFormProps) {
 
         <div className="flex gap-4">
           <Button type="submit" isLoading={isLoading} disabled={!QRCodeStyling}>
-            {isEditing ? 'Update QR Code' : 'Create QR Code'}
+            {isEditing ? 'Zaktualizuj kod QR' : 'Utworz kod QR'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancel
+            Anuluj
           </Button>
         </div>
       </form>
 
-      <div className="lg:sticky lg:top-24">
+      {/* Sticky Preview */}
+      <div className="lg:sticky lg:top-6 lg:self-start">
         <Card>
           <CardHeader>
-            <CardTitle>Preview</CardTitle>
+            <CardTitle>Podglad</CardTitle>
           </CardHeader>
           <CardContent>
             <QrPreview
@@ -509,8 +510,8 @@ export function QrForm({ qrCode }: QrFormProps) {
             />
             <p className="mt-4 text-sm text-gray-500 text-center">
               {isEditing
-                ? 'Changes will be reflected after saving.'
-                : 'This is a preview. The actual QR code will be generated on save.'}
+                ? 'Zmiany beda widoczne po zapisaniu.'
+                : 'To jest podglad. Kod QR zostanie wygenerowany po zapisaniu.'}
             </p>
           </CardContent>
         </Card>
