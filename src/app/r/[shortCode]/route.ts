@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { extractUtmParams, appendUtmParams } from '@/lib/utils'
 import { UAParser } from 'ua-parser-js'
@@ -31,8 +31,10 @@ export async function GET(
     return NextResponse.redirect(new URL('/not-found', request.url))
   }
 
-  // Track scan asynchronously (fire and forget)
-  trackScan(request, qrCode, supabase).catch(console.error)
+  // Track scan after response is sent (Vercel waits for this to complete)
+  after(async () => {
+    await trackScan(request, qrCode, supabase)
+  })
 
   // Get UTM params from request
   const requestUrl = new URL(request.url)
