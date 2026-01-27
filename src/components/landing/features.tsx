@@ -33,15 +33,8 @@ const features = [
 
 export function Features() {
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
-      {/* Gradient background - flowing from previous and to next section */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--background-surface)] via-[var(--background-surface)] to-white" />
-
-      {/* Subtle background glow */}
-      <div className="glow-orb glow-orb-secondary w-96 h-96 top-0 left-1/4 opacity-10" />
-      <div className="glow-orb glow-orb-primary w-64 h-64 bottom-0 right-1/4 opacity-10" />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="section-features py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base font-semibold leading-7 text-[var(--primary)]">
             Wszystko czego potrzebujesz

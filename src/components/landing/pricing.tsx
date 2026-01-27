@@ -47,15 +47,8 @@ const tiers = [
 
 export function Pricing() {
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
-      {/* Gradient background - flowing from previous and to next section */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[var(--background-surface)]" />
-
-      {/* Background glows */}
-      <div className="glow-orb glow-orb-primary w-80 h-80 top-1/4 -left-40 opacity-10" />
-      <div className="glow-orb glow-orb-secondary w-64 h-64 bottom-1/4 -right-32 opacity-10" />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="section-pricing py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">Cennik</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
