@@ -3,8 +3,11 @@ import { Button } from '@/components/ui'
 
 export function CTA() {
   return (
-    <section className="relative py-24 sm:py-32 overflow-hidden bg-[var(--background-surface)]">
-      {/* Gradient background */}
+    <section className="relative py-24 sm:py-32 overflow-hidden">
+      {/* Gradient background - flowing from previous section */}
+      <div className="absolute inset-0 bg-[var(--background-surface)]" />
+
+      {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 via-transparent to-[var(--secondary)]/5" />
 
       {/* Animated glow orbs */}

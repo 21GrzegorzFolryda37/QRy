@@ -3,15 +3,14 @@ import { Button } from '@/components/ui'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden py-20 sm:py-32 pt-32">
-      {/* Gradient background */}
-      <div className="absolute inset-0 hero-gradient" />
+    <section className="relative overflow-hidden pt-32 pb-20 sm:pb-32">
+      {/* Gradient background that flows into next section */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[var(--background-surface)]" />
       <div className="absolute inset-0 hero-pattern" />
 
-      {/* Soft glow orbs for light mode */}
+      {/* Soft glow orbs */}
       <div className="glow-orb glow-orb-primary w-[500px] h-[500px] -top-64 -left-64 animate-pulse-glow" />
       <div className="glow-orb glow-orb-secondary w-[400px] h-[400px] top-1/4 -right-48 animate-pulse-glow animate-delay-500" />
-      <div className="glow-orb glow-orb-primary w-[300px] h-[300px] bottom-0 left-1/3 animate-pulse-glow animate-delay-300" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-3xl text-center">

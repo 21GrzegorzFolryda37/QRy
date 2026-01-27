@@ -33,7 +33,10 @@ const features = [
 
 export function Features() {
   return (
-    <section className="bg-[var(--background-surface)] py-24 sm:py-32 relative overflow-hidden">
+    <section className="relative overflow-hidden py-24 sm:py-32">
+      {/* Gradient background - flowing from previous and to next section */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--background-surface)] via-[var(--background-surface)] to-white" />
+
       {/* Subtle background glow */}
       <div className="glow-orb glow-orb-secondary w-96 h-96 top-0 left-1/4 opacity-10" />
       <div className="glow-orb glow-orb-primary w-64 h-64 bottom-0 right-1/4 opacity-10" />
@@ -56,11 +59,11 @@ export function Features() {
             {features.map((feature, index) => (
               <div
                 key={feature.name}
-                className="group flex flex-col p-6 rounded-xl bg-[var(--background)] border border-[var(--border)] hover-lift animate-fade-in-up"
+                className="group flex flex-col p-6 rounded-xl bg-white border border-[var(--border)] shadow-sm hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient}`}>
+                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient} shadow-md`}>
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
