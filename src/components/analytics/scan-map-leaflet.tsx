@@ -57,15 +57,16 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
   const CIRCLE_RADIUS = 18
 
   return (
-    <MapContainer
-      center={[center.lat, center.lng]}
-      zoom={data.length === 1 ? 6 : 3}
-      bounds={data.length > 1 ? bounds : undefined}
-      style={{ height: '400px', width: '100%', borderRadius: '8px', background: '#f8f9fa' }}
-      scrollWheelZoom={true}
-      maxZoom={12}
-      minZoom={2}
-    >
+    <div className="relative z-0">
+      <MapContainer
+        center={[center.lat, center.lng]}
+        zoom={data.length === 1 ? 6 : 3}
+        bounds={data.length > 1 ? bounds : undefined}
+        style={{ height: '400px', width: '100%', borderRadius: '8px', background: '#f8f9fa' }}
+        scrollWheelZoom={true}
+        maxZoom={12}
+        minZoom={2}
+      >
       {/* Clean, minimal map style - CartoDB Positron (no labels version for even cleaner look) */}
       <TileLayer
         attribution='&copy; <a href="https://carto.com/">CARTO</a>'
@@ -113,6 +114,7 @@ export function ScanMapLeaflet({ data }: ScanMapLeafletProps) {
           </Popup>
         </CircleMarker>
       ))}
-    </MapContainer>
+      </MapContainer>
+    </div>
   )
 }

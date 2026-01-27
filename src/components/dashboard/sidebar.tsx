@@ -120,7 +120,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop sidebar - fixed */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block lg:w-64 lg:border-r lg:border-[var(--border)] lg:bg-white lg:shadow-sm">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-[999] lg:block lg:w-64 lg:border-r lg:border-[var(--border)] lg:bg-white lg:shadow-sm">
         {sidebarContent}
       </aside>
 
@@ -129,11 +129,11 @@ export function Sidebar() {
         <div className="lg:hidden">
           {/* Overlay */}
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[1001] bg-black/50 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
           {/* Drawer */}
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
+          <aside className="fixed inset-y-0 left-0 z-[1002] w-64 bg-white shadow-xl">
             {sidebarContent}
           </aside>
         </div>

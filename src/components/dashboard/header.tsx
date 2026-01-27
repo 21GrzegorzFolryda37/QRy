@@ -10,7 +10,7 @@ interface HeaderProps {
 
 export function Header({ profile }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 lg:px-6">
+    <header className="sticky top-0 z-[1000] flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 lg:px-6">
       {/* Mobile menu toggle */}
       <div className="flex items-center gap-4">
         <MobileSidebarToggle />
