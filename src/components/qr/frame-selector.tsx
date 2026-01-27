@@ -125,6 +125,130 @@ const frameStyleOptions: FrameStyleOption[] = [
       </svg>
     ),
   },
+  {
+    id: 'arrow',
+    label: 'Strzalka',
+    preview: (color) => (
+      <svg viewBox="0 0 60 75" className="w-full h-full">
+        <rect x="2" y="12" width="56" height="60" fill={color} rx="4" />
+        <polygon points="30,2 40,12 20,12" fill={color} />
+        <rect x="6" y="16" width="48" height="44" fill="white" rx="2" />
+        <rect x="10" y="20" width="40" height="36" fill="#e5e7eb" rx="2" />
+        <text x="30" y="68" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">SCAN ME</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'chat',
+    label: 'Czat',
+    preview: (color) => (
+      <svg viewBox="0 0 60 70" className="w-full h-full">
+        <path d={`M8 2 L52 2 Q58 2 58 8 L58 50 Q58 56 52 56 L14 56 L8 66 L8 56 Q2 56 2 50 L2 8 Q2 2 8 2`} fill={color} />
+        <rect x="6" y="6" width="48" height="44" fill="white" rx="2" />
+        <rect x="10" y="10" width="40" height="36" fill="#e5e7eb" rx="2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ribbon',
+    label: 'Wstazka',
+    preview: (color) => (
+      <svg viewBox="0 0 60 70" className="w-full h-full">
+        <rect x="6" y="10" width="48" height="58" fill={color} rx="4" />
+        {/* Ribbon on top */}
+        <path d="M0 6 L60 6 L60 16 L30 12 L0 16 Z" fill={color} />
+        <rect x="10" y="14" width="40" height="40" fill="white" rx="2" />
+        <rect x="14" y="18" width="32" height="32" fill="#e5e7eb" rx="2" />
+        <text x="30" y="62" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">SCAN ME</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'stamp',
+    label: 'Znaczek',
+    preview: (color) => (
+      <svg viewBox="0 0 60 70" className="w-full h-full">
+        <rect x="2" y="2" width="56" height="66" fill={color} rx="2" />
+        <rect x="4" y="4" width="52" height="62" fill="white" rx="1" />
+        <rect x="6" y="6" width="48" height="58" fill={color} rx="1" strokeDasharray="3,3" stroke="white" strokeWidth="2" />
+        <rect x="10" y="10" width="40" height="40" fill="white" rx="2" />
+        <rect x="14" y="14" width="32" height="32" fill="#e5e7eb" rx="2" />
+        <text x="30" y="60" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">SCAN ME</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'circle',
+    label: 'Kolo',
+    preview: (color) => (
+      <svg viewBox="0 0 60 70" className="w-full h-full">
+        <circle cx="30" cy="30" r="28" fill={color} />
+        <circle cx="30" cy="30" r="24" fill="white" />
+        <rect x="12" y="12" width="36" height="36" fill="#e5e7eb" rx="2" />
+        <text x="30" y="66" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold">SCAN ME</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'hexagon',
+    label: 'Szesciokat',
+    preview: (color) => (
+      <svg viewBox="0 0 60 75" className="w-full h-full">
+        <polygon points="30,2 56,16 56,44 30,58 4,44 4,16" fill={color} />
+        <polygon points="30,6 52,18 52,42 30,54 8,42 8,18" fill="white" />
+        <rect x="14" y="14" width="32" height="32" fill="#e5e7eb" rx="2" />
+        <text x="30" y="70" textAnchor="middle" fill={color} fontSize="6" fontWeight="bold">SCAN</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'shield',
+    label: 'Tarcza',
+    preview: (color) => (
+      <svg viewBox="0 0 60 75" className="w-full h-full">
+        <path d="M30 2 L56 10 L56 40 Q56 60 30 70 Q4 60 4 40 L4 10 Z" fill={color} />
+        <path d="M30 6 L52 13 L52 39 Q52 56 30 65 Q8 56 8 39 L8 13 Z" fill="white" />
+        <rect x="14" y="16" width="32" height="32" fill="#e5e7eb" rx="2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'tag',
+    label: 'Metka',
+    preview: (color) => (
+      <svg viewBox="0 0 60 75" className="w-full h-full">
+        <path d="M8 2 L52 2 Q58 2 58 8 L58 62 L30 72 L2 62 L2 8 Q2 2 8 2" fill={color} />
+        <circle cx="12" cy="12" r="3" fill="white" />
+        <rect x="6" y="18" width="48" height="40" fill="white" rx="2" />
+        <rect x="10" y="22" width="40" height="32" fill="#e5e7eb" rx="2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'heart',
+    label: 'Serce',
+    preview: (color) => (
+      <svg viewBox="0 0 60 70" className="w-full h-full">
+        <path d="M30 56 C10 40 2 28 2 18 C2 8 12 2 20 2 C26 2 30 8 30 8 C30 8 34 2 40 2 C48 2 58 8 58 18 C58 28 50 40 30 56" fill={color} />
+        <ellipse cx="30" cy="28" rx="20" ry="18" fill="white" />
+        <rect x="14" y="14" width="32" height="28" fill="#e5e7eb" rx="2" />
+        <text x="30" y="64" textAnchor="middle" fill={color} fontSize="5" fontWeight="bold">SCAN</text>
+      </svg>
+    ),
+  },
+  {
+    id: 'phone',
+    label: 'Telefon',
+    preview: (color) => (
+      <svg viewBox="0 0 50 80" className="w-full h-full">
+        <rect x="4" y="2" width="42" height="76" fill={color} rx="6" />
+        <rect x="6" y="10" width="38" height="54" fill="white" rx="2" />
+        <rect x="10" y="14" width="30" height="46" fill="#e5e7eb" rx="2" />
+        <circle cx="25" cy="72" r="3" fill="white" />
+        <rect x="18" y="5" width="14" height="2" fill="white" rx="1" />
+      </svg>
+    ),
+  },
 ]
 
 interface FrameSelectorProps {

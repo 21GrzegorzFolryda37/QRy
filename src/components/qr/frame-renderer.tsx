@@ -344,6 +344,208 @@ function getFrameStyle(
         ),
       }
 
+    case 'arrow':
+      const arrowHeight = 16
+      return {
+        background: (
+          <>
+            <polygon points={`${width / 2},0 ${width / 2 + 20},${arrowHeight} ${width / 2 - 20},${arrowHeight}`} fill={fill} />
+            <rect x={0} y={arrowHeight} width={width} height={height - arrowHeight} fill={fill} rx={8} />
+          </>
+        ),
+        decoration: (
+          <rect
+            x={padding - 4}
+            y={padding - 4 + arrowHeight}
+            width={qrSize + 8}
+            height={qrSize + 8}
+            fill="white"
+            rx={4}
+          />
+        ),
+      }
+
+    case 'chat':
+      const tailSize = 16
+      return {
+        background: (
+          <path
+            d={`
+              M 12 0
+              L ${width - 12} 0
+              Q ${width} 0 ${width} 12
+              L ${width} ${height - tailSize - 12}
+              Q ${width} ${height - tailSize} ${width - 12} ${height - tailSize}
+              L ${tailSize + 12} ${height - tailSize}
+              L 0 ${height}
+              L 0 12
+              Q 0 0 12 0
+              Z
+            `}
+            fill={fill}
+          />
+        ),
+        decoration: (
+          <rect
+            x={padding - 2}
+            y={padding - 2}
+            width={qrSize + 4}
+            height={qrSize + 4}
+            fill="white"
+            rx={4}
+          />
+        ),
+      }
+
+    case 'ribbon': {
+      const ribbonBannerHeight = 20
+      return {
+        background: (
+          <>
+            <rect x={0} y={ribbonBannerHeight} width={width} height={height - ribbonBannerHeight} fill={fill} rx={8} />
+            {/* Ribbon banner */}
+            <path d={`M -10 ${ribbonBannerHeight / 2} L ${width + 10} ${ribbonBannerHeight / 2} L ${width + 10} ${ribbonBannerHeight} L ${width / 2} ${ribbonBannerHeight - 6} L -10 ${ribbonBannerHeight} Z`} fill={fill} />
+          </>
+        ),
+        decoration: (
+          <rect
+            x={padding - 4}
+            y={padding - 4 + ribbonBannerHeight}
+            width={qrSize + 8}
+            height={qrSize + 8}
+            fill="white"
+            rx={4}
+          />
+        ),
+      }
+    }
+
+    case 'stamp':
+      const stampBorder = 6
+      return {
+        background: (
+          <>
+            <rect x={0} y={0} width={width} height={height} fill={fill} rx={4} />
+            <rect x={stampBorder} y={stampBorder} width={width - stampBorder * 2} height={height - stampBorder * 2} fill="white" rx={2} />
+            <rect x={stampBorder + 2} y={stampBorder + 2} width={width - stampBorder * 2 - 4} height={height - stampBorder * 2 - 4} fill={fill} rx={2} stroke="white" strokeWidth="3" strokeDasharray="8,4" />
+          </>
+        ),
+        decoration: (
+          <rect
+            x={padding}
+            y={padding}
+            width={qrSize}
+            height={qrSize}
+            fill="white"
+            rx={4}
+          />
+        ),
+      }
+
+    case 'circle':
+      const radius = Math.min(width, qrSize + padding * 2) / 2
+      return {
+        background: (
+          <circle cx={width / 2} cy={radius} r={radius} fill={fill} />
+        ),
+        decoration: (
+          <circle cx={width / 2} cy={radius} r={qrSize / 2 + 8} fill="white" />
+        ),
+      }
+
+    case 'hexagon':
+      const hexH = qrSize + padding * 2
+      const hexW = width
+      return {
+        background: (
+          <polygon
+            points={`${hexW / 2},0 ${hexW},${hexH * 0.25} ${hexW},${hexH * 0.75} ${hexW / 2},${hexH} 0,${hexH * 0.75} 0,${hexH * 0.25}`}
+            fill={fill}
+          />
+        ),
+        decoration: (
+          <polygon
+            points={`${hexW / 2},${padding - 4} ${hexW - padding + 4},${hexH * 0.25} ${hexW - padding + 4},${hexH * 0.75} ${hexW / 2},${hexH - padding + 4} ${padding - 4},${hexH * 0.75} ${padding - 4},${hexH * 0.25}`}
+            fill="white"
+          />
+        ),
+      }
+
+    case 'shield':
+      return {
+        background: (
+          <path
+            d={`M ${width / 2} 0 L ${width} ${height * 0.12} L ${width} ${height * 0.55} Q ${width} ${height * 0.85} ${width / 2} ${height} Q 0 ${height * 0.85} 0 ${height * 0.55} L 0 ${height * 0.12} Z`}
+            fill={fill}
+          />
+        ),
+        decoration: (
+          <path
+            d={`M ${width / 2} ${padding - 4} L ${width - padding + 4} ${height * 0.12 + 4} L ${width - padding + 4} ${height * 0.55 - 4} Q ${width - padding + 4} ${height * 0.78} ${width / 2} ${height - padding - 8} Q ${padding - 4} ${height * 0.78} ${padding - 4} ${height * 0.55 - 4} L ${padding - 4} ${height * 0.12 + 4} Z`}
+            fill="white"
+          />
+        ),
+      }
+
+    case 'tag':
+      const holeRadius = 8
+      return {
+        background: (
+          <path
+            d={`M 12 0 L ${width - 12} 0 Q ${width} 0 ${width} 12 L ${width} ${height - 20} L ${width / 2} ${height} L 0 ${height - 20} L 0 12 Q 0 0 12 0`}
+            fill={fill}
+          />
+        ),
+        decoration: (
+          <>
+            <circle cx={padding} cy={padding} r={holeRadius} fill="white" />
+            <rect
+              x={padding - 4}
+              y={padding + holeRadius + 4}
+              width={qrSize + 8}
+              height={qrSize + 8}
+              fill="white"
+              rx={4}
+            />
+          </>
+        ),
+      }
+
+    case 'heart':
+      const heartScale = width / 60
+      return {
+        background: (
+          <path
+            d={`M ${width / 2} ${height * 0.85} C ${width * 0.15} ${height * 0.6} 0 ${height * 0.4} 0 ${height * 0.25} C 0 ${height * 0.1} ${width * 0.18} 0 ${width * 0.33} 0 C ${width * 0.43} 0 ${width / 2} ${height * 0.1} ${width / 2} ${height * 0.1} C ${width / 2} ${height * 0.1} ${width * 0.57} 0 ${width * 0.67} 0 C ${width * 0.82} 0 ${width} ${height * 0.1} ${width} ${height * 0.25} C ${width} ${height * 0.4} ${width * 0.85} ${height * 0.6} ${width / 2} ${height * 0.85}`}
+            fill={fill}
+          />
+        ),
+        decoration: (
+          <ellipse cx={width / 2} cy={height * 0.4} rx={qrSize / 2 + 4} ry={qrSize / 2.2} fill="white" />
+        ),
+      }
+
+    case 'phone':
+      const phoneRadius = 12
+      const screenTop = 24
+      const screenBottom = height - 32
+      const buttonY = height - 18
+      return {
+        background: (
+          <rect x={0} y={0} width={width} height={height} fill={fill} rx={phoneRadius} />
+        ),
+        decoration: (
+          <>
+            {/* Speaker */}
+            <rect x={width / 2 - 20} y={10} width={40} height={6} fill="white" rx={3} />
+            {/* Screen */}
+            <rect x={padding - 6} y={screenTop} width={qrSize + 12} height={screenBottom - screenTop} fill="white" rx={4} />
+            {/* Home button */}
+            <circle cx={width / 2} cy={buttonY} r={10} fill="white" fillOpacity={0.3} stroke="white" strokeWidth={2} />
+          </>
+        ),
+      }
+
     default:
       return { background: <></>, decoration: <></> }
   }

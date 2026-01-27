@@ -80,6 +80,16 @@ export type FrameStyle =
   | 'badge'
   | 'banner'
   | 'minimal'
+  | 'arrow'
+  | 'chat'
+  | 'ribbon'
+  | 'stamp'
+  | 'circle'
+  | 'hexagon'
+  | 'shield'
+  | 'tag'
+  | 'heart'
+  | 'phone'
 
 export interface FrameOptions {
   style: FrameStyle
