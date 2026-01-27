@@ -44,18 +44,21 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
   appstore: { title: 'Link do aplikacji w kodzie QR', subtitle: 'App Store i Google Play w jednym kodzie' },
 }
 
-const stickerTemplates = [
-  { id: 'none', label: 'Brak', frame: false },
-  { id: 'scan-me-1', label: 'Scan Me', frame: true, text: 'SCAN ME', icon: 'phone' },
-  { id: 'scan-me-2', label: 'Scan Me Arrow', frame: true, text: 'SCAN ME', icon: 'arrow' },
-  { id: 'scan-here', label: 'Skanuj', frame: true, text: 'SKANUJ', icon: 'qr' },
-  { id: 'follow-us', label: 'Obserwuj', frame: true, text: 'OBSERWUJ', icon: 'heart' },
-  { id: 'visit-us', label: 'Odwiedź', frame: true, text: 'ODWIEDŹ', icon: 'globe' },
-  { id: 'contact', label: 'Kontakt', frame: true, text: 'KONTAKT', icon: 'mail' },
-  { id: 'menu', label: 'Menu', frame: true, text: 'MENU', icon: 'utensils' },
-  { id: 'wifi', label: 'WiFi', frame: true, text: 'WIFI', icon: 'wifi' },
-  { id: 'download', label: 'Pobierz', frame: true, text: 'POBIERZ', icon: 'download' },
-  { id: 'shop', label: 'Sklep', frame: true, text: 'SKLEP', icon: 'shop' },
+type FrameStyle = 'none' | 'simple' | 'rounded' | 'badge-top' | 'badge-bottom' | 'bubble' | 'pointer' | 'ticket' | 'stamp' | 'ribbon' | 'chat' | 'hexagon'
+
+const frameTemplates: { id: FrameStyle; label: string; text?: string }[] = [
+  { id: 'none', label: 'Brak' },
+  { id: 'simple', label: 'Prosta', text: 'SCAN ME' },
+  { id: 'rounded', label: 'Zaokrąglona', text: 'SCAN ME' },
+  { id: 'badge-top', label: 'Badge góra', text: 'SCAN ME' },
+  { id: 'badge-bottom', label: 'Badge dół', text: 'SKANUJ TUTAJ' },
+  { id: 'bubble', label: 'Bąbel', text: 'SCAN ME' },
+  { id: 'pointer', label: 'Wskaźnik', text: 'SKANUJ' },
+  { id: 'ticket', label: 'Bilet', text: 'SCAN ME' },
+  { id: 'stamp', label: 'Pieczątka', text: 'QR CODE' },
+  { id: 'ribbon', label: 'Wstążka', text: 'SCAN ME' },
+  { id: 'chat', label: 'Chat', text: 'ZESKANUJ!' },
+  { id: 'hexagon', label: 'Heksagon', text: 'SCAN' },
 ]
 
 const colorPresets = [
@@ -109,7 +112,8 @@ export function Hero() {
   const [formData, setFormData] = useState<Record<string, string>>({})
 
   // QR customization
-  const [selectedSticker, setSelectedSticker] = useState('scan-me-1')
+  const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('simple')
+  const [frameText, setFrameText] = useState('SCAN ME')
   const [dotColor, setDotColor] = useState('#000000')
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
@@ -260,7 +264,7 @@ export function Hero() {
     }
   }
 
-  const currentSticker = stickerTemplates.find(s => s.id === selectedSticker)
+  const currentFrame = frameTemplates.find(f => f.id === selectedFrame)
   const tabs: { id: TabType; label: string }[] = [
     { id: 'sticker', label: 'NAKLEJKA' },
     { id: 'color', label: 'KOLOR' },
@@ -465,30 +469,39 @@ export function Hero() {
                   {/* Tab Content */}
                   <div className="min-h-[160px]">
                     {activeTab === 'sticker' && (
-                      <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-11 gap-2">
-                        {stickerTemplates.map((sticker) => (
-                          <button
-                            key={sticker.id}
-                            onClick={() => setSelectedSticker(sticker.id)}
-                            className={`aspect-square rounded-lg border-2 p-1 transition-all flex items-center justify-center ${
-                              selectedSticker === sticker.id
-                                ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                            }`}
-                            title={sticker.label}
-                          >
-                            <div className="w-full h-full bg-[var(--background-surface)] rounded flex items-center justify-center text-[7px] font-bold text-[var(--foreground-muted)]">
-                              {sticker.id === 'none' ? (
-                                <NoStickerIcon className="w-5 h-5" />
-                              ) : (
-                                <div className="text-center">
-                                  <StickerIcon icon={sticker.icon} className="w-3.5 h-3.5 mx-auto mb-0.5" />
-                                  <span className="block truncate px-0.5 leading-tight">{sticker.text}</span>
-                                </div>
-                              )}
-                            </div>
-                          </button>
-                        ))}
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-6 gap-2">
+                          {frameTemplates.map((frame) => (
+                            <button
+                              key={frame.id}
+                              onClick={() => {
+                                setSelectedFrame(frame.id)
+                                if (frame.text) setFrameText(frame.text)
+                              }}
+                              className={`aspect-square rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
+                                selectedFrame === frame.id
+                                  ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                              }`}
+                              title={frame.label}
+                            >
+                              <FramePreviewIcon frameId={frame.id} className="w-full h-full" />
+                            </button>
+                          ))}
+                        </div>
+                        {selectedFrame !== 'none' && (
+                          <div>
+                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Tekst ramki</label>
+                            <input
+                              type="text"
+                              value={frameText}
+                              onChange={(e) => setFrameText(e.target.value.toUpperCase())}
+                              placeholder="SCAN ME"
+                              maxLength={20}
+                              className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--success)]"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -684,20 +697,9 @@ export function Hero() {
 
                 {/* QR Preview */}
                 <div className="flex items-center justify-center mb-6">
-                  <div className="relative">
-                    {currentSticker?.frame && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
-                        <div className="bg-black text-white px-3 py-1 rounded-t-lg text-[10px] font-bold flex items-center gap-1.5">
-                          <StickerIcon icon={currentSticker.icon} className="w-3 h-3" />
-                          {currentSticker.text}
-                        </div>
-                        <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[6px] border-l-transparent border-r-transparent border-t-black mx-auto" />
-                      </div>
-                    )}
-                    <div className={`bg-white rounded-xl p-4 shadow-lg border border-[var(--border)] ${currentSticker?.frame ? 'mt-3' : ''}`}>
-                      <div ref={qrRef} className="w-[180px] h-[180px] flex items-center justify-center" />
-                    </div>
-                  </div>
+                  <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
+                    <div ref={qrRef} className="w-[180px] h-[180px] flex items-center justify-center" />
+                  </QRFrameWrapper>
                 </div>
 
                 {/* Download */}
@@ -749,10 +751,6 @@ function UploadIcon({ className }: { className?: string }) {
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
 }
 
-function NoStickerIcon({ className }: { className?: string }) {
-  return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><circle cx="12" cy="12" r="9" /><path d="M6 6l12 12" /></svg>
-}
-
 function TypeIcon({ type, className }: { type: string; className?: string }) {
   const icons: Record<string, React.ReactNode> = {
     globe: <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.916 17.916 0 0 1-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />,
@@ -770,22 +768,6 @@ function TypeIcon({ type, className }: { type: string; className?: string }) {
     music: <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />,
   }
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">{icons[type]}</svg>
-}
-
-function StickerIcon({ icon, className }: { icon?: string; className?: string }) {
-  const icons: Record<string, React.ReactNode> = {
-    phone: <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />,
-    arrow: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
-    qr: <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v3h-3v-3zm-3 3h3v3h-3v-3zm3 3h3v3h-3v-3z" />,
-    heart: <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />,
-    globe: <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-18c2.485 0 4.5 4.03 4.5 9s-2.015 9-4.5 9m0-18c-2.485 0-4.5 4.03-4.5 9s2.015 9 4.5 9M3 12h18" />,
-    mail: <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />,
-    utensils: <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m18-4.5a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
-    wifi: <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />,
-    download: <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />,
-    shop: <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />,
-  }
-  return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">{icons[icon || '']}</svg>
 }
 
 function ShapePreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
@@ -821,4 +803,288 @@ function CornerDotPreviewIcon({ shapeId, className }: { shapeId: string; classNa
     dot: <circle cx="9" cy="9" r="5" fill="currentColor"/>,
   }
   return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
+}
+
+function FramePreviewIcon({ frameId, className }: { frameId: string; className?: string }) {
+  const frames: Record<string, React.ReactNode> = {
+    none: (
+      <>
+        <rect x="8" y="8" width="24" height="24" fill="#e5e7eb" rx="2" />
+        <line x1="6" y1="6" x2="34" y2="34" stroke="#9ca3af" strokeWidth="2" />
+      </>
+    ),
+    simple: (
+      <>
+        <rect x="4" y="4" width="32" height="32" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="10" width="20" height="20" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    rounded: (
+      <>
+        <rect x="4" y="4" width="32" height="32" rx="6" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="10" width="20" height="20" fill="#e5e7eb" rx="2" />
+      </>
+    ),
+    'badge-top': (
+      <>
+        <rect x="4" y="10" width="32" height="26" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="4" width="20" height="8" fill="#000" rx="2" />
+        <rect x="10" y="16" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    'badge-bottom': (
+      <>
+        <rect x="4" y="4" width="32" height="26" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="28" width="20" height="8" fill="#000" rx="2" />
+        <rect x="10" y="8" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    bubble: (
+      <>
+        <rect x="4" y="4" width="32" height="28" rx="8" stroke="#000" strokeWidth="2" fill="white" />
+        <polygon points="20,32 16,36 24,36" fill="#000" />
+        <rect x="10" y="8" width="20" height="18" fill="#e5e7eb" rx="2" />
+      </>
+    ),
+    pointer: (
+      <>
+        <rect x="4" y="8" width="32" height="28" stroke="#000" strokeWidth="2" fill="white" />
+        <polygon points="20,8 16,2 24,2" fill="#000" />
+        <rect x="10" y="14" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    ticket: (
+      <>
+        <path d="M4 10 Q4 4 10 4 L30 4 Q36 4 36 10 L36 30 Q36 36 30 36 L10 36 Q4 36 4 30 Z" stroke="#000" strokeWidth="2" fill="white" strokeDasharray="4 2" />
+        <rect x="10" y="10" width="20" height="20" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    stamp: (
+      <>
+        <circle cx="20" cy="20" r="16" stroke="#000" strokeWidth="2" fill="white" />
+        <circle cx="20" cy="20" r="12" stroke="#000" strokeWidth="1" fill="none" strokeDasharray="2 2" />
+        <rect x="12" y="12" width="16" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    ribbon: (
+      <>
+        <rect x="4" y="8" width="32" height="28" stroke="#000" strokeWidth="2" fill="white" />
+        <path d="M8 4 L32 4 L32 12 L20 8 L8 12 Z" fill="#000" />
+        <rect x="10" y="14" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    chat: (
+      <>
+        <path d="M4 4 L36 4 L36 28 L24 28 L20 36 L16 28 L4 28 Z" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="8" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+    hexagon: (
+      <>
+        <polygon points="20,2 36,10 36,30 20,38 4,30 4,10" stroke="#000" strokeWidth="2" fill="white" />
+        <rect x="10" y="12" width="20" height="16" fill="#e5e7eb" rx="1" />
+      </>
+    ),
+  }
+  return <svg className={className} viewBox="0 0 40 40" fill="none">{frames[frameId] || frames.none}</svg>
+}
+
+function QRFrameWrapper({
+  frameStyle,
+  text,
+  dotColor,
+  children
+}: {
+  frameStyle: FrameStyle
+  text: string
+  dotColor: string
+  children: React.ReactNode
+}) {
+  const baseQrWrapper = "bg-white flex items-center justify-center"
+
+  if (frameStyle === 'none') {
+    return (
+      <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border border-[var(--border)]`}>
+        {children}
+      </div>
+    )
+  }
+
+  if (frameStyle === 'simple') {
+    return (
+      <div className="p-1 shadow-lg" style={{ backgroundColor: dotColor }}>
+        <div className={`${baseQrWrapper} p-3`}>
+          {children}
+        </div>
+        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white">
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'rounded') {
+    return (
+      <div className="rounded-2xl p-1 shadow-lg" style={{ backgroundColor: dotColor }}>
+        <div className={`${baseQrWrapper} rounded-xl p-3`}>
+          {children}
+        </div>
+        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white">
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'badge-top') {
+    return (
+      <div className="relative pt-6">
+        <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-t-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+          {text}
+        </div>
+        <div className={`${baseQrWrapper} rounded-b-xl rounded-t-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'badge-bottom') {
+    return (
+      <div className="relative pb-6">
+        <div className={`${baseQrWrapper} rounded-t-xl rounded-b-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+        </div>
+        <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-b-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'bubble') {
+    return (
+      <div className="relative">
+        <div className={`${baseQrWrapper} rounded-2xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+            <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: dotColor }} />
+          </div>
+        </div>
+        <div className="text-center mt-4 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'pointer') {
+    return (
+      <div className="relative pt-4">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
+          <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[12px] border-l-transparent border-r-transparent" style={{ borderBottomColor: dotColor }} />
+        </div>
+        <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+        </div>
+        <div className="text-center mt-2 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'ticket') {
+    return (
+      <div className="relative p-1 rounded-xl shadow-lg" style={{ backgroundColor: dotColor }}>
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
+        <div className={`${baseQrWrapper} rounded-lg p-3`}>
+          {children}
+        </div>
+        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white border-t border-dashed border-white/30">
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'stamp') {
+    return (
+      <div className="relative">
+        <div className="rounded-full p-3 shadow-lg border-4 border-dashed" style={{ borderColor: dotColor }}>
+          <div className={`${baseQrWrapper} rounded-lg p-2`}>
+            {children}
+          </div>
+        </div>
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded text-[9px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'ribbon') {
+    return (
+      <div className="relative pt-5">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
+          <div className="relative">
+            <div className="px-6 py-1 text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+              {text}
+            </div>
+            <div className="absolute -left-2 bottom-0 w-0 h-0 border-t-[8px] border-r-[8px] border-t-transparent" style={{ borderRightColor: dotColor, filter: 'brightness(0.7)' }} />
+            <div className="absolute -right-2 bottom-0 w-0 h-0 border-t-[8px] border-l-[8px] border-t-transparent" style={{ borderLeftColor: dotColor, filter: 'brightness(0.7)' }} />
+          </div>
+        </div>
+        <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'chat') {
+    return (
+      <div className="relative pb-3">
+        <div className={`${baseQrWrapper} rounded-2xl rounded-bl-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+          {children}
+        </div>
+        <div className="absolute -bottom-0 left-4">
+          <div className="w-0 h-0 border-t-[12px] border-r-[12px] border-r-transparent" style={{ borderTopColor: dotColor }} />
+        </div>
+        <div className="absolute -bottom-5 left-8 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  if (frameStyle === 'hexagon') {
+    return (
+      <div className="relative">
+        <div className="p-4 shadow-lg" style={{
+          backgroundColor: 'white',
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+          border: `3px solid ${dotColor}`
+        }}>
+          <div className="p-2" style={{
+            backgroundColor: 'white',
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+          }}>
+            {children}
+          </div>
+        </div>
+        <div className="text-center mt-2 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+          {text}
+        </div>
+      </div>
+    )
+  }
+
+  // Default fallback
+  return (
+    <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border border-[var(--border)]`}>
+      {children}
+    </div>
+  )
 }
