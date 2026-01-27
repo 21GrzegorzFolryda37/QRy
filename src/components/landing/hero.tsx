@@ -84,6 +84,15 @@ const cornerDotTypes: { type: CornerDotType; label: string }[] = [
   { type: 'dot', label: 'Okrągłe' },
 ]
 
+const dotTypes: { type: DotType; label: string }[] = [
+  { type: 'square', label: 'Kwadrat' },
+  { type: 'rounded', label: 'Zaokrąglone' },
+  { type: 'dots', label: 'Kropki' },
+  { type: 'extra-rounded', label: 'Okrągłe' },
+  { type: 'classy', label: 'Klasyczne' },
+  { type: 'classy-rounded', label: 'Eleganckie' },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
@@ -515,62 +524,73 @@ export function Hero() {
 
                     {activeTab === 'shapes' && (
                       <div className="space-y-5">
-                        {/* Preset shapes */}
+                        {/* Dot shapes (Kropki) */}
                         <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Szybki wybór</label>
-                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                            {shapePresets.map((preset, idx) => (
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Kropki</label>
+                            <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                          </div>
+                          <div className="grid grid-cols-6 gap-2">
+                            {dotTypes.map((item) => (
                               <button
-                                key={idx}
-                                onClick={() => { setDotType(preset.dots); setCornerSquareType(preset.cornerSquare); setCornerDotType(preset.cornerDot) }}
-                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex flex-col items-center justify-center gap-1 ${
-                                  dotType === preset.dots && cornerSquareType === preset.cornerSquare
+                                key={item.type}
+                                onClick={() => setDotType(item.type)}
+                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
+                                  dotType === item.type
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
+                                title={item.label}
                               >
-                                <ShapePreviewIcon dots={preset.dots} className="w-8 h-8" />
-                                <span className="text-[10px] text-[var(--foreground-muted)]">{preset.label}</span>
+                                <ShapePreviewIcon dots={item.type} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
                         </div>
 
-                        {/* Corner Frame (Ramka) */}
+                        {/* Corner Frame (Ramka narożnika) */}
                         <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</label>
-                          <div className="flex gap-2">
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Ramka narożnika</label>
+                            <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
                             {cornerSquareTypes.map((item) => (
                               <button
                                 key={item.type}
                                 onClick={() => setCornerSquareType(item.type)}
-                                className={`flex-1 py-2 px-3 rounded-lg border-2 text-xs font-medium transition-all ${
+                                className={`aspect-square rounded-lg border-2 p-3 transition-all flex items-center justify-center ${
                                   cornerSquareType === item.type
-                                    ? 'border-[var(--success)] bg-[var(--success)]/5 text-[var(--foreground)]'
-                                    : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)]'
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
+                                title={item.label}
                               >
-                                {item.label}
+                                <CornerSquarePreviewIcon type={item.type} className="w-8 h-8" />
                               </button>
                             ))}
                           </div>
                         </div>
 
-                        {/* Corner Dot (Środek) */}
+                        {/* Corner Dot (Środek narożnika) */}
                         <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</label>
-                          <div className="flex gap-2">
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Środek narożnika</label>
+                            <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
                             {cornerDotTypes.map((item) => (
                               <button
                                 key={item.type}
                                 onClick={() => setCornerDotType(item.type)}
-                                className={`flex-1 py-2 px-3 rounded-lg border-2 text-xs font-medium transition-all ${
+                                className={`aspect-square rounded-lg border-2 p-3 transition-all flex items-center justify-center ${
                                   cornerDotType === item.type
-                                    ? 'border-[var(--success)] bg-[var(--success)]/5 text-[var(--foreground)]'
-                                    : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)]'
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
+                                title={item.label}
                               >
-                                {item.label}
+                                <CornerDotPreviewIcon type={item.type} className="w-8 h-8" />
                               </button>
                             ))}
                           </div>
@@ -725,4 +745,21 @@ function ShapePreviewIcon({ dots, className }: { dots: DotType; className?: stri
     'classy-rounded': <><rect x="2" y="2" width="6" height="6" rx="2" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="2" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="2" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="2" fill="currentColor"/></>,
   }
   return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[dots] || shapes.square}</svg>
+}
+
+function CornerSquarePreviewIcon({ type, className }: { type: CornerSquareType; className?: string }) {
+  const shapes: Record<string, React.ReactNode> = {
+    square: <rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="3" fill="none"/>,
+    'extra-rounded': <rect x="2" y="2" width="14" height="14" rx="4" stroke="currentColor" strokeWidth="3" fill="none"/>,
+    dot: <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="3" fill="none"/>,
+  }
+  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[type] || shapes.square}</svg>
+}
+
+function CornerDotPreviewIcon({ type, className }: { type: CornerDotType; className?: string }) {
+  const shapes: Record<string, React.ReactNode> = {
+    square: <rect x="4" y="4" width="10" height="10" fill="currentColor"/>,
+    dot: <circle cx="9" cy="9" r="5" fill="currentColor"/>,
+  }
+  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[type] || shapes.square}</svg>
 }
