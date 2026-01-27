@@ -2,16 +2,16 @@ import Link from 'next/link'
 
 const navigation = {
   product: [
-    { name: 'Features', href: '/features' },
-    { name: 'Pricing', href: '/pricing' },
+    { name: 'Funkcje', href: '/features' },
+    { name: 'Cennik', href: '/pricing' },
   ],
   support: [
-    { name: 'Documentation', href: '#' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Dokumentacja', href: '#' },
+    { name: 'Kontakt', href: '/contact' },
   ],
   legal: [
-    { name: 'Privacy', href: '/privacy' },
-    { name: 'Terms', href: '/terms' },
+    { name: 'Prywatność', href: '/privacy' },
+    { name: 'Regulamin', href: '/terms' },
   ],
 }
 
@@ -25,11 +25,11 @@ export function Footer() {
               EngageQR
             </Link>
             <p className="mt-4 text-sm text-[var(--foreground-muted)]">
-              Dynamic QR codes with powerful analytics for modern marketing.
+              Dynamiczne kody QR z zaawansowaną analityką dla nowoczesnego marketingu.
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Product</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">Produkt</h3>
             <ul className="mt-4 space-y-2">
               {navigation.product.map((item) => (
                 <li key={item.name}>
@@ -44,7 +44,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Support</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">Wsparcie</h3>
             <ul className="mt-4 space-y-2">
               {navigation.support.map((item) => (
                 <li key={item.name}>
@@ -59,7 +59,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Legal</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">Prawne</h3>
             <ul className="mt-4 space-y-2">
               {navigation.legal.map((item) => (
                 <li key={item.name}>
@@ -76,7 +76,7 @@ export function Footer() {
         </div>
         <div className="mt-12 border-t border-[var(--border)] pt-8">
           <p className="text-sm text-[var(--foreground-subtle)] text-center">
-            &copy; {new Date().getFullYear()} EngageQR. All rights reserved.
+            &copy; {new Date().getFullYear()} EngageQR. Wszelkie prawa zastrzeżone.
           </p>
         </div>
       </div>

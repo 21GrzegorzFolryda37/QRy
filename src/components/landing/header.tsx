@@ -15,13 +15,13 @@ export function Header() {
             href="/features"
             className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
           >
-            Features
+            Funkcje
           </Link>
           <Link
             href="/pricing"
             className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
           >
-            Pricing
+            Cennik
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end gap-x-4">
@@ -29,10 +29,10 @@ export function Header() {
             href="/login"
             className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
           >
-            Log in
+            Zaloguj się
           </Link>
           <Link href="/register">
-            <Button variant="gradient">Get started</Button>
+            <Button variant="gradient">Rozpocznij</Button>
           </Link>
         </div>
       </nav>

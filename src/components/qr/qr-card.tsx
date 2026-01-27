@@ -40,7 +40,7 @@ export function QrCard({ qrCode }: QrCardProps) {
               />
             ) : (
               <div className="flex h-full items-center justify-center text-[var(--foreground-subtle)]">
-                No image
+                Brak obrazu
               </div>
             )}
           </div>
@@ -58,12 +58,12 @@ export function QrCard({ qrCode }: QrCardProps) {
                 </p>
               </div>
               <Badge variant={qrCode.is_active ? 'success' : 'outline'}>
-                {qrCode.is_active ? 'Active' : 'Inactive'}
+                {qrCode.is_active ? 'Aktywny' : 'Nieaktywny'}
               </Badge>
             </div>
 
             <div className="mt-2 flex items-center gap-4 text-sm text-[var(--foreground-muted)]">
-              <span className="text-[var(--primary)]">{qrCode.scan_count} scans</span>
+              <span className="text-[var(--primary)]">{qrCode.scan_count} skanów</span>
               <span className="text-[var(--border)]">|</span>
               <a
                 href={redirectUrl}
@@ -78,18 +78,18 @@ export function QrCard({ qrCode }: QrCardProps) {
             <div className="mt-auto pt-3 flex gap-2">
               <Link href={`/qr-codes/${qrCode.id}/edit`}>
                 <Button variant="outline" size="sm">
-                  Edit
+                  Edytuj
                 </Button>
               </Link>
               <Link href={`/qr-codes/${qrCode.id}`}>
                 <Button variant="outline" size="sm">
-                  Analytics
+                  Statystyki
                 </Button>
               </Link>
               {qrCode.qr_image_url && (
                 <a href={qrCode.qr_image_url} download={`${qrCode.name}.png`}>
                   <Button variant="outline" size="sm">
-                    Download
+                    Pobierz
                   </Button>
                 </a>
               )}
@@ -101,14 +101,14 @@ export function QrCard({ qrCode }: QrCardProps) {
                     onClick={handleDelete}
                     isLoading={isDeleting}
                   >
-                    Confirm
+                    Potwierdź
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowDeleteConfirm(false)}
                   >
-                    Cancel
+                    Anuluj
                   </Button>
                 </div>
               ) : (
@@ -118,7 +118,7 @@ export function QrCard({ qrCode }: QrCardProps) {
                   className="ml-auto text-[var(--error)] hover:text-[var(--error)] hover:bg-[var(--error)]/10"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
-                  Delete
+                  Usuń
                 </Button>
               )}
             </div>

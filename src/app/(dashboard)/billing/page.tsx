@@ -43,41 +43,41 @@ export default function BillingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
-        <p className="text-gray-500">Manage your subscription and billing</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Płatności</h1>
+        <p className="text-[var(--foreground-muted)]">Zarządzaj subskrypcją i płatnościami</p>
       </div>
 
       {success && (
-        <div className="rounded-md bg-green-50 p-4">
-          <p className="text-sm text-green-700">
-            Your subscription has been successfully updated!
+        <div className="rounded-lg bg-[var(--success)]/10 border border-[var(--success)]/30 p-4">
+          <p className="text-sm text-[var(--success)]">
+            Twoja subskrypcja została pomyślnie zaktualizowana!
           </p>
         </div>
       )}
 
       {canceled && (
-        <div className="rounded-md bg-yellow-50 p-4">
-          <p className="text-sm text-yellow-700">
-            Subscription checkout was canceled.
+        <div className="rounded-lg bg-[var(--warning)]/10 border border-[var(--warning)]/30 p-4">
+          <p className="text-sm text-[var(--warning)]">
+            Proces płatności został anulowany.
           </p>
         </div>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>Current Plan</CardTitle>
+          <CardTitle>Aktualny plan</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="flex items-center gap-2">
               <LoadingSpinner />
-              <span className="text-gray-500">Loading...</span>
+              <span className="text-[var(--foreground-muted)]">Ładowanie...</span>
             </div>
           ) : (
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-gray-900 capitalize">
+                  <span className="text-2xl font-bold text-[var(--foreground)] capitalize">
                     {PLANS[plan].name}
                   </span>
                   {subscriptionStatus && (
@@ -90,16 +90,18 @@ export default function BillingPage() {
                           : 'outline'
                       }
                     >
-                      {subscriptionStatus}
+                      {subscriptionStatus === 'active' ? 'Aktywna' :
+                       subscriptionStatus === 'past_due' ? 'Zaległa płatność' :
+                       subscriptionStatus}
                     </Badge>
                   )}
                 </div>
-                <p className="text-gray-500 mt-1">
-                  {PLANS[plan].qrLimit === -1 ? 'Unlimited' : PLANS[plan].qrLimit} QR codes |{' '}
+                <p className="text-[var(--foreground-muted)] mt-1">
+                  {PLANS[plan].qrLimit === -1 ? 'Bez limitu' : PLANS[plan].qrLimit} kodów QR |{' '}
                   {PLANS[plan].scanLimit === -1
-                    ? 'Unlimited'
+                    ? 'Bez limitu'
                     : PLANS[plan].scanLimit.toLocaleString()}{' '}
-                  scans/month
+                  skanów/miesiąc
                 </p>
               </div>
               {plan !== 'free' && (
@@ -108,7 +110,7 @@ export default function BillingPage() {
                   onClick={handleManageSubscription}
                   isLoading={portalLoading}
                 >
-                  Manage Subscription
+                  Zarządzaj subskrypcją
                 </Button>
               )}
             </div>
@@ -117,7 +119,7 @@ export default function BillingPage() {
       </Card>
 
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Available Plans</h2>
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Dostępne plany</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <PricingCard planId="free" currentPlan={plan} />
           <PricingCard planId="starter" currentPlan={plan} />
@@ -132,7 +134,7 @@ export default function BillingPage() {
 function LoadingSpinner() {
   return (
     <svg
-      className="h-5 w-5 animate-spin text-gray-400"
+      className="h-5 w-5 animate-spin text-[var(--foreground-subtle)]"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

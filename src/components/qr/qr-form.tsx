@@ -41,10 +41,10 @@ function CollapsibleSection({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full"
       >
-        <CardHeader className="flex flex-row items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
+        <CardHeader className="flex flex-row items-center justify-between cursor-pointer hover:bg-[var(--background-elevated)] transition-colors">
           <CardTitle>{title}</CardTitle>
           <svg
-            className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-5 w-5 text-[var(--foreground-subtle)] transition-transform ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -206,7 +206,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                 required
               />
               {contentTypeInfo.hint && (
-                <p className="mt-1 text-xs text-gray-500">{contentTypeInfo.hint}</p>
+                <p className="mt-1 text-xs text-[var(--foreground-muted)]">{contentTypeInfo.hint}</p>
               )}
             </div>
           </CardContent>
@@ -239,7 +239,7 @@ export function QrForm({ qrCode }: QrFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
                 Kolor modulow
               </label>
               <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                   type="color"
                   value={style.foregroundColor}
                   onChange={(e) => setStyle({ ...style, foregroundColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                  className="h-10 w-14 rounded border border-[var(--border)] cursor-pointer"
                 />
                 <Input
                   value={style.foregroundColor}
@@ -257,7 +257,7 @@ export function QrForm({ qrCode }: QrFormProps) {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
                 Kolor tla
               </label>
               <div className="flex items-center gap-2">
@@ -265,7 +265,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                   type="color"
                   value={style.backgroundColor}
                   onChange={(e) => setStyle({ ...style, backgroundColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                  className="h-10 w-14 rounded border border-[var(--border)] cursor-pointer"
                 />
                 <Input
                   value={style.backgroundColor}
@@ -301,7 +301,7 @@ export function QrForm({ qrCode }: QrFormProps) {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
               Kolor zewnetrzny (opcjonalnie)
             </label>
             <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                     cornersSquareColor: e.target.checked ? style.foregroundColor : null,
                   })
                 }
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-[var(--border)]"
               />
               {style.cornersSquareColor !== null && (
                 <>
@@ -322,7 +322,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                     type="color"
                     value={style.cornersSquareColor}
                     onChange={(e) => setStyle({ ...style, cornersSquareColor: e.target.value })}
-                    className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                    className="h-10 w-14 rounded border border-[var(--border)] cursor-pointer"
                   />
                   <Input
                     value={style.cornersSquareColor}
@@ -332,7 +332,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                 </>
               )}
               {style.cornersSquareColor === null && (
-                <span className="text-sm text-gray-500">Uzywa koloru modulow</span>
+                <span className="text-sm text-[var(--foreground-muted)]">Uzywa koloru modulow</span>
               )}
             </div>
           </div>
@@ -344,7 +344,7 @@ export function QrForm({ qrCode }: QrFormProps) {
             baseColor={style.cornersSquareColor || style.foregroundColor}
           />
 
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-[var(--border)] pt-4">
             <ShapeSelector<CornersDotType>
               value={style.cornersDotType}
               onChange={(value) => setStyle({ ...style, cornersDotType: value })}
@@ -354,7 +354,7 @@ export function QrForm({ qrCode }: QrFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
               Kolor wewnetrzny (opcjonalnie)
             </label>
             <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                     cornersDotColor: e.target.checked ? style.foregroundColor : null,
                   })
                 }
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-[var(--border)]"
               />
               {style.cornersDotColor !== null && (
                 <>
@@ -375,7 +375,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                     type="color"
                     value={style.cornersDotColor}
                     onChange={(e) => setStyle({ ...style, cornersDotColor: e.target.value })}
-                    className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                    className="h-10 w-14 rounded border border-[var(--border)] cursor-pointer"
                   />
                   <Input
                     value={style.cornersDotColor}
@@ -385,7 +385,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                 </>
               )}
               {style.cornersDotColor === null && (
-                <span className="text-sm text-gray-500">Uzywa koloru modulow</span>
+                <span className="text-sm text-[var(--foreground-muted)]">Uzywa koloru modulow</span>
               )}
             </div>
           </div>
@@ -401,7 +401,7 @@ export function QrForm({ qrCode }: QrFormProps) {
         {/* Ustawienia zaawansowane */}
         <CollapsibleSection title="Ustawienia zaawansowane">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
               Poziom korekcji bledow
             </label>
             <select
@@ -412,21 +412,21 @@ export function QrForm({ qrCode }: QrFormProps) {
                   errorCorrectionLevel: e.target.value as 'L' | 'M' | 'Q' | 'H',
                 })
               }
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-1"
+              className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--background-surface)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             >
               <option value="L">Niski (7%)</option>
               <option value="M">Sredni (15%)</option>
               <option value="Q">Wysoki (25%)</option>
               <option value="H">Maksymalny (30%)</option>
             </select>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-[var(--foreground-muted)]">
               Wyzszy poziom pozwala na wieksze uszkodzenia, ale kod jest gestszy. Uzyj H jesli dodajesz logo.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
                 Margines: {style.margin}
               </label>
               <input
@@ -435,11 +435,11 @@ export function QrForm({ qrCode }: QrFormProps) {
                 max="10"
                 value={style.margin}
                 onChange={(e) => setStyle({ ...style, margin: Number(e.target.value) })}
-                className="w-full accent-gray-900"
+                className="w-full accent-[var(--primary)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
                 Rozmiar: {style.width}px
               </label>
               <input
@@ -449,7 +449,7 @@ export function QrForm({ qrCode }: QrFormProps) {
                 step="50"
                 value={style.width}
                 onChange={(e) => setStyle({ ...style, width: Number(e.target.value) })}
-                className="w-full accent-gray-900"
+                className="w-full accent-[var(--primary)]"
               />
             </div>
           </div>
@@ -464,7 +464,7 @@ export function QrForm({ qrCode }: QrFormProps) {
           />
           {logoUrl && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
                 Rozmiar logo: {logoSize}px
               </label>
               <input
@@ -473,15 +473,15 @@ export function QrForm({ qrCode }: QrFormProps) {
                 max="100"
                 value={logoSize}
                 onChange={(e) => setLogoSize(Number(e.target.value))}
-                className="w-full accent-gray-900"
+                className="w-full accent-[var(--primary)]"
               />
             </div>
           )}
         </CollapsibleSection>
 
         {error && (
-          <div className="rounded-md bg-red-50 p-3">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="rounded-md bg-[var(--error)]/10 p-3">
+            <p className="text-sm text-[var(--error)]">{error}</p>
           </div>
         )}
 
@@ -508,7 +508,7 @@ export function QrForm({ qrCode }: QrFormProps) {
               logoUrl={logoUrl || undefined}
               logoSize={logoSize}
             />
-            <p className="mt-4 text-sm text-gray-500 text-center">
+            <p className="mt-4 text-sm text-[var(--foreground-muted)] text-center">
               {isEditing
                 ? 'Zmiany beda widoczne po zapisaniu.'
                 : 'To jest podglad. Kod QR zostanie wygenerowany po zapisaniu.'}

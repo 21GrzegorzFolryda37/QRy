@@ -12,24 +12,24 @@ export function Hero() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl animate-fade-in-up">
-            <span className="text-[var(--foreground)]">Dynamic QR Codes with</span>
+            <span className="text-[var(--foreground)]">Dynamiczne kody QR z</span>
             <br />
-            <span className="gradient-text">Powerful Analytics</span>
+            <span className="gradient-text">zaawansowaną analityką</span>
           </h1>
           <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)] animate-fade-in-up animate-delay-100">
-            Create branded, trackable QR codes that help you understand your audience.
-            Update destinations anytime without reprinting. Get real-time insights on
-            scans, locations, and devices.
+            Twórz markowe, śledzalne kody QR, które pomogą Ci zrozumieć Twoją publiczność.
+            Aktualizuj adresy docelowe w dowolnym momencie bez ponownego drukowania.
+            Otrzymuj statystyki skanów, lokalizacji i urządzeń w czasie rzeczywistym.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6 animate-fade-in-up animate-delay-200">
             <Link href="/register">
-              <Button variant="gradient" size="lg">Get Started Free</Button>
+              <Button variant="gradient" size="lg">Zacznij za darmo</Button>
             </Link>
             <Link
               href="/features"
               className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--primary)] transition-colors group"
             >
-              Learn more <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
+              Dowiedz się więcej <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
             </Link>
           </div>
         </div>
@@ -42,14 +42,14 @@ export function Hero() {
                   <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-primary">
                     <QrCodeIcon className="w-24 h-24 text-[var(--primary)]" />
                   </div>
-                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Your branded QR code</p>
+                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Twój markowy kod QR</p>
                 </div>
                 <ArrowIcon className="w-8 h-8 text-[var(--secondary)] animate-pulse" />
                 <div className="text-center animate-float animate-delay-200">
                   <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-secondary">
                     <ChartIcon className="w-24 h-24 text-[var(--secondary)]" />
                   </div>
-                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Real-time analytics</p>
+                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Analityka w czasie rzeczywistym</p>
                 </div>
               </div>
             </div>

@@ -17,8 +17,8 @@ export default async function EditQrCodePage({ params }: EditQrCodePageProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Edit QR Code</h1>
-        <p className="text-gray-500">Update your QR code settings and styling</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Edytuj kod QR</h1>
+        <p className="text-[var(--foreground-muted)]">Zaktualizuj ustawienia i styl kodu QR</p>
       </div>
 
       <QrForm qrCode={qrCode} />

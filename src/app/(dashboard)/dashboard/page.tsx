@@ -27,49 +27,49 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Dashboard</h1>
-          <p className="text-[var(--foreground-muted)]">Welcome back! Here&apos;s an overview of your QR codes.</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Panel główny</h1>
+          <p className="text-[var(--foreground-muted)]">Witaj ponownie! Oto przegląd Twoich kodów QR.</p>
         </div>
         <Link href="/qr-codes/new">
-          <Button variant="gradient">Create QR Code</Button>
+          <Button variant="gradient">Utwórz kod QR</Button>
         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total QR Codes"
+          title="Wszystkie kody QR"
           value={stats?.totalQrCodes || 0}
-          subtitle={`${stats?.qrLimit === -1 ? 'Unlimited' : `Limit: ${stats?.qrLimit}`}`}
+          subtitle={`${stats?.qrLimit === -1 ? 'Bez limitu' : `Limit: ${stats?.qrLimit}`}`}
         />
         <StatsCard
-          title="Total Scans"
+          title="Wszystkie skany"
           value={stats?.totalScans || 0}
-          subtitle="All time"
+          subtitle="Od początku"
         />
         <StatsCard
-          title="Scans This Month"
+          title="Skany w tym miesiącu"
           value={stats?.scansThisMonth || 0}
-          subtitle={`${stats?.scanLimit === -1 ? 'Unlimited' : `Limit: ${stats?.scanLimit}/mo`}`}
+          subtitle={`${stats?.scanLimit === -1 ? 'Bez limitu' : `Limit: ${stats?.scanLimit}/mies.`}`}
         />
         <StatsCard
-          title="Usage"
+          title="Wykorzystanie"
           value={
             stats?.scanLimit === -1
               ? 0
               : Math.round(((stats?.currentMonthScans || 0) / (stats?.scanLimit || 1)) * 100)
           }
-          subtitle={stats?.scanLimit === -1 ? 'Unlimited' : `${stats?.currentMonthScans || 0} of ${stats?.scanLimit}`}
+          subtitle={stats?.scanLimit === -1 ? 'Bez limitu' : `${stats?.currentMonthScans || 0} z ${stats?.scanLimit}`}
         />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing QR Codes</CardTitle>
+            <CardTitle>Najlepsze kody QR</CardTitle>
           </CardHeader>
           <CardContent>
             {topQrCodes.length === 0 ? (
-              <p className="text-[var(--foreground-muted)] text-sm">No scans recorded yet.</p>
+              <p className="text-[var(--foreground-muted)] text-sm">Brak zarejestrowanych skanów.</p>
             ) : (
               <div className="space-y-4">
                 {topQrCodes.map((qr, index) => (
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     <span className="text-sm font-semibold text-[var(--primary)]">
-                      {qr.scanCount} scans
+                      {qr.scanCount} skanów
                     </span>
                   </div>
                 ))}
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>Szybkie akcje</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Link href="/qr-codes/new" className="block">
@@ -109,8 +109,8 @@ export default async function DashboardPage() {
                   <PlusIcon className="h-5 w-5 text-[var(--primary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-[var(--foreground)]">Create QR Code</p>
-                  <p className="text-sm text-[var(--foreground-muted)]">Generate a new dynamic QR code</p>
+                  <p className="font-medium text-[var(--foreground)]">Utwórz kod QR</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">Wygeneruj nowy dynamiczny kod QR</p>
                 </div>
               </div>
             </Link>
@@ -120,8 +120,8 @@ export default async function DashboardPage() {
                   <ChartIcon className="h-5 w-5 text-[var(--secondary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-[var(--foreground)]">View Analytics</p>
-                  <p className="text-sm text-[var(--foreground-muted)]">See detailed scan statistics</p>
+                  <p className="font-medium text-[var(--foreground)]">Zobacz analitykę</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">Szczegółowe statystyki skanów</p>
                 </div>
               </div>
             </Link>
@@ -131,8 +131,8 @@ export default async function DashboardPage() {
                   <UpgradeIcon className="h-5 w-5 text-[var(--primary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-[var(--foreground)]">Upgrade Plan</p>
-                  <p className="text-sm text-[var(--foreground-muted)]">Get more QR codes and scans</p>
+                  <p className="font-medium text-[var(--foreground)]">Ulepsz plan</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">Więcej kodów QR i skanów</p>
                 </div>
               </div>
             </Link>

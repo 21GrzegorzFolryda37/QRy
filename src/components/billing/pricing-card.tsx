@@ -39,45 +39,45 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{plan.name}</CardTitle>
-          {isCurrentPlan && <Badge variant="primary">Current Plan</Badge>}
+          {isCurrentPlan && <Badge variant="primary">Aktualny plan</Badge>}
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
           <span className="text-4xl font-bold text-[var(--foreground)]">{plan.price} PLN</span>
-          {plan.price > 0 && <span className="text-[var(--foreground-muted)]">/month</span>}
+          {plan.price > 0 && <span className="text-[var(--foreground-muted)]">/miesiąc</span>}
         </div>
 
         <ul className="space-y-3">
           <li className="flex items-center gap-2 text-sm">
             <CheckIcon className="h-4 w-4 text-[var(--success)]" />
             <span className="text-[var(--foreground-muted)]">
-              {plan.qrLimit === -1 ? 'Unlimited' : plan.qrLimit} QR codes
+              {plan.qrLimit === -1 ? 'Bez limitu' : plan.qrLimit} kodów QR
             </span>
           </li>
           <li className="flex items-center gap-2 text-sm">
             <CheckIcon className="h-4 w-4 text-[var(--success)]" />
             <span className="text-[var(--foreground-muted)]">
-              {plan.scanLimit === -1 ? 'Unlimited' : plan.scanLimit.toLocaleString()} scans/month
+              {plan.scanLimit === -1 ? 'Bez limitu' : plan.scanLimit.toLocaleString()} skanów/miesiąc
             </span>
           </li>
           <li className="flex items-center gap-2 text-sm">
             <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-            <span className="text-[var(--foreground-muted)]">Custom QR styling</span>
+            <span className="text-[var(--foreground-muted)]">Własny styl QR</span>
           </li>
           <li className="flex items-center gap-2 text-sm">
             <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-            <span className="text-[var(--foreground-muted)]">Analytics dashboard</span>
+            <span className="text-[var(--foreground-muted)]">Panel analityczny</span>
           </li>
           {planId !== 'free' && (
             <>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-                <span className="text-[var(--foreground-muted)]">Logo overlay</span>
+                <span className="text-[var(--foreground-muted)]">Logo na kodzie QR</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-                <span className="text-[var(--foreground-muted)]">Priority support</span>
+                <span className="text-[var(--foreground-muted)]">Priorytetowe wsparcie</span>
               </li>
             </>
           )}
@@ -85,11 +85,11 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
             <>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-                <span className="text-[var(--foreground-muted)]">API access</span>
+                <span className="text-[var(--foreground-muted)]">Dostęp do API</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-[var(--success)]" />
-                <span className="text-[var(--foreground-muted)]">Dedicated account manager</span>
+                <span className="text-[var(--foreground-muted)]">Dedykowany opiekun konta</span>
               </li>
             </>
           )}
@@ -97,19 +97,19 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
 
         {isCurrentPlan ? (
           <Button variant="outline" className="w-full" disabled>
-            Current Plan
+            Aktualny plan
           </Button>
         ) : isFreePlan ? (
           <Button variant="outline" className="w-full" disabled>
-            Free Forever
+            Zawsze darmowy
           </Button>
         ) : canUpgrade ? (
           <Button variant="gradient" className="w-full" onClick={handleUpgrade} isLoading={isLoading}>
-            Upgrade to {plan.name}
+            Ulepsz do {plan.name}
           </Button>
         ) : (
           <Button variant="outline" className="w-full" disabled>
-            {getPlanRank(planId) < getPlanRank(currentPlan || 'free') ? 'Downgrade' : 'N/A'}
+            {getPlanRank(planId) < getPlanRank(currentPlan || 'free') ? 'Obniż plan' : 'Niedostępne'}
           </Button>
         )}
       </CardContent>

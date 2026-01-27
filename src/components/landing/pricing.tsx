@@ -7,25 +7,25 @@ const tiers = [
     id: 'free',
     name: PLANS.free.name,
     price: PLANS.free.price,
-    description: 'Perfect for getting started',
+    description: 'Idealny na początek',
     features: [
-      `${PLANS.free.qrLimit} QR codes`,
-      `${PLANS.free.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors',
-      'Basic analytics',
+      `${PLANS.free.qrLimit} kodów QR`,
+      `${PLANS.free.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory',
+      'Podstawowa analityka',
     ],
   },
   {
     id: 'starter',
     name: PLANS.starter.name,
     price: PLANS.starter.price,
-    description: 'Great for small businesses',
+    description: 'Świetny dla małych firm',
     features: [
-      `${PLANS.starter.qrLimit} QR codes`,
-      `${PLANS.starter.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors & logo',
-      'Full analytics',
-      'Priority support',
+      `${PLANS.starter.qrLimit} kodów QR`,
+      `${PLANS.starter.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory i logo',
+      'Pełna analityka',
+      'Priorytetowe wsparcie',
     ],
     featured: true,
   },
@@ -33,14 +33,14 @@ const tiers = [
     id: 'pro',
     name: PLANS.pro.name,
     price: PLANS.pro.price,
-    description: 'For growing teams',
+    description: 'Dla rozwijających się zespołów',
     features: [
-      `${PLANS.pro.qrLimit} QR codes`,
-      `${PLANS.pro.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors & logo',
-      'Full analytics',
-      'Priority support',
-      'API access',
+      `${PLANS.pro.qrLimit} kodów QR`,
+      `${PLANS.pro.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory i logo',
+      'Pełna analityka',
+      'Priorytetowe wsparcie',
+      'Dostęp do API',
     ],
   },
 ]
@@ -54,12 +54,12 @@ export function Pricing() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">Pricing</h2>
+          <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">Cennik</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Choose the right <span className="gradient-text">plan for you</span>
+            Wybierz odpowiedni <span className="gradient-text">plan dla siebie</span>
           </p>
           <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
-            Start free and scale as you grow. All plans include a 14-day trial.
+            Zacznij za darmo i skaluj w miarę rozwoju. Wszystkie plany zawierają 14-dniowy okres próbny.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export function Pricing() {
                   <CardTitle>{tier.name}</CardTitle>
                   {tier.featured && (
                     <span className="rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] px-3 py-1 text-xs font-semibold text-white">
-                      Popular
+                      Popularny
                     </span>
                   )}
                 </div>
@@ -86,7 +86,7 @@ export function Pricing() {
               <CardContent className="space-y-6">
                 <div>
                   <span className="text-4xl font-bold text-[var(--foreground)]">{tier.price} PLN</span>
-                  {tier.price > 0 && <span className="text-[var(--foreground-muted)]">/month</span>}
+                  {tier.price > 0 && <span className="text-[var(--foreground-muted)]">/miesiąc</span>}
                 </div>
 
                 <ul className="space-y-3">
@@ -103,7 +103,7 @@ export function Pricing() {
                     className="w-full"
                     variant={tier.featured ? 'gradient' : 'outline'}
                   >
-                    Get started
+                    Rozpocznij
                   </Button>
                 </Link>
               </CardContent>
@@ -113,9 +113,9 @@ export function Pricing() {
 
         <div className="mt-12 text-center">
           <p className="text-[var(--foreground-muted)]">
-            Need more?{' '}
+            Potrzebujesz więcej?{' '}
             <Link href="/pricing" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors">
-              View Enterprise pricing
+              Zobacz cennik Enterprise
             </Link>
           </p>
         </div>

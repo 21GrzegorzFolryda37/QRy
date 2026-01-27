@@ -20,7 +20,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         name="email"
         type="email"
         label="Email"
-        placeholder="you@example.com"
+        placeholder="twoj@email.com"
         required
         autoComplete="email"
       />
@@ -28,8 +28,8 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       <Input
         name="password"
         type="password"
-        label="Password"
-        placeholder="Enter your password"
+        label="Hasło"
+        placeholder="Wpisz hasło"
         required
         autoComplete="current-password"
       />
@@ -41,7 +41,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       )}
 
       <Button type="submit" variant="gradient" className="w-full" isLoading={isPending}>
-        Sign in
+        Zaloguj się
       </Button>
 
       <div className="text-center text-sm">
@@ -49,14 +49,14 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           href="/forgot-password"
           className="text-[var(--foreground-muted)] hover:text-[var(--primary)] transition-colors"
         >
-          Forgot your password?
+          Nie pamiętasz hasła?
         </Link>
       </div>
 
       <div className="text-center text-sm text-[var(--foreground-muted)]">
-        Don&apos;t have an account?{' '}
+        Nie masz jeszcze konta?{' '}
         <Link href="/register" className="text-[var(--primary)] font-medium hover:text-[var(--primary-hover)] transition-colors">
-          Sign up
+          Zarejestruj się
         </Link>
       </div>
     </form>

@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils'
 import { logout } from '@/actions/auth'
 
 const navigation = [
-  { name: 'Overview', href: '/dashboard', icon: HomeIcon },
-  { name: 'QR Codes', href: '/qr-codes', icon: QrCodeIcon },
-  { name: 'Analytics', href: '/analytics', icon: ChartIcon },
-  { name: 'Billing', href: '/billing', icon: CreditCardIcon },
-  { name: 'Settings', href: '/settings', icon: SettingsIcon },
+  { name: 'Przegląd', href: '/dashboard', icon: HomeIcon },
+  { name: 'Kody QR', href: '/qr-codes', icon: QrCodeIcon },
+  { name: 'Analityka', href: '/analytics', icon: ChartIcon },
+  { name: 'Płatności', href: '/billing', icon: CreditCardIcon },
+  { name: 'Ustawienia', href: '/settings', icon: SettingsIcon },
 ]
 
 export function Sidebar() {
@@ -56,7 +56,7 @@ export function Sidebar() {
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)] transition-all duration-200"
             >
               <LogoutIcon className="h-5 w-5 text-[var(--foreground-subtle)]" />
-              Sign out
+              Wyloguj się
             </button>
           </form>
         </div>

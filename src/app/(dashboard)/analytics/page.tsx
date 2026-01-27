@@ -52,30 +52,30 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-gray-500">Track your QR code performance</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Analityka</h1>
+          <p className="text-[var(--foreground-muted)]">Śledź wydajność swoich kodów QR</p>
         </div>
         <div className="flex items-center gap-4">
           {connectionStatus === 'connected' && (
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              Live
+              Na żywo
             </span>
           )}
           {connectionStatus === 'connecting' && (
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
               <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
-              Connecting...
+              Łączenie...
             </span>
           )}
           {connectionStatus === 'error' && (
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
               <span className="h-2 w-2 rounded-full bg-red-500" />
-              Error
+              Błąd
             </span>
           )}
           {connectionStatus === 'disconnected' && (
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
               <span className="h-2 w-2 rounded-full bg-gray-400" />
               Offline
             </span>
@@ -95,7 +95,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <Card className="border-green-200 bg-green-50/30">
+      <Card className="border-green-500/30 bg-green-500/5">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -109,30 +109,30 @@ export default function AnalyticsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total QR Codes"
+          title="Wszystkie kody QR"
           value={stats?.totalQrCodes || 0}
-          subtitle={`Limit: ${stats?.qrLimit === -1 ? 'Unlimited' : stats?.qrLimit}`}
+          subtitle={`Limit: ${stats?.qrLimit === -1 ? 'Bez limitu' : stats?.qrLimit}`}
         />
         <StatsCard
-          title="Total Scans"
+          title="Wszystkie skany"
           value={stats?.totalScans || 0}
-          subtitle="All time"
+          subtitle="Od początku"
         />
         <StatsCard
-          title="Scans This Month"
+          title="Skany w tym miesiącu"
           value={stats?.scansThisMonth || 0}
-          subtitle={`Limit: ${stats?.scanLimit === -1 ? 'Unlimited' : stats?.scanLimit}`}
+          subtitle={`Limit: ${stats?.scanLimit === -1 ? 'Bez limitu' : stats?.scanLimit}`}
         />
         <StatsCard
-          title="Active QR Codes"
+          title="Aktywne kody QR"
           value={stats?.totalQrCodes || 0}
-          subtitle="With scans"
+          subtitle="Ze skanami"
         />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Scans Over Time</CardTitle>
+          <CardTitle>Skany w czasie</CardTitle>
         </CardHeader>
         <CardContent>
           {scansLoading ? (
@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Scan Locations</CardTitle>
+          <CardTitle>Lokalizacje skanów</CardTitle>
         </CardHeader>
         <CardContent>
           {locationsLoading ? (
@@ -162,7 +162,7 @@ export default function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Time Patterns</CardTitle>
+          <CardTitle>Wzorce czasowe</CardTitle>
         </CardHeader>
         <CardContent>
           {timePatternsLoading ? (
@@ -178,7 +178,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Devices</CardTitle>
+            <CardTitle>Urządzenia</CardTitle>
           </CardHeader>
           <CardContent>
             {devicesLoading ? (
@@ -193,7 +193,7 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Top Countries</CardTitle>
+            <CardTitle>Kraje</CardTitle>
           </CardHeader>
           <CardContent>
             {geoLoading ? (
@@ -210,7 +210,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Browsers</CardTitle>
+            <CardTitle>Przeglądarki</CardTitle>
           </CardHeader>
           <CardContent>
             {devicesLoading ? (
@@ -218,22 +218,22 @@ export default function AnalyticsPage() {
                 <LoadingSpinner />
               </div>
             ) : browsers.length === 0 ? (
-              <div className="flex h-[200px] items-center justify-center text-gray-500">
-                No browser data available
+              <div className="flex h-[200px] items-center justify-center text-[var(--foreground-muted)]">
+                Brak danych o przeglądarkach
               </div>
             ) : (
               <div className="space-y-3">
                 {browsers.slice(0, 5).map((browser) => (
                   <div key={browser.browser} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{browser.browser}</span>
+                    <span className="text-sm text-[var(--foreground-muted)]">{browser.browser}</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="w-32 h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gray-900 rounded-full"
+                          className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-full"
                           style={{ width: `${browser.percentage}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-500 w-12 text-right">
+                      <span className="text-sm text-[var(--foreground-subtle)] w-12 text-right">
                         {browser.percentage}%
                       </span>
                     </div>
@@ -246,7 +246,7 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Operating Systems</CardTitle>
+            <CardTitle>Systemy operacyjne</CardTitle>
           </CardHeader>
           <CardContent>
             {devicesLoading ? (
@@ -254,22 +254,22 @@ export default function AnalyticsPage() {
                 <LoadingSpinner />
               </div>
             ) : os.length === 0 ? (
-              <div className="flex h-[200px] items-center justify-center text-gray-500">
-                No OS data available
+              <div className="flex h-[200px] items-center justify-center text-[var(--foreground-muted)]">
+                Brak danych o systemach
               </div>
             ) : (
               <div className="space-y-3">
                 {os.slice(0, 5).map((item) => (
                   <div key={item.os} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{item.os}</span>
+                    <span className="text-sm text-[var(--foreground-muted)]">{item.os}</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="w-32 h-2 bg-[var(--background-elevated)] rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gray-900 rounded-full"
+                          className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-full"
                           style={{ width: `${item.percentage}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-500 w-12 text-right">
+                      <span className="text-sm text-[var(--foreground-subtle)] w-12 text-right">
                         {item.percentage}%
                       </span>
                     </div>
@@ -283,7 +283,7 @@ export default function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Top Performing QR Codes</CardTitle>
+          <CardTitle>Najlepsze kody QR</CardTitle>
         </CardHeader>
         <CardContent>
           {topLoading ? (
@@ -291,34 +291,34 @@ export default function AnalyticsPage() {
               <LoadingSpinner />
             </div>
           ) : topQrCodes.length === 0 ? (
-            <div className="flex h-[200px] items-center justify-center text-gray-500">
-              No QR code data available
+            <div className="flex h-[200px] items-center justify-center text-[var(--foreground-muted)]">
+              Brak danych o kodach QR
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="py-3 text-left text-sm font-medium text-gray-500">Rank</th>
-                    <th className="py-3 text-left text-sm font-medium text-gray-500">Name</th>
-                    <th className="py-3 text-left text-sm font-medium text-gray-500">Short Code</th>
-                    <th className="py-3 text-right text-sm font-medium text-gray-500">Scans</th>
+                  <tr className="border-b border-[var(--border)]">
+                    <th className="py-3 text-left text-sm font-medium text-[var(--foreground-muted)]">Pozycja</th>
+                    <th className="py-3 text-left text-sm font-medium text-[var(--foreground-muted)]">Nazwa</th>
+                    <th className="py-3 text-left text-sm font-medium text-[var(--foreground-muted)]">Krótki kod</th>
+                    <th className="py-3 text-right text-sm font-medium text-[var(--foreground-muted)]">Skany</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topQrCodes.map((qr, index) => (
-                    <tr key={qr.id} className="border-b border-gray-100">
-                      <td className="py-3 text-sm text-gray-500">#{index + 1}</td>
+                    <tr key={qr.id} className="border-b border-[var(--border)]/50">
+                      <td className="py-3 text-sm text-[var(--foreground-subtle)]">#{index + 1}</td>
                       <td className="py-3">
                         <Link
                           href={`/qr-codes/${qr.id}`}
-                          className="text-sm font-medium text-gray-900 hover:underline"
+                          className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--primary)] transition-colors"
                         >
                           {qr.name}
                         </Link>
                       </td>
-                      <td className="py-3 text-sm text-gray-500">{qr.shortCode}</td>
-                      <td className="py-3 text-sm text-gray-900 text-right font-medium">
+                      <td className="py-3 text-sm text-[var(--foreground-muted)]">{qr.shortCode}</td>
+                      <td className="py-3 text-sm text-[var(--primary)] text-right font-medium">
                         {qr.scanCount}
                       </td>
                     </tr>
@@ -336,7 +336,7 @@ export default function AnalyticsPage() {
 function LoadingSpinner() {
   return (
     <svg
-      className="h-6 w-6 animate-spin text-gray-400"
+      className="h-6 w-6 animate-spin text-[var(--foreground-subtle)]"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

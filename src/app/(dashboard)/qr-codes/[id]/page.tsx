@@ -31,12 +31,12 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{qrCode.name}</h1>
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">{qrCode.name}</h1>
             <Badge variant={qrCode.is_active ? 'success' : 'outline'}>
               {qrCode.is_active ? 'Aktywny' : 'Nieaktywny'}
             </Badge>
           </div>
-          <p className="text-gray-500 truncate max-w-md">{qrCode.destination_url}</p>
+          <p className="text-[var(--foreground-muted)] truncate max-w-md">{qrCode.destination_url}</p>
         </div>
         <div className="flex gap-2">
           <Link href={`/qr-codes/${qrCode.id}/edit`}>
@@ -44,7 +44,7 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
           </Link>
           {qrCode.qr_image_url && (
             <a href={qrCode.qr_image_url} download={`${qrCode.name}.png`}>
-              <Button>Pobierz</Button>
+              <Button variant="gradient">Pobierz</Button>
             </a>
           )}
         </div>
@@ -57,7 +57,7 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
         </CardHeader>
         <CardContent>
           <div className="flex gap-6">
-            <div className="relative h-48 w-48 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+            <div className="relative h-48 w-48 flex-shrink-0 bg-[var(--background-elevated)] rounded-lg overflow-hidden">
               {qrCode.qr_image_url ? (
                 <Image
                   src={`${qrCode.qr_image_url}?v=${new Date(qrCode.updated_at).getTime()}`}
@@ -67,62 +67,62 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-gray-400">
+                <div className="flex h-full items-center justify-center text-[var(--foreground-subtle)]">
                   Brak obrazu
                 </div>
               )}
             </div>
             <div className="space-y-4 flex-1">
               <div>
-                <p className="text-sm font-medium text-gray-500">Krótki URL</p>
+                <p className="text-sm font-medium text-[var(--foreground-muted)]">Krótki URL</p>
                 <a
                   href={redirectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-900 hover:underline"
+                  className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors"
                 >
                   {redirectUrl}
                 </a>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Docelowy URL</p>
+                <p className="text-sm font-medium text-[var(--foreground-muted)]">Docelowy URL</p>
                 <a
                   href={qrCode.destination_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-900 hover:underline break-all"
+                  className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors break-all"
                 >
                   {qrCode.destination_url}
                 </a>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Utworzono</p>
-                  <p className="text-gray-900">
+                  <p className="text-sm font-medium text-[var(--foreground-muted)]">Utworzono</p>
+                  <p className="text-[var(--foreground)]">
                     {new Date(qrCode.created_at).toLocaleDateString('pl-PL')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Ostatnia aktualizacja</p>
-                  <p className="text-gray-900">
+                  <p className="text-sm font-medium text-[var(--foreground-muted)]">Ostatnia aktualizacja</p>
+                  <p className="text-[var(--foreground)]">
                     {new Date(qrCode.updated_at).toLocaleDateString('pl-PL')}
                   </p>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Styl</p>
+                <p className="text-sm font-medium text-[var(--foreground-muted)]">Styl</p>
                 <div className="flex items-center gap-2 mt-1">
                   <div
-                    className="h-6 w-6 rounded border"
+                    className="h-6 w-6 rounded border border-[var(--border)]"
                     style={{ backgroundColor: qrCode.style.foregroundColor }}
                     title="Kolor główny"
                   />
                   <div
-                    className="h-6 w-6 rounded border"
+                    className="h-6 w-6 rounded border border-[var(--border)]"
                     style={{ backgroundColor: qrCode.style.backgroundColor }}
                     title="Kolor tła"
                   />
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-[var(--foreground-muted)]">
                     {qrCode.style.width}px, Korekcja: {qrCode.style.errorCorrectionLevel}
                   </span>
                 </div>

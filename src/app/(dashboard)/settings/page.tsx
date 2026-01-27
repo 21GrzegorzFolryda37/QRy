@@ -20,17 +20,17 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500">Manage your account settings</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Ustawienia</h1>
+        <p className="text-[var(--foreground-muted)]">Zarządzaj ustawieniami konta</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
+          <CardTitle>Informacje o profilu</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Input
-            label="Full Name"
+            label="Imię i nazwisko"
             defaultValue={profile?.full_name || ''}
             disabled
           />
@@ -39,36 +39,36 @@ export default async function SettingsPage() {
             defaultValue={profile?.email || ''}
             disabled
           />
-          <p className="text-sm text-gray-500">
-            Contact support to update your profile information.
+          <p className="text-sm text-[var(--foreground-muted)]">
+            Skontaktuj się z pomocą techniczną, aby zaktualizować dane profilu.
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Account Details</CardTitle>
+          <CardTitle>Szczegóły konta</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-sm font-medium text-gray-500">Account ID</p>
-              <p className="text-sm text-gray-900 font-mono">{user?.id}</p>
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">ID konta</p>
+              <p className="text-sm text-[var(--foreground)] font-mono">{user?.id}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Created</p>
-              <p className="text-sm text-gray-900">
-                {new Date(profile?.created_at || '').toLocaleDateString()}
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">Data utworzenia</p>
+              <p className="text-sm text-[var(--foreground)]">
+                {new Date(profile?.created_at || '').toLocaleDateString('pl-PL')}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Current Plan</p>
-              <p className="text-sm text-gray-900 capitalize">{profile?.plan || 'Free'}</p>
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">Aktualny plan</p>
+              <p className="text-sm text-[var(--foreground)] capitalize">{profile?.plan || 'Free'}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Subscription Status</p>
-              <p className="text-sm text-gray-900 capitalize">
-                {profile?.subscription_status || 'N/A'}
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">Status subskrypcji</p>
+              <p className="text-sm text-[var(--foreground)] capitalize">
+                {profile?.subscription_status || 'Brak'}
               </p>
             </div>
           </div>
@@ -77,24 +77,24 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Usage</CardTitle>
+          <CardTitle>Wykorzystanie</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-sm font-medium text-gray-500">QR Codes</p>
-              <p className="text-sm text-gray-900">
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">Kody QR</p>
+              <p className="text-sm text-[var(--foreground)]">
                 {profile?.qr_limit === -1
-                  ? 'Unlimited'
+                  ? 'Bez limitu'
                   : `Limit: ${profile?.qr_limit || 5}`}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Monthly Scans</p>
-              <p className="text-sm text-gray-900">
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">Skany miesięcznie</p>
+              <p className="text-sm text-[var(--foreground)]">
                 {profile?.current_month_scans || 0} /{' '}
                 {profile?.monthly_scan_limit === -1
-                  ? 'Unlimited'
+                  ? 'Bez limitu'
                   : profile?.monthly_scan_limit || 1000}
               </p>
             </div>
@@ -104,17 +104,17 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-red-600">Danger Zone</CardTitle>
+          <CardTitle className="text-[var(--error)]">Strefa niebezpieczna</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-500">
-            Once you delete your account, there is no going back. Please be certain.
+          <p className="text-sm text-[var(--foreground-muted)]">
+            Po usunięciu konta nie ma możliwości jego przywrócenia. Upewnij się, że na pewno chcesz to zrobić.
           </p>
           <Button variant="destructive" disabled>
-            Delete Account
+            Usuń konto
           </Button>
-          <p className="text-xs text-gray-500">
-            Account deletion is currently disabled. Contact support to delete your account.
+          <p className="text-xs text-[var(--foreground-subtle)]">
+            Usuwanie konta jest obecnie wyłączone. Skontaktuj się z pomocą techniczną, aby usunąć konto.
           </p>
         </CardContent>
       </Card>

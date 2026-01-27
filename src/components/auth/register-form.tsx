@@ -13,8 +13,8 @@ export function RegisterForm() {
       <Input
         name="fullName"
         type="text"
-        label="Full name"
-        placeholder="John Doe"
+        label="Imię i nazwisko"
+        placeholder="Jan Kowalski"
         required
         autoComplete="name"
       />
@@ -23,7 +23,7 @@ export function RegisterForm() {
         name="email"
         type="email"
         label="Email"
-        placeholder="you@example.com"
+        placeholder="twoj@email.com"
         required
         autoComplete="email"
       />
@@ -31,12 +31,12 @@ export function RegisterForm() {
       <Input
         name="password"
         type="password"
-        label="Password"
-        placeholder="Create a password"
+        label="Hasło"
+        placeholder="Utwórz hasło"
         required
         autoComplete="new-password"
       />
-      <p className="text-xs text-[var(--foreground-subtle)] -mt-2">Must be at least 8 characters</p>
+      <p className="text-xs text-[var(--foreground-subtle)] -mt-2">Minimum 8 znaków</p>
 
       {state?.error && (
         <div className="rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/30 p-3">
@@ -45,13 +45,13 @@ export function RegisterForm() {
       )}
 
       <Button type="submit" variant="gradient" className="w-full" isLoading={isPending}>
-        Create account
+        Utwórz konto
       </Button>
 
       <div className="text-center text-sm text-[var(--foreground-muted)]">
-        Already have an account?{' '}
+        Masz już konto?{' '}
         <Link href="/login" className="text-[var(--primary)] font-medium hover:text-[var(--primary-hover)] transition-colors">
-          Sign in
+          Zaloguj się
         </Link>
       </div>
     </form>

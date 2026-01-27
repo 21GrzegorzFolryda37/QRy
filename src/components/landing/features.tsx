@@ -2,30 +2,30 @@
 
 const features = [
   {
-    name: 'Dynamic QR Codes',
+    name: 'Dynamiczne kody QR',
     description:
-      'Update your QR code destination anytime without reprinting. Change URLs, track campaigns, and adapt to your needs.',
+      'Aktualizuj adres docelowy kodu QR w dowolnym momencie bez ponownego drukowania. Zmieniaj URL-e, śledź kampanie i dostosowuj się do potrzeb.',
     icon: QrCodeIcon,
     gradient: 'from-[var(--primary)] to-[var(--primary-hover)]',
   },
   {
-    name: 'Real-time Analytics',
+    name: 'Analityka w czasie rzeczywistym',
     description:
-      'Track scans in real-time. See who scanned your codes, when, where, and on what device.',
+      'Śledź skany w czasie rzeczywistym. Zobacz kto skanował Twoje kody, kiedy, gdzie i na jakim urządzeniu.',
     icon: ChartIcon,
     gradient: 'from-[var(--secondary)] to-[var(--secondary-hover)]',
   },
   {
-    name: 'Custom Branding',
+    name: 'Personalizacja marki',
     description:
-      'Customize colors, add your logo, and create QR codes that match your brand identity.',
+      'Dostosuj kolory, dodaj logo i twórz kody QR, które pasują do identyfikacji wizualnej Twojej marki.',
     icon: PaletteIcon,
     gradient: 'from-[var(--primary)] to-[var(--secondary)]',
   },
   {
-    name: 'Easy Management',
+    name: 'Łatwe zarządzanie',
     description:
-      'Manage all your QR codes from one dashboard. Create, edit, and organize with ease.',
+      'Zarządzaj wszystkimi kodami QR z jednego panelu. Twórz, edytuj i organizuj z łatwością.',
     icon: FolderIcon,
     gradient: 'from-[var(--secondary-hover)] to-[var(--primary)]',
   },
@@ -41,14 +41,14 @@ export function Features() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base font-semibold leading-7 text-[var(--primary)]">
-            Everything you need
+            Wszystko czego potrzebujesz
           </h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Powerful features for <span className="gradient-text">modern marketing</span>
+            Potężne funkcje dla <span className="gradient-text">nowoczesnego marketingu</span>
           </p>
           <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
-            Create QR codes that work harder for your business with features designed
-            for performance and insights.
+            Twórz kody QR, które pracują ciężej dla Twojego biznesu dzięki funkcjom
+            zaprojektowanym z myślą o wydajności i wglądzie w dane.
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
