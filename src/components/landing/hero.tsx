@@ -3,7 +3,7 @@ import { Button } from '@/components/ui'
 
 export function Hero() {
   return (
-    <section className="section-hero pt-32 pb-20 sm:pb-32">
+    <section className="pt-32 pb-20 sm:pb-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl animate-fade-in-up">
