@@ -53,12 +53,13 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header - responsive */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Analityka</h1>
           <p className="text-[var(--foreground-muted)]">Śledź wydajność swoich kodów QR</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           {connectionStatus === 'connected' && (
             <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />

@@ -74,20 +74,21 @@ export function ExportButtons({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       <Button
         variant="outline"
         size="sm"
         onClick={handleCSVExport}
         disabled={isExportingCSV}
+        className="px-2 sm:px-3"
       >
         {isExportingCSV ? (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <LoadingSpinner />
-            Exporting...
+            <span className="hidden sm:inline">Eksport...</span>
           </span>
         ) : (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <CSVIcon />
             CSV
           </span>
@@ -98,14 +99,15 @@ export function ExportButtons({
         size="sm"
         onClick={handlePDFExport}
         disabled={isExportingPDF}
+        className="px-2 sm:px-3"
       >
         {isExportingPDF ? (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <LoadingSpinner />
-            Generating...
+            <span className="hidden sm:inline">Generowanie...</span>
           </span>
         ) : (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <PDFIcon />
             PDF
           </span>
