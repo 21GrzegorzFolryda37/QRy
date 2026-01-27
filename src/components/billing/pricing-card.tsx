@@ -40,8 +40,6 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
   const canDowngradeToFree = !isCurrentPlan && isFreePlan && currentPlan !== 'free'
 
   async function handleUpgrade() {
-    if (!plan.priceId) return
-
     setIsLoading(true)
     const result = await createCheckoutSession(planId)
     setIsLoading(false)

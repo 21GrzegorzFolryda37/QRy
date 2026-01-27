@@ -1,3 +1,4 @@
+// Price IDs are loaded from env on server, but we need to know if plan is paid on client
 export const PLANS = {
   free: {
     name: 'Free',
@@ -5,6 +6,7 @@ export const PLANS = {
     qrLimit: 5,
     scanLimit: 1000,
     priceId: null as string | null,
+    isPaid: false,
   },
   starter: {
     name: 'Starter',
@@ -12,6 +14,7 @@ export const PLANS = {
     qrLimit: 25,
     scanLimit: 10000,
     priceId: process.env.STRIPE_STARTER_PRICE_ID || null,
+    isPaid: true,
   },
   pro: {
     name: 'Pro',
@@ -19,6 +22,7 @@ export const PLANS = {
     qrLimit: 100,
     scanLimit: 100000,
     priceId: process.env.STRIPE_PRO_PRICE_ID || null,
+    isPaid: true,
   },
   enterprise: {
     name: 'Enterprise',
@@ -26,6 +30,7 @@ export const PLANS = {
     qrLimit: -1, // Unlimited
     scanLimit: -1, // Unlimited
     priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
+    isPaid: true,
   },
 } as const
 
