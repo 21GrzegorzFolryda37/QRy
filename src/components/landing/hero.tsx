@@ -84,13 +84,19 @@ const cornerDotTypes: { type: CornerDotType; label: string }[] = [
   { type: 'dot', label: 'Okrągłe' },
 ]
 
-const dotTypes: { type: DotType; label: string }[] = [
-  { type: 'square', label: 'Kwadrat' },
-  { type: 'rounded', label: 'Zaokrąglone' },
-  { type: 'dots', label: 'Kropki' },
-  { type: 'extra-rounded', label: 'Okrągłe' },
-  { type: 'classy', label: 'Klasyczne' },
-  { type: 'classy-rounded', label: 'Eleganckie' },
+const dotShapes: { id: string; type: DotType; label: string }[] = [
+  { id: 'square', type: 'square', label: 'Kwadrat' },
+  { id: 'hollow-square', type: 'classy', label: 'Kwadrat z pustym środkiem' },
+  { id: 'rounded', type: 'rounded', label: 'Kwadrat z zaokrąglonymi rogami' },
+  { id: 'circle', type: 'dots', label: 'Koło' },
+  { id: 'rounded-circle', type: 'extra-rounded', label: 'Zaokrąglony z kołem w środku' },
+  { id: 'donut', type: 'dots', label: 'Koło z kołem w środku' },
+  { id: 'hollow-rounded', type: 'classy-rounded', label: 'Zaokrąglony z pustym środkiem' },
+  { id: 'vertical-pill', type: 'extra-rounded', label: 'Pionowy prostokąt' },
+  { id: 'rounded-diamond', type: 'rounded', label: 'Zaokrąglony z rombem' },
+  { id: 'pixel', type: 'square', label: 'Pikselowy wzór' },
+  { id: 'rounded-plus', type: 'classy-rounded', label: 'Zaokrąglony z plusem' },
+  { id: 'classy', type: 'classy', label: 'Klasyczne' },
 ]
 
 export function Hero() {
@@ -106,7 +112,8 @@ export function Hero() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
-  const [dotType, setDotType] = useState<DotType>('rounded')
+  const [dotShapeId, setDotShapeId] = useState('rounded')
+  const dotType = dotShapes.find(s => s.id === dotShapeId)?.type || 'rounded'
   const [cornerSquareType, setCornerSquareType] = useState<CornerSquareType>('extra-rounded')
   const [cornerDotType, setCornerDotType] = useState<CornerDotType>('dot')
   const [logo, setLogo] = useState<string | null>(null)
@@ -528,18 +535,18 @@ export function Hero() {
                         <div>
                           <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Kropki</label>
                           <div className="grid grid-cols-6 gap-2 mb-2">
-                            {dotTypes.map((item) => (
+                            {dotShapes.map((item) => (
                               <button
-                                key={item.type}
-                                onClick={() => setDotType(item.type)}
+                                key={item.id}
+                                onClick={() => setDotShapeId(item.id)}
                                 className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  dotType === item.type
+                                  dotShapeId === item.id
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
                                 title={item.label}
                               >
-                                <ShapePreviewIcon dots={item.type} className="w-6 h-6" />
+                                <ShapePreviewIcon shapeId={item.id} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
@@ -768,16 +775,34 @@ function StickerIcon({ icon, className }: { icon?: string; className?: string })
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">{icons[icon || '']}</svg>
 }
 
-function ShapePreviewIcon({ dots, className }: { dots: DotType; className?: string }) {
+function ShapePreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
   const shapes: Record<string, React.ReactNode> = {
+    // Kwadrat - podstawowy
     square: <><rect x="2" y="2" width="6" height="6" fill="currentColor"/><rect x="10" y="2" width="6" height="6" fill="currentColor"/><rect x="2" y="10" width="6" height="6" fill="currentColor"/><rect x="10" y="10" width="6" height="6" fill="currentColor"/></>,
-    dots: <><circle cx="5" cy="5" r="3" fill="currentColor"/><circle cx="13" cy="5" r="3" fill="currentColor"/><circle cx="5" cy="13" r="3" fill="currentColor"/><circle cx="13" cy="13" r="3" fill="currentColor"/></>,
+    // Kwadrat z pustym środkiem (ramka)
+    'hollow-square': <><rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="10" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="2" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="10" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.5" fill="none"/></>,
+    // Kwadrat z zaokrąglonymi rogami
     rounded: <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/></>,
-    'extra-rounded': <><rect x="2" y="2" width="6" height="6" rx="3" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="3" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="3" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="3" fill="currentColor"/></>,
+    // Koło
+    circle: <><circle cx="5" cy="5" r="3" fill="currentColor"/><circle cx="13" cy="5" r="3" fill="currentColor"/><circle cx="5" cy="13" r="3" fill="currentColor"/><circle cx="13" cy="13" r="3" fill="currentColor"/></>,
+    // Zaokrąglony kwadrat z kołem w środku
+    'rounded-circle': <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><circle cx="5" cy="5" r="1.5" fill="white"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><circle cx="13" cy="5" r="1.5" fill="white"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><circle cx="5" cy="13" r="1.5" fill="white"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><circle cx="13" cy="13" r="1.5" fill="white"/></>,
+    // Koło z mniejszym kołem w środku (donut)
+    donut: <><circle cx="5" cy="5" r="3" fill="currentColor"/><circle cx="5" cy="5" r="1.2" fill="white"/><circle cx="13" cy="5" r="3" fill="currentColor"/><circle cx="13" cy="5" r="1.2" fill="white"/><circle cx="5" cy="13" r="3" fill="currentColor"/><circle cx="5" cy="13" r="1.2" fill="white"/><circle cx="13" cy="13" r="3" fill="currentColor"/><circle cx="13" cy="13" r="1.2" fill="white"/></>,
+    // Kwadrat z zaokrąglonymi rogami i pustym środkiem
+    'hollow-rounded': <><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none"/></>,
+    // Pionowy prostokąt z zaokrąglonymi rogami (pill vertical)
+    'vertical-pill': <><rect x="3" y="1" width="4" height="7" rx="2" fill="currentColor"/><rect x="11" y="1" width="4" height="7" rx="2" fill="currentColor"/><rect x="3" y="10" width="4" height="7" rx="2" fill="currentColor"/><rect x="11" y="10" width="4" height="7" rx="2" fill="currentColor"/></>,
+    // Zaokrąglony kwadrat z rombem w środku
+    'rounded-diamond': <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="3.5" y="3.5" width="3" height="3" transform="rotate(45 5 5)" fill="white"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="11.5" y="3.5" width="3" height="3" transform="rotate(45 13 5)" fill="white"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="3.5" y="11.5" width="3" height="3" transform="rotate(45 5 13)" fill="white"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="11.5" y="11.5" width="3" height="3" transform="rotate(45 13 13)" fill="white"/></>,
+    // Kwadrat z pikselowym wzorem (3x3 grid)
+    pixel: <><rect x="2" y="2" width="2" height="2" fill="currentColor"/><rect x="4" y="4" width="2" height="2" fill="currentColor"/><rect x="6" y="2" width="2" height="2" fill="currentColor"/><rect x="2" y="6" width="2" height="2" fill="currentColor"/><rect x="6" y="6" width="2" height="2" fill="currentColor"/><rect x="10" y="2" width="2" height="2" fill="currentColor"/><rect x="14" y="2" width="2" height="2" fill="currentColor"/><rect x="12" y="4" width="2" height="2" fill="currentColor"/><rect x="10" y="6" width="2" height="2" fill="currentColor"/><rect x="14" y="6" width="2" height="2" fill="currentColor"/><rect x="2" y="10" width="2" height="2" fill="currentColor"/><rect x="6" y="10" width="2" height="2" fill="currentColor"/><rect x="4" y="12" width="2" height="2" fill="currentColor"/><rect x="2" y="14" width="2" height="2" fill="currentColor"/><rect x="6" y="14" width="2" height="2" fill="currentColor"/><rect x="10" y="10" width="2" height="2" fill="currentColor"/><rect x="14" y="10" width="2" height="2" fill="currentColor"/><rect x="12" y="12" width="2" height="2" fill="currentColor"/><rect x="10" y="14" width="2" height="2" fill="currentColor"/><rect x="14" y="14" width="2" height="2" fill="currentColor"/></>,
+    // Zaokrąglony kwadrat z plusem w środku
+    'rounded-plus': <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="4.5" y="3.5" width="1" height="3" fill="white"/><rect x="3.5" y="4.5" width="3" height="1" fill="white"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="12.5" y="3.5" width="1" height="3" fill="white"/><rect x="11.5" y="4.5" width="3" height="1" fill="white"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="4.5" y="11.5" width="1" height="3" fill="white"/><rect x="3.5" y="12.5" width="3" height="1" fill="white"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="12.5" y="11.5" width="1" height="3" fill="white"/><rect x="11.5" y="12.5" width="3" height="1" fill="white"/></>,
+    // Klasyczne
     classy: <><path d="M2 2h6v6H2z" fill="currentColor"/><path d="M10 2h6v6h-6z" fill="currentColor"/><path d="M2 10h6v6H2z" fill="currentColor"/><path d="M10 10h6v6h-6z" fill="currentColor"/></>,
-    'classy-rounded': <><rect x="2" y="2" width="6" height="6" rx="2" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="2" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="2" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="2" fill="currentColor"/></>,
   }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[dots] || shapes.square}</svg>
+  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
 }
 
 function CornerSquarePreviewIcon({ type, className }: { type: CornerSquareType; className?: string }) {
