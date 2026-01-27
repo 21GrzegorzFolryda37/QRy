@@ -13,7 +13,6 @@ import { generateQrDataUrl } from '@/lib/qr/options'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
-import { FrameShapeSelector } from './frame-shapes'
 import { LogoUploader } from './logo-uploader'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
 import { FrameSelector } from './frame-selector'
@@ -211,14 +210,6 @@ export function QrForm({ qrCode }: QrFormProps) {
             </div>
           </CardContent>
         </Card>
-
-        {/* Kształt kodu QR */}
-        <CollapsibleSection title="Ksztalt kodu QR" defaultOpen={true}>
-          <FrameShapeSelector
-            value={style.frameShape}
-            onChange={(value) => setStyle({ ...style, frameShape: value })}
-          />
-        </CollapsibleSection>
 
         {/* Ramka dekoracyjna */}
         <CollapsibleSection title="Ramka dekoracyjna" defaultOpen={false}>
