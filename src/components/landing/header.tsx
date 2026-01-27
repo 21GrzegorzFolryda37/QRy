@@ -1,11 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui'
+import { createClient } from '@/lib/supabase/client'
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    // Check initial auth state
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user)
+      setIsLoading(false)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-[var(--background)] border-b border-[var(--border)] shadow-sm">
@@ -54,15 +74,25 @@ export function Header() {
 
         {/* Desktop auth buttons */}
         <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-x-4">
-          <Link
-            href="/login"
-            className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
-          >
-            Zaloguj się
-          </Link>
-          <Link href="/register">
-            <Button variant="gradient">Rozpocznij</Button>
-          </Link>
+          {!isLoading && (
+            isLoggedIn ? (
+              <Link href="/dashboard">
+                <Button variant="gradient">Mój profil</Button>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+                >
+                  Zaloguj się
+                </Link>
+                <Link href="/register">
+                  <Button variant="gradient">Rozpocznij</Button>
+                </Link>
+              </>
+            )
+          )}
         </div>
       </nav>
 
@@ -112,16 +142,24 @@ export function Header() {
                   </Link>
                 </div>
                 <div className="py-6 space-y-3">
-                  <Link
-                    href="/login"
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-[var(--foreground)] hover:bg-[var(--background-surface)]"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Zaloguj się
-                  </Link>
-                  <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="gradient" className="w-full">Rozpocznij za darmo</Button>
-                  </Link>
+                  {isLoggedIn ? (
+                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="gradient" className="w-full">Mój profil</Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-[var(--foreground)] hover:bg-[var(--background-surface)]"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Zaloguj się
+                      </Link>
+                      <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                        <Button variant="gradient" className="w-full">Rozpocznij za darmo</Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
