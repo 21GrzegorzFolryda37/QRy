@@ -712,136 +712,184 @@ function QRFrameWrapper({
   dotColor: string
   children: React.ReactNode
 }) {
-  // Use a stable structure - children always rendered in the same place
-  // Frame decorations are added around without changing children's tree position
+  // Completely stable structure - children ALWAYS at the exact same DOM position
+  // Only CSS changes, never the structure
 
-  const getFrameClasses = () => {
-    switch (frameStyle) {
-      case 'none': return 'rounded-xl p-4 border border-[var(--border)]'
-      case 'simple': return 'p-3'
-      case 'rounded': return 'rounded-xl p-3'
-      case 'badge-top': return 'rounded-b-xl rounded-t-none p-4 border-2'
-      case 'badge-bottom': return 'rounded-t-xl rounded-b-none p-4 border-2'
-      case 'bubble': return 'rounded-2xl p-4 border-2'
-      case 'pointer': return 'rounded-xl p-4 border-2'
-      case 'ticket': return 'rounded-lg p-3'
-      case 'stamp': return 'rounded-lg p-2'
-      case 'ribbon': return 'rounded-xl p-4 border-2'
-      case 'chat': return 'rounded-2xl rounded-bl-none p-4 border-2'
-      case 'hexagon': return 'p-3'
-      default: return 'rounded-xl p-4 border border-[var(--border)]'
-    }
+  const isNone = frameStyle === 'none'
+  const hasColoredBorder = ['simple', 'rounded', 'ticket'].includes(frameStyle)
+  const showBottomText = ['simple', 'rounded', 'ticket', 'pointer', 'hexagon', 'bubble'].includes(frameStyle)
+
+  // Outer wrapper styles based on frame type
+  const getOuterStyle = (): React.CSSProperties => {
+    if (isNone) return {}
+    if (hasColoredBorder) return { backgroundColor: dotColor }
+    if (frameStyle === 'stamp') return { borderColor: dotColor }
+    return {}
   }
 
-  const getFrameStyle = (): React.CSSProperties => {
-    if (frameStyle === 'none') return {}
-    if (['simple', 'rounded', 'ticket'].includes(frameStyle)) return {}
+  const getOuterClasses = () => {
+    if (isNone) return 'shadow-lg'
+    if (frameStyle === 'simple') return 'p-1 shadow-lg'
+    if (frameStyle === 'rounded') return 'p-1 shadow-lg rounded-2xl'
+    if (frameStyle === 'ticket') return 'p-1 shadow-lg rounded-xl relative'
+    if (frameStyle === 'stamp') return 'p-3 shadow-lg rounded-full border-4 border-dashed'
+    return 'shadow-lg'
+  }
+
+  // Inner container (QR holder) styles
+  const getInnerClasses = () => {
+    const base = 'bg-white flex items-center justify-center'
+    if (isNone) return `${base} rounded-xl p-4 border border-[var(--border)]`
+    if (frameStyle === 'simple') return `${base} p-3`
+    if (frameStyle === 'rounded') return `${base} rounded-xl p-3`
+    if (frameStyle === 'badge-top') return `${base} rounded-b-xl rounded-t-none p-4 border-2`
+    if (frameStyle === 'badge-bottom') return `${base} rounded-t-xl rounded-b-none p-4 border-2`
+    if (frameStyle === 'bubble') return `${base} rounded-2xl p-4 border-2`
+    if (frameStyle === 'pointer') return `${base} rounded-xl p-4 border-2`
+    if (frameStyle === 'ticket') return `${base} rounded-lg p-3`
+    if (frameStyle === 'stamp') return `${base} rounded-lg p-2`
+    if (frameStyle === 'ribbon') return `${base} rounded-xl p-4 border-2`
+    if (frameStyle === 'chat') return `${base} rounded-2xl rounded-bl-none p-4 border-2`
+    if (frameStyle === 'hexagon') return `${base} p-3`
+    return `${base} rounded-xl p-4`
+  }
+
+  const getInnerStyle = (): React.CSSProperties => {
+    if (isNone || hasColoredBorder) return {}
     return { borderColor: dotColor }
   }
 
-  const showText = frameStyle !== 'none'
-  const hasOuterWrapper = ['simple', 'rounded', 'ticket', 'stamp'].includes(frameStyle)
-  const hasTopDecoration = ['badge-top', 'pointer', 'ribbon'].includes(frameStyle)
-  const hasBottomDecoration = ['badge-bottom', 'bubble', 'chat'].includes(frameStyle)
-
   return (
     <div className="relative">
-      {/* Top decorations */}
-      {hasTopDecoration && (
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-          {frameStyle === 'badge-top' && (
-            <div className="px-4 py-1.5 rounded-t-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-              {text}
-            </div>
-          )}
-          {frameStyle === 'pointer' && (
-            <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[12px] border-l-transparent border-r-transparent mb-1" style={{ borderBottomColor: dotColor }} />
-          )}
-          {frameStyle === 'ribbon' && (
-            <div className="relative">
-              <div className="px-6 py-1 text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-                {text}
-              </div>
-              <div className="absolute -left-2 bottom-0 w-0 h-0 border-t-[8px] border-r-[8px] border-t-transparent" style={{ borderRightColor: dotColor, filter: 'brightness(0.7)' }} />
-              <div className="absolute -right-2 bottom-0 w-0 h-0 border-t-[8px] border-l-[8px] border-t-transparent" style={{ borderLeftColor: dotColor, filter: 'brightness(0.7)' }} />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Main container with optional outer wrapper */}
+      {/* Badge top - always rendered, hidden when not needed */}
       <div
-        className={hasOuterWrapper ? `p-1 shadow-lg ${frameStyle === 'rounded' ? 'rounded-2xl' : frameStyle === 'ticket' ? 'rounded-xl' : frameStyle === 'stamp' ? 'rounded-full border-4 border-dashed p-3' : ''}` : 'shadow-lg'}
-        style={hasOuterWrapper && frameStyle !== 'stamp' ? { backgroundColor: dotColor } : frameStyle === 'stamp' ? { borderColor: dotColor } : {}}
+        className="absolute -top-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-t-lg text-[10px] font-bold tracking-wider text-white transition-opacity"
+        style={{
+          backgroundColor: dotColor,
+          opacity: frameStyle === 'badge-top' ? 1 : 0,
+          pointerEvents: frameStyle === 'badge-top' ? 'auto' : 'none'
+        }}
       >
-        {/* Ticket notches */}
-        {frameStyle === 'ticket' && (
-          <>
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
-          </>
-        )}
+        {text}
+      </div>
 
-        {/* QR Code container - always in the same place */}
+      {/* Pointer arrow - always rendered */}
+      <div
+        className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[12px] border-l-transparent border-r-transparent transition-opacity"
+        style={{
+          borderBottomColor: dotColor,
+          opacity: frameStyle === 'pointer' ? 1 : 0
+        }}
+      />
+
+      {/* Ribbon - always rendered */}
+      <div
+        className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 transition-opacity"
+        style={{ opacity: frameStyle === 'ribbon' ? 1 : 0, pointerEvents: frameStyle === 'ribbon' ? 'auto' : 'none' }}
+      >
+        <div className="relative">
+          <div className="px-6 py-1 text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+            {text}
+          </div>
+          <div className="absolute -left-2 bottom-0 w-0 h-0 border-t-[8px] border-r-[8px] border-t-transparent" style={{ borderRightColor: dotColor, filter: 'brightness(0.7)' }} />
+          <div className="absolute -right-2 bottom-0 w-0 h-0 border-t-[8px] border-l-[8px] border-t-transparent" style={{ borderLeftColor: dotColor, filter: 'brightness(0.7)' }} />
+        </div>
+      </div>
+
+      {/* Main outer wrapper - stable structure */}
+      <div className={getOuterClasses()} style={getOuterStyle()}>
+        {/* Ticket notches - always rendered but hidden */}
         <div
-          className={`bg-white flex items-center justify-center ${getFrameClasses()}`}
-          style={getFrameStyle()}
-        >
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)] transition-opacity"
+          style={{ opacity: frameStyle === 'ticket' ? 1 : 0 }}
+        />
+        <div
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)] transition-opacity"
+          style={{ opacity: frameStyle === 'ticket' ? 1 : 0 }}
+        />
+
+        {/* QR Code container - ALWAYS at this exact position */}
+        <div className={getInnerClasses()} style={getInnerStyle()}>
           {children}
         </div>
 
-        {/* Inner text for frames with outer wrapper */}
-        {hasOuterWrapper && frameStyle !== 'stamp' && (
-          <div className={`text-center py-1.5 text-[10px] font-bold tracking-wider text-white ${frameStyle === 'ticket' ? 'border-t border-dashed border-white/30' : ''}`}>
-            {text}
-          </div>
-        )}
+        {/* Bottom text for colored border frames */}
+        <div
+          className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white transition-all"
+          style={{
+            opacity: hasColoredBorder ? 1 : 0,
+            height: hasColoredBorder ? 'auto' : 0,
+            padding: hasColoredBorder ? undefined : 0,
+            overflow: 'hidden'
+          }}
+        >
+          {text}
+        </div>
       </div>
 
-      {/* Bottom decorations */}
-      {hasBottomDecoration && (
-        <>
-          {frameStyle === 'badge-bottom' && (
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-b-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-              {text}
-            </div>
-          )}
-          {frameStyle === 'bubble' && (
-            <>
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: dotColor }} />
-              </div>
-              <div className="text-center mt-4 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-                {text}
-              </div>
-            </>
-          )}
-          {frameStyle === 'chat' && (
-            <>
-              <div className="absolute -bottom-0 left-4">
-                <div className="w-0 h-0 border-t-[12px] border-r-[12px] border-r-transparent" style={{ borderTopColor: dotColor }} />
-              </div>
-              <div className="absolute -bottom-5 left-8 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-                {text}
-              </div>
-            </>
-          )}
-        </>
-      )}
+      {/* Badge bottom */}
+      <div
+        className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-b-lg text-[10px] font-bold tracking-wider text-white transition-opacity"
+        style={{
+          backgroundColor: dotColor,
+          opacity: frameStyle === 'badge-bottom' ? 1 : 0,
+          pointerEvents: frameStyle === 'badge-bottom' ? 'auto' : 'none'
+        }}
+      >
+        {text}
+      </div>
+
+      {/* Bubble arrow */}
+      <div
+        className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent transition-opacity"
+        style={{
+          borderTopColor: dotColor,
+          opacity: frameStyle === 'bubble' ? 1 : 0
+        }}
+      />
+
+      {/* Chat tail */}
+      <div
+        className="absolute -bottom-0 left-4 w-0 h-0 border-t-[12px] border-r-[12px] border-r-transparent transition-opacity"
+        style={{
+          borderTopColor: dotColor,
+          opacity: frameStyle === 'chat' ? 1 : 0
+        }}
+      />
+
+      {/* Chat text */}
+      <div
+        className="absolute -bottom-5 left-8 text-[10px] font-bold tracking-wider transition-opacity"
+        style={{
+          color: dotColor,
+          opacity: frameStyle === 'chat' ? 1 : 0
+        }}
+      >
+        {text}
+      </div>
 
       {/* Stamp text */}
-      {frameStyle === 'stamp' && (
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded text-[9px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-          {text}
-        </div>
-      )}
+      <div
+        className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded text-[9px] font-bold tracking-wider text-white transition-opacity"
+        style={{
+          backgroundColor: dotColor,
+          opacity: frameStyle === 'stamp' ? 1 : 0
+        }}
+      >
+        {text}
+      </div>
 
-      {/* Text for pointer and hexagon */}
-      {(frameStyle === 'pointer' || frameStyle === 'hexagon') && (
-        <div className="text-center mt-2 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-          {text}
-        </div>
-      )}
+      {/* Bottom text for pointer, hexagon, bubble */}
+      <div
+        className="text-center mt-2 text-[10px] font-bold tracking-wider transition-opacity"
+        style={{
+          color: dotColor,
+          opacity: ['pointer', 'hexagon', 'bubble'].includes(frameStyle) ? 1 : 0,
+          height: ['pointer', 'hexagon', 'bubble'].includes(frameStyle) ? 'auto' : 0
+        }}
+      >
+        {text}
+      </div>
     </div>
   )
 }
