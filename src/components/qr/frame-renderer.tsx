@@ -17,50 +17,49 @@ const TEXT_AREA_HEIGHT = 0.12 // 12% for text area
 export function FrameRenderer({ children, frame, size, className }: FrameRendererProps) {
   const gradientId = useId()
 
-  if (!frame || frame.style === 'none') {
-    return <div className={className}>{children}</div>
-  }
-
-  const padding = Math.round(size * FRAME_PADDING)
-  const textHeight = frame.showText ? Math.round(size * TEXT_AREA_HEIGHT) : 0
+  // Always calculate dimensions (use minimal padding for 'none' to keep children stable)
+  const hasFrame = frame && frame.style !== 'none'
+  const padding = hasFrame ? Math.round(size * FRAME_PADDING) : 0
+  const textHeight = hasFrame && frame.showText ? Math.round(size * TEXT_AREA_HEIGHT) : 0
   const totalWidth = size + padding * 2
   const totalHeight = size + padding * 2 + textHeight
 
-  const fillValue = frame.gradient ? `url(#${gradientId})` : frame.color
-  const frameStyle = getFrameStyle(frame.style, fillValue, frame.color, totalWidth, totalHeight, padding)
+  const fillValue = hasFrame && frame.gradient ? `url(#${gradientId})` : (frame?.color || '#000000')
+  const frameStyleResult = hasFrame ? getFrameStyle(frame.style, fillValue, frame.color, totalWidth, totalHeight, padding) : null
 
+  // Always render the same structure - children always at the same DOM position
   return (
-    <div className={className} style={{ width: totalWidth, height: totalHeight }}>
+    <div className={className} style={{ width: totalWidth, height: totalHeight, position: 'relative' }}>
+      {/* SVG frame - always rendered, just empty when no frame */}
       <svg
         width={totalWidth}
         height={totalHeight}
         viewBox={`0 0 ${totalWidth} ${totalHeight}`}
         className="absolute inset-0"
+        style={{ opacity: hasFrame ? 1 : 0, pointerEvents: hasFrame ? 'auto' : 'none' }}
       >
-        {/* Gradient definition */}
-        {frame.gradient && (
-          <defs>
-            {frame.gradient.type === 'linear' ? (
-              <linearGradient
-                id={gradientId}
-                gradientTransform={`rotate(${frame.gradient.rotation}, 0.5, 0.5)`}
-              >
-                {frame.gradient.colorStops.map((stop, i) => (
-                  <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
-                ))}
-              </linearGradient>
-            ) : (
-              <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
-                {frame.gradient.colorStops.map((stop, i) => (
-                  <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
-                ))}
-              </radialGradient>
-            )}
-          </defs>
-        )}
-        {frameStyle.background}
-        {frameStyle.decoration}
-        {frame.showText && frame.text && (
+        {/* Gradient definition - always rendered */}
+        <defs>
+          {frame?.gradient && frame.gradient.type === 'linear' ? (
+            <linearGradient
+              id={gradientId}
+              gradientTransform={`rotate(${frame.gradient.rotation}, 0.5, 0.5)`}
+            >
+              {frame.gradient.colorStops.map((stop, i) => (
+                <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
+              ))}
+            </linearGradient>
+          ) : frame?.gradient ? (
+            <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
+              {frame.gradient.colorStops.map((stop, i) => (
+                <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
+              ))}
+            </radialGradient>
+          ) : null}
+        </defs>
+        {frameStyleResult?.background}
+        {frameStyleResult?.decoration}
+        {hasFrame && frame.showText && frame.text && (
           <text
             x={totalWidth / 2}
             y={size + padding * 2 + textHeight / 2 + 4}
@@ -74,6 +73,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
           </text>
         )}
       </svg>
+      {/* Children container - ALWAYS at the same position in the DOM */}
       <div
         className="absolute"
         style={{

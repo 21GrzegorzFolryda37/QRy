@@ -75,66 +75,57 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
     }
   }, [QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, qrSize])
 
-  // QR code content (used in both cases)
-  const qrContent = frameShape === 'square' ? (
-    <div
-      ref={containerRef}
-      className="rounded-lg overflow-hidden bg-white"
-      style={{ width: qrSize, height: qrSize }}
-    />
-  ) : (
-    <div className="relative" style={{ width: qrSize, height: qrSize }}>
-      <svg
-        width={qrSize}
-        height={qrSize}
-        viewBox="0 0 100 100"
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 1 }}
-      >
-        <defs>
-          <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
-            <path d={frameShapePaths[frameShape]} />
-          </clipPath>
-        </defs>
-      </svg>
+  // Always use a stable structure - containerRef must stay in same DOM position
+  // Use FrameRenderer always (it handles 'none' case by just returning children)
+  const hasCustomShape = frameShape !== 'square'
 
-      <svg
-        width={qrSize}
-        height={qrSize}
-        viewBox="0 0 100 100"
-        className="absolute inset-0"
-        style={{ zIndex: 0 }}
-      >
-        <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
-      </svg>
-
-      <div
-        ref={containerRef}
-        className="absolute inset-0"
-        style={{
-          clipPath: `url(#${clipId})`,
-          WebkitClipPath: `url(#${clipId})`,
-          zIndex: 2,
-        }}
-      />
-    </div>
-  )
-
-  // Wrap with decorative frame if enabled
-  if (frame && frame.style !== 'none') {
-    return (
-      <div className="flex justify-center">
-        <FrameRenderer frame={frame} size={qrSize} className="relative">
-          {qrContent}
-        </FrameRenderer>
-      </div>
-    )
-  }
-
-  // No decorative frame
   return (
     <div className="flex justify-center">
-      {qrContent}
+      <FrameRenderer frame={frame} size={qrSize} className="relative">
+        {hasCustomShape ? (
+          <div className="relative" style={{ width: qrSize, height: qrSize }}>
+            <svg
+              width={qrSize}
+              height={qrSize}
+              viewBox="0 0 100 100"
+              className="absolute inset-0 pointer-events-none"
+              style={{ zIndex: 1 }}
+            >
+              <defs>
+                <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
+                  <path d={frameShapePaths[frameShape]} />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg
+              width={qrSize}
+              height={qrSize}
+              viewBox="0 0 100 100"
+              className="absolute inset-0"
+              style={{ zIndex: 0 }}
+            >
+              <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
+            </svg>
+
+            <div
+              ref={containerRef}
+              className="absolute inset-0"
+              style={{
+                clipPath: `url(#${clipId})`,
+                WebkitClipPath: `url(#${clipId})`,
+                zIndex: 2,
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            ref={containerRef}
+            className="rounded-lg overflow-hidden bg-white"
+            style={{ width: qrSize, height: qrSize }}
+          />
+        )}
+      </FrameRenderer>
     </div>
   )
 }
