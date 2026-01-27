@@ -73,15 +73,34 @@ const shapePresets: { dots: DotType; cornerSquare: CornerSquareType; cornerDot: 
   { dots: 'extra-rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Okrągłe' },
 ]
 
-const cornerSquareTypes: { type: CornerSquareType; label: string }[] = [
-  { type: 'square', label: 'Kwadrat' },
-  { type: 'extra-rounded', label: 'Zaokrąglone' },
-  { type: 'dot', label: 'Okrągłe' },
+const cornerSquareShapes: { id: string; type: CornerSquareType; label: string }[] = [
+  { id: 'square', type: 'square', label: 'Kwadrat' },
+  { id: 'rounded', type: 'extra-rounded', label: 'Zaokrąglone' },
+  { id: 'circle', type: 'dot', label: 'Koło' },
+  { id: 'rounded-sm', type: 'extra-rounded', label: 'Lekko zaokrąglone' },
+  { id: 'classy', type: 'square', label: 'Klasyczne' },
+  { id: 'dotted', type: 'dot', label: 'Kropkowane' },
+  { id: 'double', type: 'square', label: 'Podwójna ramka' },
+  { id: 'rounded-out', type: 'extra-rounded', label: 'Zaokrąglone na zewnątrz' },
+  { id: 'leaf', type: 'extra-rounded', label: 'Liść' },
+  { id: 'diamond', type: 'square', label: 'Romb' },
+  { id: 'shield', type: 'extra-rounded', label: 'Tarcza' },
+  { id: 'star', type: 'square', label: 'Gwiazda' },
 ]
 
-const cornerDotTypes: { type: CornerDotType; label: string }[] = [
-  { type: 'square', label: 'Kwadrat' },
-  { type: 'dot', label: 'Okrągłe' },
+const cornerDotShapes: { id: string; type: CornerDotType; label: string }[] = [
+  { id: 'square', type: 'square', label: 'Kwadrat' },
+  { id: 'circle', type: 'dot', label: 'Koło' },
+  { id: 'rounded', type: 'dot', label: 'Zaokrąglone' },
+  { id: 'diamond', type: 'square', label: 'Romb' },
+  { id: 'star', type: 'square', label: 'Gwiazda' },
+  { id: 'heart', type: 'dot', label: 'Serce' },
+  { id: 'plus', type: 'square', label: 'Plus' },
+  { id: 'cross', type: 'square', label: 'Krzyżyk' },
+  { id: 'triangle', type: 'square', label: 'Trójkąt' },
+  { id: 'hexagon', type: 'dot', label: 'Sześciokąt' },
+  { id: 'flower', type: 'dot', label: 'Kwiatek' },
+  { id: 'clover', type: 'dot', label: 'Koniczyna' },
 ]
 
 const dotShapes: { id: string; type: DotType; label: string }[] = [
@@ -114,8 +133,10 @@ export function Hero() {
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
   const [dotShapeId, setDotShapeId] = useState('rounded')
   const dotType = dotShapes.find(s => s.id === dotShapeId)?.type || 'rounded'
-  const [cornerSquareType, setCornerSquareType] = useState<CornerSquareType>('extra-rounded')
-  const [cornerDotType, setCornerDotType] = useState<CornerDotType>('dot')
+  const [cornerSquareShapeId, setCornerSquareShapeId] = useState('rounded')
+  const cornerSquareType = cornerSquareShapes.find(s => s.id === cornerSquareShapeId)?.type || 'extra-rounded'
+  const [cornerDotShapeId, setCornerDotShapeId] = useState('circle')
+  const cornerDotType = cornerDotShapes.find(s => s.id === cornerDotShapeId)?.type || 'dot'
   const [logo, setLogo] = useState<string | null>(null)
 
   // Download state
@@ -570,18 +591,18 @@ export function Hero() {
                         <div>
                           <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</label>
                           <div className="grid grid-cols-6 gap-2 mb-2">
-                            {cornerSquareTypes.map((item) => (
+                            {cornerSquareShapes.map((item) => (
                               <button
-                                key={item.type}
-                                onClick={() => setCornerSquareType(item.type)}
+                                key={item.id}
+                                onClick={() => setCornerSquareShapeId(item.id)}
                                 className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  cornerSquareType === item.type
+                                  cornerSquareShapeId === item.id
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
                                 title={item.label}
                               >
-                                <CornerSquarePreviewIcon type={item.type} className="w-6 h-6" />
+                                <CornerSquarePreviewIcon shapeId={item.id} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
@@ -605,18 +626,18 @@ export function Hero() {
                         <div>
                           <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</label>
                           <div className="grid grid-cols-6 gap-2 mb-2">
-                            {cornerDotTypes.map((item) => (
+                            {cornerDotShapes.map((item) => (
                               <button
-                                key={item.type}
-                                onClick={() => setCornerDotType(item.type)}
+                                key={item.id}
+                                onClick={() => setCornerDotShapeId(item.id)}
                                 className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  cornerDotType === item.type
+                                  cornerDotShapeId === item.id
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
                                 title={item.label}
                               >
-                                <CornerDotPreviewIcon type={item.type} className="w-6 h-6" />
+                                <CornerDotPreviewIcon shapeId={item.id} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
@@ -805,19 +826,62 @@ function ShapePreviewIcon({ shapeId, className }: { shapeId: string; className?:
   return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
 }
 
-function CornerSquarePreviewIcon({ type, className }: { type: CornerSquareType; className?: string }) {
+function CornerSquarePreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
   const shapes: Record<string, React.ReactNode> = {
-    square: <rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="3" fill="none"/>,
-    'extra-rounded': <rect x="2" y="2" width="14" height="14" rx="4" stroke="currentColor" strokeWidth="3" fill="none"/>,
-    dot: <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="3" fill="none"/>,
+    // Kwadrat
+    square: <rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Zaokrąglone
+    rounded: <rect x="2" y="2" width="14" height="14" rx="4" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Koło
+    circle: <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Lekko zaokrąglone
+    'rounded-sm': <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Klasyczne (wypełnione rogi)
+    classy: <><rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none"/><rect x="2" y="2" width="4" height="4" fill="currentColor"/><rect x="12" y="2" width="4" height="4" fill="currentColor"/><rect x="2" y="12" width="4" height="4" fill="currentColor"/><rect x="12" y="12" width="4" height="4" fill="currentColor"/></>,
+    // Kropkowane (przerywana linia)
+    dotted: <rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="2" strokeDasharray="3 2" fill="none"/>,
+    // Podwójna ramka
+    double: <><rect x="1" y="1" width="16" height="16" stroke="currentColor" strokeWidth="1.5" fill="none"/><rect x="4" y="4" width="10" height="10" stroke="currentColor" strokeWidth="1.5" fill="none"/></>,
+    // Zaokrąglone na zewnątrz
+    'rounded-out': <path d="M2 9 Q2 2 9 2 Q16 2 16 9 Q16 16 9 16 Q2 16 2 9" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Liść
+    leaf: <path d="M2 14 Q2 2 9 2 Q16 2 16 9 Q16 16 9 16 Q2 16 2 14 Z" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Romb
+    diamond: <rect x="9" y="2" width="10" height="10" transform="rotate(45 9 9)" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Tarcza
+    shield: <path d="M9 2 L16 5 L16 11 Q16 16 9 16 Q2 16 2 11 L2 5 Z" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
+    // Gwiazda (8-ramienna)
+    star: <path d="M9 1 L11 6 L16 6 L12 9 L14 14 L9 11 L4 14 L6 9 L2 6 L7 6 Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>,
   }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[type] || shapes.square}</svg>
+  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
 }
 
-function CornerDotPreviewIcon({ type, className }: { type: CornerDotType; className?: string }) {
+function CornerDotPreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
   const shapes: Record<string, React.ReactNode> = {
+    // Kwadrat
     square: <rect x="4" y="4" width="10" height="10" fill="currentColor"/>,
-    dot: <circle cx="9" cy="9" r="5" fill="currentColor"/>,
+    // Koło
+    circle: <circle cx="9" cy="9" r="5" fill="currentColor"/>,
+    // Zaokrąglone
+    rounded: <rect x="4" y="4" width="10" height="10" rx="2" fill="currentColor"/>,
+    // Romb
+    diamond: <rect x="9" y="4" width="7" height="7" transform="rotate(45 9 9)" fill="currentColor"/>,
+    // Gwiazda
+    star: <path d="M9 3 L10.5 7 L15 7 L11.5 9.5 L13 14 L9 11 L5 14 L6.5 9.5 L3 7 L7.5 7 Z" fill="currentColor"/>,
+    // Serce
+    heart: <path d="M9 14 C5 10 3 8 3 6 C3 4 5 3 7 4 C8 4.5 9 5.5 9 5.5 C9 5.5 10 4.5 11 4 C13 3 15 4 15 6 C15 8 13 10 9 14 Z" fill="currentColor"/>,
+    // Plus
+    plus: <path d="M7.5 4 L10.5 4 L10.5 7.5 L14 7.5 L14 10.5 L10.5 10.5 L10.5 14 L7.5 14 L7.5 10.5 L4 10.5 L4 7.5 L7.5 7.5 Z" fill="currentColor"/>,
+    // Krzyżyk (X)
+    cross: <path d="M5 4 L9 8 L13 4 L14 5 L10 9 L14 13 L13 14 L9 10 L5 14 L4 13 L8 9 L4 5 Z" fill="currentColor"/>,
+    // Trójkąt
+    triangle: <path d="M9 3 L15 14 L3 14 Z" fill="currentColor"/>,
+    // Sześciokąt
+    hexagon: <path d="M9 3 L14 6 L14 12 L9 15 L4 12 L4 6 Z" fill="currentColor"/>,
+    // Kwiatek
+    flower: <><circle cx="9" cy="5" r="2.5" fill="currentColor"/><circle cx="13" cy="9" r="2.5" fill="currentColor"/><circle cx="9" cy="13" r="2.5" fill="currentColor"/><circle cx="5" cy="9" r="2.5" fill="currentColor"/><circle cx="9" cy="9" r="2" fill="currentColor"/></>,
+    // Koniczyna (4 liście)
+    clover: <><circle cx="6" cy="6" r="3" fill="currentColor"/><circle cx="12" cy="6" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></>,
   }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[type] || shapes.square}</svg>
+  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
 }
