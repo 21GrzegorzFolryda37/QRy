@@ -8,14 +8,14 @@ type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video
 type TabType = 'sticker' | 'color' | 'logo'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
-  { id: 'website', label: 'Website', icon: 'globe' },
+  { id: 'website', label: 'Strona www', icon: 'globe' },
   { id: 'pdf', label: 'PDF', icon: 'file' },
-  { id: 'email', label: 'Email', icon: 'mail' },
+  { id: 'email', label: 'E-mail', icon: 'mail' },
   { id: 'social', label: 'Social media', icon: 'share' },
-  { id: 'vcard', label: 'vCard', icon: 'user' },
+  { id: 'vcard', label: 'Wizytówka', icon: 'user' },
   { id: 'wifi', label: 'WiFi', icon: 'wifi' },
-  { id: 'appstore', label: 'App stores', icon: 'download' },
-  { id: 'video', label: 'Video', icon: 'play' },
+  { id: 'appstore', label: 'Sklepy z aplikacjami', icon: 'download' },
+  { id: 'video', label: 'Wideo', icon: 'play' },
   { id: 'facebook', label: 'Facebook', icon: 'facebook' },
   { id: 'instagram', label: 'Instagram', icon: 'instagram' },
   { id: 'twitter', label: 'Twitter/X', icon: 'twitter' },

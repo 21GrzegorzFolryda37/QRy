@@ -3,69 +3,69 @@ import { Button } from '@/components/ui'
 
 const features = [
   {
-    name: 'Dynamic QR Codes',
+    name: 'Dynamiczne kody QR',
     description:
-      'Unlike static QR codes, our dynamic codes let you change the destination URL anytime without reprinting. Perfect for marketing campaigns, product packaging, and business cards.',
+      'W przeciwieństwie do statycznych kodów QR, nasze dynamiczne kody pozwalają zmienić docelowy URL w dowolnym momencie bez ponownego drukowania. Idealne do kampanii marketingowych, opakowań produktów i wizytówek.',
     details: [
-      'Change destination URL anytime',
-      'No reprinting required',
-      'Track all scans automatically',
-      'A/B test different landing pages',
+      'Zmień docelowy URL w dowolnym momencie',
+      'Bez konieczności ponownego druku',
+      'Automatyczne śledzenie wszystkich skanów',
+      'Testy A/B różnych stron docelowych',
     ],
   },
   {
-    name: 'Powerful Analytics',
+    name: 'Zaawansowana analityka',
     description:
-      'Get detailed insights into who scans your QR codes, when, and where. Make data-driven decisions with comprehensive analytics.',
+      'Uzyskaj szczegółowe informacje o tym, kto skanuje Twoje kody QR, kiedy i gdzie. Podejmuj decyzje oparte na danych dzięki kompleksowej analityce.',
     details: [
-      'Real-time scan tracking',
-      'Geographic location data',
-      'Device and browser breakdown',
-      'Time-based analytics',
+      'Śledzenie skanów w czasie rzeczywistym',
+      'Dane o lokalizacji geograficznej',
+      'Statystyki urządzeń i przeglądarek',
+      'Analityka czasowa',
     ],
   },
   {
-    name: 'Custom Branding',
+    name: 'Własny branding',
     description:
-      'Create QR codes that match your brand identity. Customize colors, add your logo, and maintain brand consistency across all touchpoints.',
+      'Twórz kody QR pasujące do identyfikacji wizualnej Twojej marki. Dostosuj kolory, dodaj logo i zachowaj spójność marki we wszystkich punktach kontaktu.',
     details: [
-      'Custom foreground/background colors',
-      'Logo overlay support',
-      'Adjustable error correction',
-      'Multiple sizes and formats',
+      'Własne kolory pierwszego planu/tła',
+      'Obsługa nakładki z logo',
+      'Regulowana korekcja błędów',
+      'Wiele rozmiarów i formatów',
     ],
   },
   {
-    name: 'UTM Parameter Tracking',
+    name: 'Śledzenie parametrów UTM',
     description:
-      'Track the effectiveness of your marketing campaigns with full UTM parameter support. Know exactly where your traffic is coming from.',
+      'Śledź skuteczność swoich kampanii marketingowych dzięki pełnej obsłudze parametrów UTM. Dowiedz się dokładnie, skąd pochodzi Twój ruch.',
     details: [
-      'Automatic UTM capture',
-      'Campaign performance tracking',
-      'Source/medium attribution',
-      'Easy integration with analytics tools',
+      'Automatyczne przechwytywanie UTM',
+      'Śledzenie wydajności kampanii',
+      'Atrybucja źródła/medium',
+      'Łatwa integracja z narzędziami analitycznymi',
     ],
   },
   {
-    name: 'Easy Management',
+    name: 'Łatwe zarządzanie',
     description:
-      'Manage all your QR codes from a single, intuitive dashboard. Create, edit, organize, and analyze with ease.',
+      'Zarządzaj wszystkimi kodami QR z jednego, intuicyjnego panelu. Twórz, edytuj, organizuj i analizuj z łatwością.',
     details: [
-      'Centralized dashboard',
-      'Bulk operations',
-      'Search and filter',
-      'Export capabilities',
+      'Scentralizowany panel',
+      'Operacje zbiorcze',
+      'Wyszukiwanie i filtrowanie',
+      'Możliwości eksportu',
     ],
   },
   {
-    name: 'Reliable Infrastructure',
+    name: 'Niezawodna infrastruktura',
     description:
-      'Built on enterprise-grade infrastructure for maximum reliability. Your QR codes will always work when your customers need them.',
+      'Zbudowana na infrastrukturze klasy enterprise dla maksymalnej niezawodności. Twoje kody QR zawsze będą działać, gdy Twoi klienci ich potrzebują.',
     details: [
-      '99.9% uptime guarantee',
-      'Global CDN distribution',
-      'Fast redirect times',
-      'Secure HTTPS endpoints',
+      'Gwarancja 99,9% dostępności',
+      'Globalna dystrybucja CDN',
+      'Szybkie czasy przekierowania',
+      'Bezpieczne punkty końcowe HTTPS',
     ],
   },
 ]
@@ -76,10 +76,10 @@ export default function FeaturesPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Everything you need to succeed with QR codes
+            Wszystko, czego potrzebujesz do sukcesu z kodami QR
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Powerful features designed for modern marketers, businesses, and creators.
+            Zaawansowane funkcje zaprojektowane dla nowoczesnych marketerów, firm i twórców.
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export default function FeaturesPage() {
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                   <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">[Feature illustration]</span>
+                    <span className="text-gray-400 text-sm">[Ilustracja funkcji]</span>
                   </div>
                 </div>
               </div>
@@ -115,17 +115,17 @@ export default function FeaturesPage() {
         </div>
 
         <div className="mt-24 text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Ready to get started?</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Gotowy, aby zacząć?</h2>
           <p className="mt-4 text-gray-600">
-            Create your first QR code in seconds. No credit card required.
+            Stwórz swój pierwszy kod QR w kilka sekund. Nie wymagamy karty kredytowej.
           </p>
           <div className="mt-8 flex items-center justify-center gap-x-4">
             <Link href="/register">
-              <Button size="lg">Start for free</Button>
+              <Button size="lg">Zacznij za darmo</Button>
             </Link>
             <Link href="/pricing">
               <Button variant="outline" size="lg">
-                View pricing
+                Zobacz cennik
               </Button>
             </Link>
           </div>

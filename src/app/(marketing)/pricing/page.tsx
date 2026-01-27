@@ -7,28 +7,28 @@ const tiers = [
     id: 'free',
     name: PLANS.free.name,
     price: PLANS.free.price,
-    description: 'Perfect for getting started',
+    description: 'Idealny na początek',
     features: [
-      `${PLANS.free.qrLimit} QR codes`,
-      `${PLANS.free.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors',
-      'Basic analytics',
-      'Email support',
+      `${PLANS.free.qrLimit} kodów QR`,
+      `${PLANS.free.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory',
+      'Podstawowa analityka',
+      'Wsparcie e-mail',
     ],
   },
   {
     id: 'starter',
     name: PLANS.starter.name,
     price: PLANS.starter.price,
-    description: 'Great for small businesses',
+    description: 'Świetny dla małych firm',
     features: [
-      `${PLANS.starter.qrLimit} QR codes`,
-      `${PLANS.starter.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors & logo',
-      'Full analytics',
-      'Geographic tracking',
-      'Device breakdown',
-      'Priority email support',
+      `${PLANS.starter.qrLimit} kodów QR`,
+      `${PLANS.starter.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory i logo',
+      'Pełna analityka',
+      'Śledzenie geograficzne',
+      'Statystyki urządzeń',
+      'Priorytetowe wsparcie',
     ],
     featured: true,
   },
@@ -36,17 +36,17 @@ const tiers = [
     id: 'pro',
     name: PLANS.pro.name,
     price: PLANS.pro.price,
-    description: 'For growing teams',
+    description: 'Dla rozwijających się zespołów',
     features: [
-      `${PLANS.pro.qrLimit} QR codes`,
-      `${PLANS.pro.scanLimit.toLocaleString()} scans/month`,
-      'Custom colors & logo',
-      'Full analytics',
-      'Geographic tracking',
-      'Device breakdown',
-      'UTM tracking',
-      'API access',
-      'Priority support',
+      `${PLANS.pro.qrLimit} kodów QR`,
+      `${PLANS.pro.scanLimit.toLocaleString()} skanów/miesiąc`,
+      'Własne kolory i logo',
+      'Pełna analityka',
+      'Śledzenie geograficzne',
+      'Statystyki urządzeń',
+      'Śledzenie UTM',
+      'Dostęp do API',
+      'Priorytetowe wsparcie',
     ],
   },
 ]
@@ -57,10 +57,10 @@ export default function PricingPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Simple, transparent pricing
+            Prosty i przejrzysty cennik
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Choose the plan that fits your needs. All plans include a 14-day free trial.
+            Wybierz plan dopasowany do Twoich potrzeb. Wszystkie plany zawierają 14-dniowy okres próbny.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function PricingPage() {
                   <CardTitle>{tier.name}</CardTitle>
                   {tier.featured && (
                     <span className="rounded-full bg-gray-900 px-2.5 py-1 text-xs font-semibold text-white">
-                      Popular
+                      Popularny
                     </span>
                   )}
                 </div>
@@ -84,7 +84,7 @@ export default function PricingPage() {
               <CardContent className="space-y-6">
                 <div>
                   <span className="text-4xl font-bold text-gray-900">{tier.price} PLN</span>
-                  {tier.price > 0 && <span className="text-gray-500">/month</span>}
+                  {tier.price > 0 && <span className="text-gray-500">/miesiąc</span>}
                 </div>
 
                 <ul className="space-y-3">
@@ -101,7 +101,7 @@ export default function PricingPage() {
                     className="w-full"
                     variant={tier.featured ? 'default' : 'outline'}
                   >
-                    Get started
+                    Rozpocznij
                   </Button>
                 </Link>
               </CardContent>
@@ -111,39 +111,39 @@ export default function PricingPage() {
 
         <div className="mt-24 mx-auto max-w-3xl">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Frequently Asked Questions
+            Często zadawane pytania
           </h2>
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                Can I change plans anytime?
+                Czy mogę zmienić plan w dowolnym momencie?
               </h3>
               <p className="mt-2 text-gray-600">
-                Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.
+                Tak, możesz ulepszać lub obniżać swój plan w dowolnym momencie. Zmiany wchodzą w życie natychmiast.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                What happens if I exceed my limits?
+                Co się stanie, jeśli przekroczę limity?
               </h3>
               <p className="mt-2 text-gray-600">
-                We&apos;ll notify you when you&apos;re approaching your limits. You can upgrade your plan to continue creating QR codes and tracking scans.
+                Powiadomimy Cię, gdy zbliżysz się do limitów. Możesz ulepszyć swój plan, aby kontynuować tworzenie kodów QR i śledzenie skanów.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                Do QR codes expire?
+                Czy kody QR wygasają?
               </h3>
               <p className="mt-2 text-gray-600">
-                No, your QR codes never expire. They&apos;ll continue to work as long as your account is active.
+                Nie, Twoje kody QR nigdy nie wygasają. Będą działać tak długo, jak Twoje konto jest aktywne.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                What payment methods do you accept?
+                Jakie metody płatności akceptujecie?
               </h3>
               <p className="mt-2 text-gray-600">
-                We accept all major credit cards through our secure payment processor, Stripe.
+                Akceptujemy wszystkie główne karty kredytowe przez nasz bezpieczny procesor płatności Stripe.
               </p>
             </div>
           </div>

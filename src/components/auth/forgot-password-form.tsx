@@ -13,11 +13,11 @@ export function ForgotPasswordForm() {
       <div className="space-y-4 text-center">
         <div className="rounded-md bg-green-50 p-4">
           <p className="text-sm text-green-700">
-            Check your email for a link to reset your password.
+            Sprawdź swoją skrzynkę e-mail, aby znaleźć link do resetowania hasła.
           </p>
         </div>
         <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900 underline">
-          Back to login
+          Powrót do logowania
         </Link>
       </div>
     )
@@ -26,14 +26,14 @@ export function ForgotPasswordForm() {
   return (
     <form action={formAction} className="space-y-4">
       <p className="text-sm text-gray-600">
-        Enter your email address and we&apos;ll send you a link to reset your password.
+        Podaj swój adres e-mail, a wyślemy Ci link do resetowania hasła.
       </p>
 
       <Input
         name="email"
         type="email"
-        label="Email"
-        placeholder="you@example.com"
+        label="E-mail"
+        placeholder="twoj@email.pl"
         required
         autoComplete="email"
       />
@@ -45,12 +45,12 @@ export function ForgotPasswordForm() {
       )}
 
       <Button type="submit" className="w-full" isLoading={isPending}>
-        Send reset link
+        Wyślij link resetujący
       </Button>
 
       <div className="text-center text-sm">
         <Link href="/login" className="text-gray-600 hover:text-gray-900 underline">
-          Back to login
+          Powrót do logowania
         </Link>
       </div>
     </form>
