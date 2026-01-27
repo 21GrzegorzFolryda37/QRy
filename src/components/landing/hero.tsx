@@ -526,15 +526,8 @@ export function Hero() {
                       <div className="space-y-5">
                         {/* Dot shapes (Kropki) */}
                         <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Kropki</label>
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: dotColor }}>
-                                <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-6 gap-2">
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Kropki</label>
+                          <div className="grid grid-cols-6 gap-2 mb-2">
                             {dotTypes.map((item) => (
                               <button
                                 key={item.type}
@@ -550,19 +543,26 @@ export function Hero() {
                               </button>
                             ))}
                           </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
+                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
+                              <button
+                                key={color}
+                                onClick={() => setDotColor(color)}
+                                className={`w-6 h-6 rounded-full border-2 transition-all ${dotColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
+                              <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            </div>
+                          </div>
                         </div>
 
                         {/* Corner Frame (Ramka narożnika) */}
                         <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Ramka narożnika</label>
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: cornerSquareColor }}>
-                                <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-6 gap-2">
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</label>
+                          <div className="grid grid-cols-6 gap-2 mb-2">
                             {cornerSquareTypes.map((item) => (
                               <button
                                 key={item.type}
@@ -578,19 +578,26 @@ export function Hero() {
                               </button>
                             ))}
                           </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
+                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
+                              <button
+                                key={color}
+                                onClick={() => setCornerSquareColor(color)}
+                                className={`w-6 h-6 rounded-full border-2 transition-all ${cornerSquareColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
+                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            </div>
+                          </div>
                         </div>
 
                         {/* Corner Dot (Środek narożnika) */}
                         <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs font-medium text-[var(--foreground-muted)]">Środek narożnika</label>
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: cornerDotColor }}>
-                                <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-6 gap-2">
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</label>
+                          <div className="grid grid-cols-6 gap-2 mb-2">
                             {cornerDotTypes.map((item) => (
                               <button
                                 key={item.type}
@@ -605,6 +612,20 @@ export function Hero() {
                                 <CornerDotPreviewIcon type={item.type} className="w-6 h-6" />
                               </button>
                             ))}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
+                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
+                              <button
+                                key={color}
+                                onClick={() => setCornerDotColor(color)}
+                                className={`w-6 h-6 rounded-full border-2 transition-all ${cornerDotColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
+                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            </div>
                           </div>
                         </div>
                       </div>
