@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { CookieConsent } from '@/components/cookie-consent'
+import { ToastProvider } from '@/components/ui/toast'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,8 +24,10 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className={`${inter.variable} font-sans antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        {children}
-        <CookieConsent />
+        <ToastProvider>
+          {children}
+          <CookieConsent />
+        </ToastProvider>
       </body>
     </html>
   )

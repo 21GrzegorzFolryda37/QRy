@@ -109,9 +109,9 @@ export function Pricing() {
 
         <div className="mt-12 text-center">
           <p className="text-[var(--foreground-muted)]">
-            Potrzebujesz więcej?{' '}
-            <Link href="/pricing" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors">
-              Zobacz cennik Enterprise
+            Masz pytania?{' '}
+            <Link href="/contact" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors">
+              Skontaktuj sie z nami
             </Link>
           </p>
         </div>

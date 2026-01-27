@@ -120,11 +120,10 @@ export default function BillingPage() {
 
       <div>
         <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Dostępne plany</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <PricingCard planId="free" currentPlan={plan} />
           <PricingCard planId="starter" currentPlan={plan} />
           <PricingCard planId="pro" currentPlan={plan} />
-          <PricingCard planId="enterprise" currentPlan={plan} />
         </div>
       </div>
     </div>

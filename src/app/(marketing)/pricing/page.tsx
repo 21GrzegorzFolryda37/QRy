@@ -49,21 +49,6 @@ const tiers = [
       'Priority support',
     ],
   },
-  {
-    id: 'enterprise',
-    name: PLANS.enterprise.name,
-    price: PLANS.enterprise.price,
-    description: 'For large organizations',
-    features: [
-      'Unlimited QR codes',
-      'Unlimited scans',
-      'Everything in Pro',
-      'Custom integrations',
-      'Dedicated account manager',
-      'SLA guarantee',
-      '24/7 phone support',
-    ],
-  },
 ]
 
 export default function PricingPage() {
@@ -79,7 +64,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-4">
+        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
           {tiers.map((tier) => (
             <Card
               key={tier.id}
