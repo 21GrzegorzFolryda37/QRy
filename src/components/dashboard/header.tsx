@@ -2,6 +2,7 @@
 
 import { Profile } from '@/types/database'
 import { Badge } from '@/components/ui'
+import { MobileSidebarToggle } from './sidebar'
 
 interface HeaderProps {
   profile: Profile | null
@@ -9,18 +10,25 @@ interface HeaderProps {
 
 export function Header({ profile }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-6">
-      <div />
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 lg:px-6">
+      {/* Mobile menu toggle */}
       <div className="flex items-center gap-4">
+        <MobileSidebarToggle />
+        {/* Mobile logo */}
+        <span className="lg:hidden text-lg font-bold gradient-text">EngageQR</span>
+      </div>
+
+      {/* User info */}
+      <div className="flex items-center gap-3">
         {profile && (
           <>
             <Badge
               variant={profile.plan === 'free' ? 'outline' : 'primary'}
-              className="capitalize"
+              className="capitalize hidden sm:inline-flex"
             >
               {profile.plan}
             </Badge>
-            <span className="text-sm text-[var(--foreground-muted)]">
+            <span className="text-sm text-[var(--foreground-muted)] truncate max-w-[150px] sm:max-w-none">
               {profile.full_name || profile.email}
             </span>
           </>

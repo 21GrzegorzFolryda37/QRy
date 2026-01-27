@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, createContext, useContext } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -13,55 +14,131 @@ const navigation = [
   { name: 'Ustawienia', href: '/settings', icon: SettingsIcon },
 ]
 
-export function Sidebar() {
-  const pathname = usePathname()
+// Context for mobile sidebar state
+const SidebarContext = createContext<{
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+} | null>(null)
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false)
+  return (
+    <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
+      {children}
+    </SidebarContext.Provider>
+  )
+}
+
+export function useSidebar() {
+  const context = useContext(SidebarContext)
+  if (!context) {
+    throw new Error('useSidebar must be used within SidebarProvider')
+  }
+  return context
+}
+
+// Mobile toggle button for header
+export function MobileSidebarToggle() {
+  const { setIsOpen } = useSidebar()
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--border)] bg-white shadow-sm">
-      <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center border-b border-[var(--border)] px-6">
-          <Link href="/dashboard" className="text-xl font-bold gradient-text">
-            EngageQR
-          </Link>
-        </div>
+    <button
+      type="button"
+      className="lg:hidden -m-2.5 p-2.5 text-[var(--foreground-muted)]"
+      onClick={() => setIsOpen(true)}
+    >
+      <span className="sr-only">Otwórz menu</span>
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+  )
+}
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
-          {navigation.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(item.href + '/')
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                  isActive
-                    ? 'bg-[var(--primary)]/10 text-[var(--primary)] shadow-sm'
-                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--foreground)]'
-                )}
-              >
-                <item.icon
-                  className={cn('h-5 w-5', isActive ? 'text-[var(--primary)]' : 'text-[var(--foreground-subtle)]')}
-                />
-                {item.name}
-              </Link>
-            )
-          })}
-        </nav>
+export function Sidebar() {
+  const pathname = usePathname()
+  const { isOpen, setIsOpen } = useSidebar()
 
-        <div className="border-t border-[var(--border)] p-4">
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--error)] transition-all duration-200"
-            >
-              <LogoutIcon className="h-5 w-5 text-[var(--foreground-subtle)]" />
-              Wyloguj się
-            </button>
-          </form>
-        </div>
+  const sidebarContent = (
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-6">
+        <Link href="/dashboard" className="text-xl font-bold gradient-text" onClick={() => setIsOpen(false)}>
+          EngageQR
+        </Link>
+        {/* Close button - mobile only */}
+        <button
+          type="button"
+          className="lg:hidden -m-2.5 p-2.5 text-[var(--foreground-muted)]"
+          onClick={() => setIsOpen(false)}
+        >
+          <span className="sr-only">Zamknij menu</span>
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
-    </aside>
+
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {navigation.map((item) => {
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + '/')
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={() => setIsOpen(false)}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                isActive
+                  ? 'bg-[var(--primary)]/10 text-[var(--primary)] shadow-sm'
+                  : 'text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--foreground)]'
+              )}
+            >
+              <item.icon
+                className={cn('h-5 w-5', isActive ? 'text-[var(--primary)]' : 'text-[var(--foreground-subtle)]')}
+              />
+              {item.name}
+            </Link>
+          )
+        })}
+      </nav>
+
+      <div className="border-t border-[var(--border)] p-4">
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--error)] transition-all duration-200"
+          >
+            <LogoutIcon className="h-5 w-5 text-[var(--foreground-subtle)]" />
+            Wyloguj się
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Desktop sidebar - fixed */}
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block lg:w-64 lg:border-r lg:border-[var(--border)] lg:bg-white lg:shadow-sm">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile sidebar - drawer */}
+      {isOpen && (
+        <div className="lg:hidden">
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+          {/* Drawer */}
+          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { Sidebar, Header } from '@/components/dashboard'
+import { Sidebar, SidebarProvider, Header } from '@/components/dashboard'
 import { Profile } from '@/types/database'
 
 export default async function DashboardLayout({
@@ -27,12 +27,14 @@ export default async function DashboardLayout({
   const profile = profileData as Profile | null
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <Sidebar />
-      <div className="ml-64">
-        <Header profile={profile} />
-        <main className="p-6">{children}</main>
+    <SidebarProvider>
+      <div className="min-h-screen bg-[var(--background)]">
+        <Sidebar />
+        <div className="lg:ml-64">
+          <Header profile={profile} />
+          <main className="p-4 lg:p-6">{children}</main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

@@ -358,14 +358,14 @@ export function Hero() {
           </h1>
         </div>
 
-        {/* QR Type Selector - Grid */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2 justify-center">
+        {/* QR Type Selector - Scrollable on mobile */}
+        <div className="mb-6 -mx-4 sm:mx-0">
+          <div className="flex gap-2 overflow-x-auto px-4 sm:px-0 pb-2 sm:pb-0 sm:flex-wrap sm:justify-center scrollbar-hide">
             {qrTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => { setSelectedType(type.id); setFormData({}) }}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedType === type.id
                     ? 'border-[var(--success)] text-[var(--success)] bg-[var(--success)]/5'
                     : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)] bg-white'
