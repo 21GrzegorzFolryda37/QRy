@@ -104,8 +104,14 @@ function createBaseOptions(
     },
 
     backgroundOptions: {
-      color: frameShape === 'square' ? finalStyle.backgroundColor : 'transparent',
-      gradient: frameShape === 'square' ? convertGradient(finalStyle.backgroundGradient) : undefined,
+      // Make background transparent if there's a decorative frame OR non-square QR shape
+      // The frame's white "decoration" area will serve as the visible background
+      color: (frameShape !== 'square' || (finalStyle.frame && finalStyle.frame.style !== 'none'))
+        ? 'transparent'
+        : finalStyle.backgroundColor,
+      gradient: (frameShape !== 'square' || (finalStyle.frame && finalStyle.frame.style !== 'none'))
+        ? undefined
+        : convertGradient(finalStyle.backgroundGradient),
     },
   }
 

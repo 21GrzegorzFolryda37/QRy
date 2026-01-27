@@ -31,9 +31,10 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   // Calculate total dimensions including frame
   const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
 
-  // Reset QR code instance when frameShape changes
+  // Reset QR code instance when frameShape or frame changes (affects background transparency)
   const prevFrameShapeRef = useRef(frameShape)
   const prevHasLogoRef = useRef(!!logoUrl)
+  const prevFrameStyleRef = useRef(frame?.style)
   useEffect(() => {
     if (prevFrameShapeRef.current !== frameShape) {
       qrCodeRef.current = null
@@ -44,7 +45,12 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       qrCodeRef.current = null
       prevHasLogoRef.current = hasLogo
     }
-  }, [frameShape, logoUrl])
+    // Reset when decorative frame changes (background transparency changes)
+    if (prevFrameStyleRef.current !== frame?.style) {
+      qrCodeRef.current = null
+      prevFrameStyleRef.current = frame?.style
+    }
+  }, [frameShape, logoUrl, frame?.style])
 
   // Dynamic import of library (client-side only)
   useEffect(() => {
@@ -121,8 +127,14 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
         ) : (
           <div
             ref={containerRef}
-            className="rounded-lg overflow-hidden bg-white"
-            style={{ width: qrSize, height: qrSize }}
+            className="rounded-lg overflow-hidden"
+            style={{
+              width: qrSize,
+              height: qrSize,
+              // Only show white background if no decorative frame
+              // Frame's decoration provides the white background
+              backgroundColor: (frame && frame.style !== 'none') ? 'transparent' : 'white'
+            }}
           />
         )}
       </FrameRenderer>
