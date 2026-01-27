@@ -9,6 +9,7 @@ import {
   DeviceBreakdown,
   BrowserBreakdown,
   OsBreakdown,
+  CityBreakdown,
   TopQrCode,
   ScanLocation,
   TimePatternData,
@@ -205,6 +206,62 @@ export async function getGeographicData(
   const result = Object.values(aggregated).sort((a, b) => b.scans - a.scans)
 
   return { data: result }
+}
+
+export async function getCityBreakdown(
+  dateRange: DateRange,
+  qrCodeId?: string
+): Promise<{ error?: string; data?: CityBreakdown[] }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  const { start, end } = getDateRangeFilter(dateRange)
+
+  let query = supabase
+    .from('scans')
+    .select('city')
+    .eq('user_id', user.id)
+    .gte('scanned_at', start.toISOString())
+    .lte('scanned_at', end.toISOString())
+
+  if (qrCodeId) {
+    query = query.eq('qr_code_id', qrCodeId)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Error fetching city breakdown:', error)
+    return { error: 'Failed to fetch analytics data' }
+  }
+
+  const scansData = (data || []) as { city: string | null }[]
+  const totalScans = scansData.length
+
+  // Aggregate by city
+  const cityCounts: Record<string, number> = {}
+
+  scansData.forEach((scan) => {
+    const city = scan.city || 'Nieznane'
+    cityCounts[city] = (cityCounts[city] || 0) + 1
+  })
+
+  const cities: CityBreakdown[] = Object.entries(cityCounts)
+    .map(([city, count]) => ({
+      city,
+      count,
+      percentage: totalScans > 0 ? Math.round((count / totalScans) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  return { data: cities }
 }
 
 export async function getDeviceBreakdown(

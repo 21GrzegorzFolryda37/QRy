@@ -36,6 +36,12 @@ export interface OsBreakdown {
   percentage: number
 }
 
+export interface CityBreakdown {
+  city: string
+  count: number
+  percentage: number
+}
+
 export interface TopQrCode {
   id: string
   name: string

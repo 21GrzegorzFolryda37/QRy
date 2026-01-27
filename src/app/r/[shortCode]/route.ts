@@ -3,11 +3,44 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { extractUtmParams, appendUtmParams } from '@/lib/utils'
 import { UAParser } from 'ua-parser-js'
 
+// Use edge runtime for faster cold starts and global distribution
+export const runtime = 'nodejs' // Edge doesn't support after(), keep nodejs
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+// In-memory cache for QR codes (works well on serverless with warm instances)
+const qrCodeCache = new Map<string, { data: QrCodeRecord; timestamp: number }>()
+const CACHE_TTL = 60 * 1000 // 1 minute cache
+
 interface QrCodeRecord {
   id: string
   user_id: string
   destination_url: string
   is_active: boolean
+}
+
+async function getQrCodeCached(shortCode: string, supabase: ReturnType<typeof createAdminClient>): Promise<QrCodeRecord | null> {
+  const cached = qrCodeCache.get(shortCode)
+  const now = Date.now()
+
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    return cached.data
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: qrCodeData, error } = await (supabase.from('qr_codes') as any)
+    .select('id,user_id,destination_url,is_active')
+    .eq('short_code', shortCode)
+    .single()
+
+  if (error || !qrCodeData) {
+    return null
+  }
+
+  const qrCode = qrCodeData as QrCodeRecord
+  qrCodeCache.set(shortCode, { data: qrCode, timestamp: now })
+
+  return qrCode
 }
 
 export async function GET(
@@ -17,24 +50,13 @@ export async function GET(
   const { shortCode } = await params
   const supabase = createAdminClient()
 
-  // Fetch QR code by short_code
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: qrCodeData, error } = await (supabase.from('qr_codes') as any)
-    .select('*')
-    .eq('short_code', shortCode)
-    .single()
-
-  const qrCode = qrCodeData as QrCodeRecord | null
+  // Fetch QR code with caching
+  const qrCode = await getQrCodeCached(shortCode, supabase)
 
   // If not found or inactive, redirect to not found
-  if (error || !qrCode || !qrCode.is_active) {
+  if (!qrCode || !qrCode.is_active) {
     return NextResponse.redirect(new URL('/not-found', request.url))
   }
-
-  // Track scan after response is sent (Vercel waits for this to complete)
-  after(async () => {
-    await trackScan(request, qrCode, supabase)
-  })
 
   // Get UTM params from request
   const requestUrl = new URL(request.url)
@@ -43,8 +65,59 @@ export async function GET(
   // Append UTM params to destination URL
   const destinationUrl = appendUtmParams(qrCode.destination_url, utmParams)
 
-  // Redirect to destination URL
+  // Track scan after response is sent (Vercel waits for this to complete)
+  after(async () => {
+    await trackScan(request, qrCode, supabase)
+  })
+
+  // Redirect to destination URL immediately
   return NextResponse.redirect(destinationUrl, { status: 302 })
+}
+
+// Fast geo lookup with timeout
+async function getGeoData(ip: string): Promise<{
+  country: string | null
+  countryCode: string | null
+  region: string | null
+  city: string | null
+  lat: number | null
+  lon: number | null
+}> {
+  const defaultGeo = {
+    country: null,
+    countryCode: null,
+    region: null,
+    city: null,
+    lat: null,
+    lon: null,
+  }
+
+  if (!ip || ip === '127.0.0.1' || ip === '::1') {
+    return defaultGeo
+  }
+
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 2000) // 2s timeout
+
+    const geoResponse = await fetch(
+      `http://ip-api.com/json/${ip}?fields=country,countryCode,region,city,lat,lon`,
+      { signal: controller.signal }
+    )
+
+    clearTimeout(timeoutId)
+
+    if (geoResponse.ok) {
+      const geoJson = await geoResponse.json()
+      if (geoJson.country) {
+        return geoJson
+      }
+    }
+  } catch {
+    // Silently fail - geo data is optional
+  }
+
+  return defaultGeo
 }
 
 async function trackScan(
@@ -79,29 +152,8 @@ async function trackScan(
     const requestUrl = new URL(request.url)
     const utmParams = extractUtmParams(requestUrl)
 
-    // Get geo data from IP (using ip-api.com - free service)
-    let geoData = {
-      country: null as string | null,
-      countryCode: null as string | null,
-      region: null as string | null,
-      city: null as string | null,
-      lat: null as number | null,
-      lon: null as number | null,
-    }
-
-    if (ip && ip !== '127.0.0.1' && ip !== '::1') {
-      try {
-        const geoResponse = await fetch(`http://ip-api.com/json/${ip}?fields=country,countryCode,region,city,lat,lon`)
-        if (geoResponse.ok) {
-          const geoJson = await geoResponse.json()
-          if (geoJson.country) {
-            geoData = geoJson
-          }
-        }
-      } catch (geoError) {
-        console.error('Geo lookup failed:', geoError)
-      }
-    }
+    // Get geo data with timeout (non-blocking)
+    const geoData = await getGeoData(ip || '')
 
     // Insert scan record
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

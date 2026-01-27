@@ -5,6 +5,7 @@ import {
   getOverviewStats,
   getScansOverTime,
   getGeographicData,
+  getCityBreakdown,
   getDeviceBreakdown,
   getTopQrCodes,
   getScanLocations,
@@ -15,6 +16,7 @@ import {
   OverviewStats,
   ScansOverTime,
   GeographicData,
+  CityBreakdown,
   DeviceBreakdown,
   BrowserBreakdown,
   OsBreakdown,
@@ -79,6 +81,29 @@ export function useGeographicData(dateRange: DateRange, qrCodeId?: string) {
   const refetch = useCallback(async () => {
     setLoading(true)
     const result = await getGeographicData(dateRange, qrCodeId)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setData(result.data || [])
+    }
+    setLoading(false)
+  }, [dateRange, qrCodeId])
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { data, loading, error, refetch }
+}
+
+export function useCityBreakdown(dateRange: DateRange, qrCodeId?: string) {
+  const [data, setData] = useState<CityBreakdown[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    const result = await getCityBreakdown(dateRange, qrCodeId)
     if (result.error) {
       setError(result.error)
     } else {

@@ -3,11 +3,12 @@
 import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard } from '@/components/analytics'
+import { ScansChart, DeviceChart, CityChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
   useDeviceBreakdown,
+  useCityBreakdown,
   useGeographicData,
   useTopQrCodes,
   useScanLocations,
@@ -25,6 +26,7 @@ export default function AnalyticsPage() {
   const { stats, loading: statsLoading, refetch: refetchStats } = useOverviewStats()
   const { data: scansData, loading: scansLoading, refetch: refetchScans } = useScansOverTime(dateRange)
   const { devices, browsers, os, loading: devicesLoading, refetch: refetchDevices } = useDeviceBreakdown(dateRange)
+  const { data: cityData, loading: cityLoading, refetch: refetchCity } = useCityBreakdown(dateRange)
   const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange)
   const { data: topQrCodes, loading: topLoading, refetch: refetchTop } = useTopQrCodes(dateRange)
   const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange)
@@ -35,11 +37,12 @@ export default function AnalyticsPage() {
     refetchStats()
     refetchScans()
     refetchDevices()
+    refetchCity()
     refetchGeo()
     refetchTop()
     refetchLocations()
     refetchTimePatterns()
-  }, [refetchStats, refetchScans, refetchDevices, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns])
+  }, [refetchStats, refetchScans, refetchDevices, refetchCity, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns])
 
   // Subscribe to realtime scan updates
   const { connectionStatus } = useScansRealtime({
@@ -175,7 +178,7 @@ export default function AnalyticsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Urządzenia</CardTitle>
@@ -187,6 +190,21 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <DeviceChart data={devices} />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Miasta</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {cityLoading ? (
+              <div className="flex h-[250px] items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <CityChart data={cityData} />
             )}
           </CardContent>
         </Card>
