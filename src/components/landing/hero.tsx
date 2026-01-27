@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui'
-import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling'
+import QRCodeStyling, { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling'
 
 type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shapes' | 'logo'
@@ -54,23 +54,34 @@ const stickerTemplates = [
 ]
 
 const colorPresets = [
-  { dots: '#000000', bg: '#ffffff', corners: '#000000' },
-  { dots: '#8b5cf6', bg: '#ffffff', corners: '#06b6d4' },
-  { dots: '#1e40af', bg: '#ffffff', corners: '#3b82f6' },
-  { dots: '#059669', bg: '#ffffff', corners: '#10b981' },
-  { dots: '#dc2626', bg: '#ffffff', corners: '#f87171' },
-  { dots: '#ea580c', bg: '#ffffff', corners: '#fb923c' },
-  { dots: '#7c3aed', bg: '#faf5ff', corners: '#a855f7' },
-  { dots: '#0891b2', bg: '#ecfeff', corners: '#22d3ee' },
+  { dots: '#000000', bg: '#ffffff', cornerSquare: '#000000', cornerDot: '#000000' },
+  { dots: '#8b5cf6', bg: '#ffffff', cornerSquare: '#06b6d4', cornerDot: '#8b5cf6' },
+  { dots: '#1e40af', bg: '#ffffff', cornerSquare: '#3b82f6', cornerDot: '#1e40af' },
+  { dots: '#059669', bg: '#ffffff', cornerSquare: '#10b981', cornerDot: '#059669' },
+  { dots: '#dc2626', bg: '#ffffff', cornerSquare: '#f87171', cornerDot: '#dc2626' },
+  { dots: '#ea580c', bg: '#ffffff', cornerSquare: '#fb923c', cornerDot: '#ea580c' },
+  { dots: '#7c3aed', bg: '#faf5ff', cornerSquare: '#a855f7', cornerDot: '#7c3aed' },
+  { dots: '#0891b2', bg: '#ecfeff', cornerSquare: '#22d3ee', cornerDot: '#0891b2' },
 ]
 
-const shapePresets: { dots: DotType; corners: CornerSquareType; label: string }[] = [
-  { dots: 'square', corners: 'square', label: 'Kwadrat' },
-  { dots: 'rounded', corners: 'extra-rounded', label: 'Zaokrąglone' },
-  { dots: 'dots', corners: 'dot', label: 'Kropki' },
-  { dots: 'classy', corners: 'square', label: 'Klasyczne' },
-  { dots: 'classy-rounded', corners: 'extra-rounded', label: 'Eleganckie' },
-  { dots: 'extra-rounded', corners: 'extra-rounded', label: 'Okrągłe' },
+const shapePresets: { dots: DotType; cornerSquare: CornerSquareType; cornerDot: CornerDotType; label: string }[] = [
+  { dots: 'square', cornerSquare: 'square', cornerDot: 'square', label: 'Kwadrat' },
+  { dots: 'rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Zaokrąglone' },
+  { dots: 'dots', cornerSquare: 'dot', cornerDot: 'dot', label: 'Kropki' },
+  { dots: 'classy', cornerSquare: 'square', cornerDot: 'square', label: 'Klasyczne' },
+  { dots: 'classy-rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Eleganckie' },
+  { dots: 'extra-rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Okrągłe' },
+]
+
+const cornerSquareTypes: { type: CornerSquareType; label: string }[] = [
+  { type: 'square', label: 'Kwadrat' },
+  { type: 'extra-rounded', label: 'Zaokrąglone' },
+  { type: 'dot', label: 'Okrągłe' },
+]
+
+const cornerDotTypes: { type: CornerDotType; label: string }[] = [
+  { type: 'square', label: 'Kwadrat' },
+  { type: 'dot', label: 'Okrągłe' },
 ]
 
 export function Hero() {
@@ -84,9 +95,11 @@ export function Hero() {
   const [selectedSticker, setSelectedSticker] = useState('scan-me-1')
   const [dotColor, setDotColor] = useState('#000000')
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
-  const [cornerColor, setCornerColor] = useState('#000000')
+  const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
+  const [cornerDotColor, setCornerDotColor] = useState('#000000')
   const [dotType, setDotType] = useState<DotType>('rounded')
-  const [cornerType, setCornerType] = useState<CornerSquareType>('extra-rounded')
+  const [cornerSquareType, setCornerSquareType] = useState<CornerSquareType>('extra-rounded')
+  const [cornerDotType, setCornerDotType] = useState<CornerDotType>('dot')
   const [logo, setLogo] = useState<string | null>(null)
 
   // Download state
@@ -151,8 +164,8 @@ export function Hero() {
       type: 'svg',
       data: getQRData(),
       dotsOptions: { color: dotColor, type: dotType },
-      cornersSquareOptions: { color: cornerColor, type: cornerType },
-      cornersDotOptions: { color: cornerColor, type: 'dot' },
+      cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareType },
+      cornersDotOptions: { color: cornerDotColor, type: cornerDotType },
       backgroundOptions: { color: backgroundColor },
       imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
     })
@@ -168,13 +181,13 @@ export function Hero() {
       qrCodeRef.current.update({
         data: getQRData(),
         dotsOptions: { color: dotColor, type: dotType },
-        cornersSquareOptions: { color: cornerColor, type: cornerType },
-        cornersDotOptions: { color: cornerColor, type: 'dot' },
+        cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareType },
+        cornersDotOptions: { color: cornerDotColor, type: cornerDotType },
         backgroundOptions: { color: backgroundColor },
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, backgroundColor, cornerColor, dotType, cornerType, logo])
+  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotType, cornerSquareType, cornerDotType, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -456,18 +469,18 @@ export function Hero() {
                           {colorPresets.map((preset, idx) => (
                             <button
                               key={idx}
-                              onClick={() => { setDotColor(preset.dots); setBackgroundColor(preset.bg); setCornerColor(preset.corners) }}
+                              onClick={() => { setDotColor(preset.dots); setBackgroundColor(preset.bg); setCornerSquareColor(preset.cornerSquare); setCornerDotColor(preset.cornerDot) }}
                               className={`aspect-square rounded-lg border-2 p-1 transition-all ${
-                                dotColor === preset.dots && cornerColor === preset.corners
+                                dotColor === preset.dots && cornerSquareColor === preset.cornerSquare
                                   ? 'border-[var(--success)]'
                                   : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                               }`}
                             >
-                              <div className="w-full h-full rounded" style={{ background: `linear-gradient(135deg, ${preset.dots} 50%, ${preset.corners} 50%)` }} />
+                              <div className="w-full h-full rounded" style={{ background: `linear-gradient(135deg, ${preset.dots} 50%, ${preset.cornerSquare} 50%)` }} />
                             </button>
                           ))}
                         </div>
-                        <div className="grid grid-cols-3 gap-4 pt-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                           <div>
                             <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Kropki</label>
                             <div className="flex items-center gap-2">
@@ -476,10 +489,17 @@ export function Hero() {
                             </div>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Narożniki</label>
+                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Ramka narożnika</label>
                             <div className="flex items-center gap-2">
-                              <input type="color" value={cornerColor} onChange={(e) => setCornerColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
-                              <input type="text" value={cornerColor} onChange={(e) => setCornerColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
+                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
+                              <input type="text" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Środek narożnika</label>
+                            <div className="flex items-center gap-2">
+                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
+                              <input type="text" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
                             </div>
                           </div>
                           <div>
@@ -494,21 +514,67 @@ export function Hero() {
                     )}
 
                     {activeTab === 'shapes' && (
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                        {shapePresets.map((preset, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => { setDotType(preset.dots); setCornerType(preset.corners) }}
-                            className={`aspect-square rounded-lg border-2 p-2 transition-all flex flex-col items-center justify-center gap-1 ${
-                              dotType === preset.dots && cornerType === preset.corners
-                                ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                            }`}
-                          >
-                            <ShapePreviewIcon dots={preset.dots} className="w-8 h-8" />
-                            <span className="text-[10px] text-[var(--foreground-muted)]">{preset.label}</span>
-                          </button>
-                        ))}
+                      <div className="space-y-5">
+                        {/* Preset shapes */}
+                        <div>
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Szybki wybór</label>
+                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                            {shapePresets.map((preset, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => { setDotType(preset.dots); setCornerSquareType(preset.cornerSquare); setCornerDotType(preset.cornerDot) }}
+                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex flex-col items-center justify-center gap-1 ${
+                                  dotType === preset.dots && cornerSquareType === preset.cornerSquare
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                              >
+                                <ShapePreviewIcon dots={preset.dots} className="w-8 h-8" />
+                                <span className="text-[10px] text-[var(--foreground-muted)]">{preset.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Corner Frame (Ramka) */}
+                        <div>
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</label>
+                          <div className="flex gap-2">
+                            {cornerSquareTypes.map((item) => (
+                              <button
+                                key={item.type}
+                                onClick={() => setCornerSquareType(item.type)}
+                                className={`flex-1 py-2 px-3 rounded-lg border-2 text-xs font-medium transition-all ${
+                                  cornerSquareType === item.type
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5 text-[var(--foreground)]'
+                                    : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)]'
+                                }`}
+                              >
+                                {item.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Corner Dot (Środek) */}
+                        <div>
+                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</label>
+                          <div className="flex gap-2">
+                            {cornerDotTypes.map((item) => (
+                              <button
+                                key={item.type}
+                                onClick={() => setCornerDotType(item.type)}
+                                className={`flex-1 py-2 px-3 rounded-lg border-2 text-xs font-medium transition-all ${
+                                  cornerDotType === item.type
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5 text-[var(--foreground)]'
+                                    : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)]'
+                                }`}
+                              >
+                                {item.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     )}
 
