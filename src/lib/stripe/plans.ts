@@ -18,7 +18,7 @@ export const PLANS = {
   },
   pro: {
     name: 'Pro',
-    price: 79,
+    price: 69,
     qrLimit: 100,
     scanLimit: 100000,
     priceId: process.env.STRIPE_PRO_PRICE_ID || null,
