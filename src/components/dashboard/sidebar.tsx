@@ -17,7 +17,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--border)] bg-[var(--background-surface)]">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--border)] bg-white shadow-sm">
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center border-b border-[var(--border)] px-6">
           <Link href="/dashboard" className="text-xl font-bold gradient-text">
@@ -36,8 +36,8 @@ export function Sidebar() {
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30'
-                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)]'
+                    ? 'bg-[var(--primary)]/10 text-[var(--primary)] shadow-sm'
+                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--foreground)]'
                 )}
               >
                 <item.icon
@@ -53,7 +53,7 @@ export function Sidebar() {
           <form action={logout}>
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)] transition-all duration-200"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-surface)] hover:text-[var(--error)] transition-all duration-200"
             >
               <LogoutIcon className="h-5 w-5 text-[var(--foreground-subtle)]" />
               Wyloguj się

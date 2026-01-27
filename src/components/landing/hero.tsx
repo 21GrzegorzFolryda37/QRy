@@ -3,11 +3,15 @@ import { Button } from '@/components/ui'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[var(--background)] py-20 sm:py-32 pt-32">
-      {/* Glow orbs */}
-      <div className="glow-orb glow-orb-primary w-96 h-96 -top-48 -left-48 animate-pulse-glow" />
-      <div className="glow-orb glow-orb-secondary w-80 h-80 top-1/4 -right-40 animate-pulse-glow animate-delay-500" />
-      <div className="glow-orb glow-orb-primary w-64 h-64 bottom-0 left-1/3 animate-pulse-glow animate-delay-300" />
+    <section className="relative overflow-hidden py-20 sm:py-32 pt-32">
+      {/* Gradient background */}
+      <div className="absolute inset-0 hero-gradient" />
+      <div className="absolute inset-0 hero-pattern" />
+
+      {/* Soft glow orbs for light mode */}
+      <div className="glow-orb glow-orb-primary w-[500px] h-[500px] -top-64 -left-64 animate-pulse-glow" />
+      <div className="glow-orb glow-orb-secondary w-[400px] h-[400px] top-1/4 -right-48 animate-pulse-glow animate-delay-500" />
+      <div className="glow-orb glow-orb-primary w-[300px] h-[300px] bottom-0 left-1/3 animate-pulse-glow animate-delay-300" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -23,7 +27,9 @@ export function Hero() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6 animate-fade-in-up animate-delay-200">
             <Link href="/register">
-              <Button variant="gradient" size="lg">Zacznij za darmo</Button>
+              <Button variant="gradient" size="lg" className="shadow-lg shadow-[var(--primary)]/25">
+                Zacznij za darmo
+              </Button>
             </Link>
             <Link
               href="/features"
@@ -35,18 +41,18 @@ export function Hero() {
         </div>
 
         <div className="mt-16 flex justify-center animate-fade-in-up animate-delay-300">
-          <div className="relative rounded-2xl gradient-border p-1">
-            <div className="rounded-xl bg-[var(--background-surface)] p-8">
+          <div className="relative rounded-2xl gradient-border p-1 shadow-xl">
+            <div className="rounded-xl bg-white p-8">
               <div className="flex items-center justify-center gap-8">
                 <div className="text-center animate-float">
-                  <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-primary">
+                  <div className="w-40 h-40 bg-[var(--background-surface)] rounded-xl flex items-center justify-center border border-[var(--border)] shadow-lg shadow-[var(--primary)]/10">
                     <QrCodeIcon className="w-24 h-24 text-[var(--primary)]" />
                   </div>
                   <p className="mt-4 text-sm text-[var(--foreground-muted)]">Twój markowy kod QR</p>
                 </div>
                 <ArrowIcon className="w-8 h-8 text-[var(--secondary)] animate-pulse" />
                 <div className="text-center animate-float animate-delay-200">
-                  <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-secondary">
+                  <div className="w-40 h-40 bg-[var(--background-surface)] rounded-xl flex items-center justify-center border border-[var(--border)] shadow-lg shadow-[var(--secondary)]/10">
                     <ChartIcon className="w-24 h-24 text-[var(--secondary)]" />
                   </div>
                   <p className="mt-4 text-sm text-[var(--foreground-muted)]">Analityka w czasie rzeczywistym</p>

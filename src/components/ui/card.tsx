@@ -9,10 +9,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', hover = false, ...props }, ref) => {
     const variants = {
-      default: 'bg-[var(--background-surface)] border border-[var(--border)]',
-      elevated: 'bg-[var(--background-elevated)] border border-[var(--border)] shadow-lg',
-      glow: 'bg-[var(--background-surface)] border border-[var(--border)] shadow-lg shadow-[var(--primary-muted)]',
-      'gradient-border': 'gradient-border',
+      default: 'bg-[var(--background-elevated)] border border-[var(--border)] shadow-sm',
+      elevated: 'bg-[var(--background-elevated)] border border-[var(--border)] shadow-md',
+      glow: 'bg-[var(--background-elevated)] border-2 border-[var(--primary)]/30 shadow-lg shadow-[var(--primary)]/10',
+      'gradient-border': 'gradient-border shadow-md',
     }
 
     return (
@@ -21,7 +21,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           'rounded-xl',
           variants[variant],
-          hover && 'hover-lift cursor-pointer',
+          hover && 'hover-lift cursor-pointer transition-all duration-300',
           className
         )}
         {...props}

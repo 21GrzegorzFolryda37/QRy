@@ -95,10 +95,10 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <Card className="border-green-500/30 bg-green-500/5">
+      <Card className="border-[var(--secondary)]/30 bg-[var(--secondary)]/5">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[var(--secondary)] animate-pulse" />
             <CardTitle className="text-lg">W czasie rzeczywistym</CardTitle>
           </div>
         </CardHeader>

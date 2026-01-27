@@ -3,9 +3,9 @@ import { Button } from '@/components/ui'
 
 export function CTA() {
   return (
-    <section className="relative py-24 sm:py-32 overflow-hidden">
+    <section className="relative py-24 sm:py-32 overflow-hidden bg-[var(--background-surface)]">
       {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--background-surface)] to-[var(--secondary)] opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 via-transparent to-[var(--secondary)]/5" />
 
       {/* Animated glow orbs */}
       <div className="glow-orb glow-orb-primary w-96 h-96 top-0 left-1/4 animate-pulse-glow" />
@@ -25,7 +25,7 @@ export function CTA() {
               <Button
                 variant="gradient"
                 size="lg"
-                className="animate-glow-border"
+                className="shadow-lg shadow-[var(--primary)]/25"
               >
                 Zacznij za darmo
               </Button>

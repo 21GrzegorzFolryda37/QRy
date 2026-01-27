@@ -9,10 +9,10 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'EngageQR - Dynamic QR Codes with Analytics',
+  title: 'EngageQR - Dynamiczne kody QR z analityką',
   description:
-    'Create branded, trackable QR codes that help you understand your audience. Update destinations anytime without reprinting. Get real-time insights on scans, locations, and devices.',
-  keywords: ['QR code', 'QR code generator', 'dynamic QR code', 'QR analytics', 'branded QR code'],
+    'Twórz markowe, śledzalne kody QR, które pomogą Ci zrozumieć odbiorców. Aktualizuj cele w dowolnym momencie bez ponownego drukowania. Uzyskaj wgląd w skany, lokalizacje i urządzenia w czasie rzeczywistym.',
+  keywords: ['kod QR', 'generator kodów QR', 'dynamiczny kod QR', 'analityka QR', 'markowy kod QR'],
 }
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="pl">
       <body className={`${inter.variable} font-sans antialiased bg-[var(--background)] text-[var(--foreground)]`}>
         {children}
         <CookieConsent />
