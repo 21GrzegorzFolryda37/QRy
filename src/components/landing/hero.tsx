@@ -5,12 +5,7 @@ import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type TabType = 'sticker' | 'color' | 'shapes' | 'logo'
-
-// qr-code-styling supported types
-type DotType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'
-type CornerSquareType = 'square' | 'dot' | 'extra-rounded'
-type CornerDotType = 'square' | 'dot'
+type TabType = 'sticker' | 'color' | 'logo'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Website', icon: 'globe' },
@@ -72,38 +67,6 @@ const colorPresets = [
   { dots: '#0891b2', bg: '#ecfeff', cornerSquare: '#22d3ee', cornerDot: '#0891b2' },
 ]
 
-const shapePresets: { dots: DotType; cornerSquare: CornerSquareType; cornerDot: CornerDotType; label: string }[] = [
-  { dots: 'square', cornerSquare: 'square', cornerDot: 'square', label: 'Kwadrat' },
-  { dots: 'rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Zaokrąglone' },
-  { dots: 'dots', cornerSquare: 'dot', cornerDot: 'dot', label: 'Kropki' },
-  { dots: 'classy', cornerSquare: 'square', cornerDot: 'square', label: 'Klasyczne' },
-  { dots: 'classy-rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Eleganckie' },
-  { dots: 'extra-rounded', cornerSquare: 'extra-rounded', cornerDot: 'dot', label: 'Okrągłe' },
-]
-
-// qr-code-styling supports 3 corner square types
-const cornerSquareShapes: { id: string; type: CornerSquareType; label: string }[] = [
-  { id: 'square', type: 'square', label: 'Kwadrat' },
-  { id: 'dot', type: 'dot', label: 'Koło' },
-  { id: 'extra-rounded', type: 'extra-rounded', label: 'Zaokrąglone' },
-]
-
-// qr-code-styling supports 2 corner dot types
-const cornerDotShapes: { id: string; type: CornerDotType; label: string }[] = [
-  { id: 'square', type: 'square', label: 'Kwadrat' },
-  { id: 'dot', type: 'dot', label: 'Koło' },
-]
-
-// qr-code-styling supports 6 dot types
-const dotShapes: { id: string; type: DotType; label: string }[] = [
-  { id: 'square', type: 'square', label: 'Kwadrat' },
-  { id: 'dots', type: 'dots', label: 'Kropki' },
-  { id: 'rounded', type: 'rounded', label: 'Zaokrąglone' },
-  { id: 'extra-rounded', type: 'extra-rounded', label: 'Bardzo zaokrąglone' },
-  { id: 'classy', type: 'classy', label: 'Klasyczne' },
-  { id: 'classy-rounded', type: 'classy-rounded', label: 'Klasyczne zaokrąglone' },
-]
-
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
@@ -118,12 +81,6 @@ export function Hero() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
-  const [dotShapeId, setDotShapeId] = useState('rounded')
-  const dotType = dotShapes.find(s => s.id === dotShapeId)?.type || 'rounded'
-  const [cornerSquareShapeId, setCornerSquareShapeId] = useState('extra-rounded')
-  const cornerSquareType = cornerSquareShapes.find(s => s.id === cornerSquareShapeId)?.type || 'extra-rounded'
-  const [cornerDotShapeId, setCornerDotShapeId] = useState('dot')
-  const cornerDotType = cornerDotShapes.find(s => s.id === cornerDotShapeId)?.type || 'dot'
   const [logo, setLogo] = useState<string | null>(null)
 
   // Download state
@@ -198,9 +155,9 @@ export function Hero() {
       height: 200,
       type: 'svg',
       data: getQRData(),
-      dotsOptions: { color: dotColor, type: dotType },
-      cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareType },
-      cornersDotOptions: { color: cornerDotColor, type: cornerDotType },
+      dotsOptions: { color: dotColor, type: 'square' },
+      cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
+      cornersDotOptions: { color: cornerDotColor, type: 'square' },
       backgroundOptions: { color: backgroundColor },
       imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
     })
@@ -213,14 +170,14 @@ export function Hero() {
     if (qrCodeRef.current) {
       qrCodeRef.current.update({
         data: getQRData(),
-        dotsOptions: { color: dotColor, type: dotType },
-        cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareType },
-        cornersDotOptions: { color: cornerDotColor, type: cornerDotType },
+        dotsOptions: { color: dotColor, type: 'square' },
+        cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
+        cornersDotOptions: { color: cornerDotColor, type: 'square' },
         backgroundOptions: { color: backgroundColor },
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotType, cornerSquareType, cornerDotType, logo])
+  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -266,9 +223,8 @@ export function Hero() {
 
   const currentFrame = frameTemplates.find(f => f.id === selectedFrame)
   const tabs: { id: TabType; label: string }[] = [
-    { id: 'sticker', label: 'NAKLEJKA' },
+    { id: 'sticker', label: 'RAMKA' },
     { id: 'color', label: 'KOLOR' },
-    { id: 'shapes', label: 'KSZTAŁTY' },
     { id: 'logo', label: 'LOGO' },
   ]
 
@@ -555,115 +511,6 @@ export function Hero() {
                       </div>
                     )}
 
-                    {activeTab === 'shapes' && (
-                      <div className="space-y-5">
-                        {/* Dot shapes (Kropki) */}
-                        <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Kropki</label>
-                          <div className="grid grid-cols-6 gap-2 mb-2">
-                            {dotShapes.map((item) => (
-                              <button
-                                key={item.id}
-                                onClick={() => setDotShapeId(item.id)}
-                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  dotShapeId === item.id
-                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                }`}
-                                title={item.label}
-                              >
-                                <ShapePreviewIcon shapeId={item.id} className="w-6 h-6" />
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
-                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
-                              <button
-                                key={color}
-                                onClick={() => setDotColor(color)}
-                                className={`w-6 h-6 rounded-full border-2 transition-all ${dotColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
-                              <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Corner Frame (Ramka narożnika) */}
-                        <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</label>
-                          <div className="grid grid-cols-6 gap-2 mb-2">
-                            {cornerSquareShapes.map((item) => (
-                              <button
-                                key={item.id}
-                                onClick={() => setCornerSquareShapeId(item.id)}
-                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  cornerSquareShapeId === item.id
-                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                }`}
-                                title={item.label}
-                              >
-                                <CornerSquarePreviewIcon shapeId={item.id} className="w-6 h-6" />
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
-                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
-                              <button
-                                key={color}
-                                onClick={() => setCornerSquareColor(color)}
-                                className={`w-6 h-6 rounded-full border-2 transition-all ${cornerSquareColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
-                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Corner Dot (Środek narożnika) */}
-                        <div>
-                          <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</label>
-                          <div className="grid grid-cols-6 gap-2 mb-2">
-                            {cornerDotShapes.map((item) => (
-                              <button
-                                key={item.id}
-                                onClick={() => setCornerDotShapeId(item.id)}
-                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  cornerDotShapeId === item.id
-                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                }`}
-                                title={item.label}
-                              >
-                                <CornerDotPreviewIcon shapeId={item.id} className="w-6 h-6" />
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-[var(--foreground-muted)]">Kolor:</span>
-                            {['#000000', '#8b5cf6', '#06b6d4', '#dc2626', '#059669', '#ea580c', '#1e40af'].map((color) => (
-                              <button
-                                key={color}
-                                onClick={() => setCornerDotColor(color)}
-                                className={`w-6 h-6 rounded-full border-2 transition-all ${cornerDotColor === color ? 'border-[var(--success)] scale-110' : 'border-[var(--border)] hover:scale-105'}`}
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                            <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] overflow-hidden relative" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}>
-                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     {activeTab === 'logo' && (
                       <div>
                         {!logo ? (
@@ -770,41 +617,6 @@ function TypeIcon({ type, className }: { type: string; className?: string }) {
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">{icons[type]}</svg>
 }
 
-function ShapePreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
-  const shapes: Record<string, React.ReactNode> = {
-    // Kwadrat
-    square: <><rect x="2" y="2" width="6" height="6" fill="currentColor"/><rect x="10" y="2" width="6" height="6" fill="currentColor"/><rect x="2" y="10" width="6" height="6" fill="currentColor"/><rect x="10" y="10" width="6" height="6" fill="currentColor"/></>,
-    // Kropki (dots)
-    dots: <><circle cx="5" cy="5" r="3" fill="currentColor"/><circle cx="13" cy="5" r="3" fill="currentColor"/><circle cx="5" cy="13" r="3" fill="currentColor"/><circle cx="13" cy="13" r="3" fill="currentColor"/></>,
-    // Zaokrąglone
-    rounded: <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/></>,
-    // Bardzo zaokrąglone
-    'extra-rounded': <><rect x="2" y="2" width="6" height="6" rx="3" fill="currentColor"/><rect x="10" y="2" width="6" height="6" rx="3" fill="currentColor"/><rect x="2" y="10" width="6" height="6" rx="3" fill="currentColor"/><rect x="10" y="10" width="6" height="6" rx="3" fill="currentColor"/></>,
-    // Klasyczne
-    classy: <><rect x="2" y="2" width="6" height="6" fill="currentColor"/><rect x="2" y="2" width="3" height="3" fill="white"/><rect x="10" y="2" width="6" height="6" fill="currentColor"/><rect x="10" y="2" width="3" height="3" fill="white"/><rect x="2" y="10" width="6" height="6" fill="currentColor"/><rect x="2" y="10" width="3" height="3" fill="white"/><rect x="10" y="10" width="6" height="6" fill="currentColor"/><rect x="10" y="10" width="3" height="3" fill="white"/></>,
-    // Klasyczne zaokrąglone
-    'classy-rounded': <><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="2" y="2" width="3" height="3" rx="0.75" fill="white"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="2" width="3" height="3" rx="0.75" fill="white"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="2" y="10" width="3" height="3" rx="0.75" fill="white"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="10" width="3" height="3" rx="0.75" fill="white"/></>,
-  }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
-}
-
-function CornerSquarePreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
-  const shapes: Record<string, React.ReactNode> = {
-    square: <rect x="2" y="2" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
-    dot: <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
-    'extra-rounded': <rect x="2" y="2" width="14" height="14" rx="5" stroke="currentColor" strokeWidth="2.5" fill="none"/>,
-  }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
-}
-
-function CornerDotPreviewIcon({ shapeId, className }: { shapeId: string; className?: string }) {
-  const shapes: Record<string, React.ReactNode> = {
-    square: <rect x="4" y="4" width="10" height="10" fill="currentColor"/>,
-    dot: <circle cx="9" cy="9" r="5" fill="currentColor"/>,
-  }
-  return <svg className={className} viewBox="0 0 18 18" fill="none">{shapes[shapeId] || shapes.square}</svg>
-}
-
 function FramePreviewIcon({ frameId, className }: { frameId: string; className?: string }) {
   const frames: Record<string, React.ReactNode> = {
     none: (
@@ -900,191 +712,136 @@ function QRFrameWrapper({
   dotColor: string
   children: React.ReactNode
 }) {
-  const baseQrWrapper = "bg-white flex items-center justify-center"
+  // Use a stable structure - children always rendered in the same place
+  // Frame decorations are added around without changing children's tree position
 
-  if (frameStyle === 'none') {
-    return (
-      <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border border-[var(--border)]`}>
-        {children}
-      </div>
-    )
+  const getFrameClasses = () => {
+    switch (frameStyle) {
+      case 'none': return 'rounded-xl p-4 border border-[var(--border)]'
+      case 'simple': return 'p-3'
+      case 'rounded': return 'rounded-xl p-3'
+      case 'badge-top': return 'rounded-b-xl rounded-t-none p-4 border-2'
+      case 'badge-bottom': return 'rounded-t-xl rounded-b-none p-4 border-2'
+      case 'bubble': return 'rounded-2xl p-4 border-2'
+      case 'pointer': return 'rounded-xl p-4 border-2'
+      case 'ticket': return 'rounded-lg p-3'
+      case 'stamp': return 'rounded-lg p-2'
+      case 'ribbon': return 'rounded-xl p-4 border-2'
+      case 'chat': return 'rounded-2xl rounded-bl-none p-4 border-2'
+      case 'hexagon': return 'p-3'
+      default: return 'rounded-xl p-4 border border-[var(--border)]'
+    }
   }
 
-  if (frameStyle === 'simple') {
-    return (
-      <div className="p-1 shadow-lg" style={{ backgroundColor: dotColor }}>
-        <div className={`${baseQrWrapper} p-3`}>
-          {children}
-        </div>
-        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white">
-          {text}
-        </div>
-      </div>
-    )
+  const getFrameStyle = (): React.CSSProperties => {
+    if (frameStyle === 'none') return {}
+    if (['simple', 'rounded', 'ticket'].includes(frameStyle)) return {}
+    return { borderColor: dotColor }
   }
 
-  if (frameStyle === 'rounded') {
-    return (
-      <div className="rounded-2xl p-1 shadow-lg" style={{ backgroundColor: dotColor }}>
-        <div className={`${baseQrWrapper} rounded-xl p-3`}>
-          {children}
-        </div>
-        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white">
-          {text}
-        </div>
-      </div>
-    )
-  }
+  const showText = frameStyle !== 'none'
+  const hasOuterWrapper = ['simple', 'rounded', 'ticket', 'stamp'].includes(frameStyle)
+  const hasTopDecoration = ['badge-top', 'pointer', 'ribbon'].includes(frameStyle)
+  const hasBottomDecoration = ['badge-bottom', 'bubble', 'chat'].includes(frameStyle)
 
-  if (frameStyle === 'badge-top') {
-    return (
-      <div className="relative pt-6">
-        <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-t-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-          {text}
+  return (
+    <div className="relative">
+      {/* Top decorations */}
+      {hasTopDecoration && (
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
+          {frameStyle === 'badge-top' && (
+            <div className="px-4 py-1.5 rounded-t-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+              {text}
+            </div>
+          )}
+          {frameStyle === 'pointer' && (
+            <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[12px] border-l-transparent border-r-transparent mb-1" style={{ borderBottomColor: dotColor }} />
+          )}
+          {frameStyle === 'ribbon' && (
+            <div className="relative">
+              <div className="px-6 py-1 text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+                {text}
+              </div>
+              <div className="absolute -left-2 bottom-0 w-0 h-0 border-t-[8px] border-r-[8px] border-t-transparent" style={{ borderRightColor: dotColor, filter: 'brightness(0.7)' }} />
+              <div className="absolute -right-2 bottom-0 w-0 h-0 border-t-[8px] border-l-[8px] border-t-transparent" style={{ borderLeftColor: dotColor, filter: 'brightness(0.7)' }} />
+            </div>
+          )}
         </div>
-        <div className={`${baseQrWrapper} rounded-b-xl rounded-t-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
-          {children}
-        </div>
-      </div>
-    )
-  }
+      )}
 
-  if (frameStyle === 'badge-bottom') {
-    return (
-      <div className="relative pb-6">
-        <div className={`${baseQrWrapper} rounded-t-xl rounded-b-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
-          {children}
-        </div>
-        <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-b-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-          {text}
-        </div>
-      </div>
-    )
-  }
+      {/* Main container with optional outer wrapper */}
+      <div
+        className={hasOuterWrapper ? `p-1 shadow-lg ${frameStyle === 'rounded' ? 'rounded-2xl' : frameStyle === 'ticket' ? 'rounded-xl' : frameStyle === 'stamp' ? 'rounded-full border-4 border-dashed p-3' : ''}` : 'shadow-lg'}
+        style={hasOuterWrapper && frameStyle !== 'stamp' ? { backgroundColor: dotColor } : frameStyle === 'stamp' ? { borderColor: dotColor } : {}}
+      >
+        {/* Ticket notches */}
+        {frameStyle === 'ticket' && (
+          <>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
+          </>
+        )}
 
-  if (frameStyle === 'bubble') {
-    return (
-      <div className="relative">
-        <div className={`${baseQrWrapper} rounded-2xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
+        {/* QR Code container - always in the same place */}
+        <div
+          className={`bg-white flex items-center justify-center ${getFrameClasses()}`}
+          style={getFrameStyle()}
+        >
           {children}
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-            <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: dotColor }} />
+        </div>
+
+        {/* Inner text for frames with outer wrapper */}
+        {hasOuterWrapper && frameStyle !== 'stamp' && (
+          <div className={`text-center py-1.5 text-[10px] font-bold tracking-wider text-white ${frameStyle === 'ticket' ? 'border-t border-dashed border-white/30' : ''}`}>
+            {text}
           </div>
-        </div>
-        <div className="text-center mt-4 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-          {text}
-        </div>
+        )}
       </div>
-    )
-  }
 
-  if (frameStyle === 'pointer') {
-    return (
-      <div className="relative pt-4">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[12px] border-l-transparent border-r-transparent" style={{ borderBottomColor: dotColor }} />
-        </div>
-        <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
-          {children}
-        </div>
-        <div className="text-center mt-2 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-          {text}
-        </div>
-      </div>
-    )
-  }
+      {/* Bottom decorations */}
+      {hasBottomDecoration && (
+        <>
+          {frameStyle === 'badge-bottom' && (
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-b-lg text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
+              {text}
+            </div>
+          )}
+          {frameStyle === 'bubble' && (
+            <>
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+                <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: dotColor }} />
+              </div>
+              <div className="text-center mt-4 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+                {text}
+              </div>
+            </>
+          )}
+          {frameStyle === 'chat' && (
+            <>
+              <div className="absolute -bottom-0 left-4">
+                <div className="w-0 h-0 border-t-[12px] border-r-[12px] border-r-transparent" style={{ borderTopColor: dotColor }} />
+              </div>
+              <div className="absolute -bottom-5 left-8 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
+                {text}
+              </div>
+            </>
+          )}
+        </>
+      )}
 
-  if (frameStyle === 'ticket') {
-    return (
-      <div className="relative p-1 rounded-xl shadow-lg" style={{ backgroundColor: dotColor }}>
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[var(--background-surface)]" />
-        <div className={`${baseQrWrapper} rounded-lg p-3`}>
-          {children}
-        </div>
-        <div className="text-center py-1.5 text-[10px] font-bold tracking-wider text-white border-t border-dashed border-white/30">
-          {text}
-        </div>
-      </div>
-    )
-  }
-
-  if (frameStyle === 'stamp') {
-    return (
-      <div className="relative">
-        <div className="rounded-full p-3 shadow-lg border-4 border-dashed" style={{ borderColor: dotColor }}>
-          <div className={`${baseQrWrapper} rounded-lg p-2`}>
-            {children}
-          </div>
-        </div>
+      {/* Stamp text */}
+      {frameStyle === 'stamp' && (
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded text-[9px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
           {text}
         </div>
-      </div>
-    )
-  }
+      )}
 
-  if (frameStyle === 'ribbon') {
-    return (
-      <div className="relative pt-5">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
-          <div className="relative">
-            <div className="px-6 py-1 text-[10px] font-bold tracking-wider text-white" style={{ backgroundColor: dotColor }}>
-              {text}
-            </div>
-            <div className="absolute -left-2 bottom-0 w-0 h-0 border-t-[8px] border-r-[8px] border-t-transparent" style={{ borderRightColor: dotColor, filter: 'brightness(0.7)' }} />
-            <div className="absolute -right-2 bottom-0 w-0 h-0 border-t-[8px] border-l-[8px] border-t-transparent" style={{ borderLeftColor: dotColor, filter: 'brightness(0.7)' }} />
-          </div>
-        </div>
-        <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
-          {children}
-        </div>
-      </div>
-    )
-  }
-
-  if (frameStyle === 'chat') {
-    return (
-      <div className="relative pb-3">
-        <div className={`${baseQrWrapper} rounded-2xl rounded-bl-none p-4 shadow-lg border-2`} style={{ borderColor: dotColor }}>
-          {children}
-        </div>
-        <div className="absolute -bottom-0 left-4">
-          <div className="w-0 h-0 border-t-[12px] border-r-[12px] border-r-transparent" style={{ borderTopColor: dotColor }} />
-        </div>
-        <div className="absolute -bottom-5 left-8 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
-          {text}
-        </div>
-      </div>
-    )
-  }
-
-  if (frameStyle === 'hexagon') {
-    return (
-      <div className="relative">
-        <div className="p-4 shadow-lg" style={{
-          backgroundColor: 'white',
-          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-          border: `3px solid ${dotColor}`
-        }}>
-          <div className="p-2" style={{
-            backgroundColor: 'white',
-            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-          }}>
-            {children}
-          </div>
-        </div>
+      {/* Text for pointer and hexagon */}
+      {(frameStyle === 'pointer' || frameStyle === 'hexagon') && (
         <div className="text-center mt-2 text-[10px] font-bold tracking-wider" style={{ color: dotColor }}>
           {text}
         </div>
-      </div>
-    )
-  }
-
-  // Default fallback
-  return (
-    <div className={`${baseQrWrapper} rounded-xl p-4 shadow-lg border border-[var(--border)]`}>
-      {children}
+      )}
     </div>
   )
 }
