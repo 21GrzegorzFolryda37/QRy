@@ -35,27 +35,27 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       />
 
       {state?.error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-600">{state.error}</p>
+        <div className="rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/30 p-3">
+          <p className="text-sm text-[var(--error)]">{state.error}</p>
         </div>
       )}
 
-      <Button type="submit" className="w-full" isLoading={isPending}>
+      <Button type="submit" variant="gradient" className="w-full" isLoading={isPending}>
         Sign in
       </Button>
 
       <div className="text-center text-sm">
         <Link
           href="/forgot-password"
-          className="text-gray-600 hover:text-gray-900 underline underline-offset-2"
+          className="text-[var(--foreground-muted)] hover:text-[var(--primary)] transition-colors"
         >
           Forgot your password?
         </Link>
       </div>
 
-      <div className="text-center text-sm text-gray-600">
+      <div className="text-center text-sm text-[var(--foreground-muted)]">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="text-gray-900 font-medium hover:underline">
+        <Link href="/register" className="text-[var(--primary)] font-medium hover:text-[var(--primary-hover)] transition-colors">
           Sign up
         </Link>
       </div>

@@ -36,21 +36,21 @@ export function RegisterForm() {
         required
         autoComplete="new-password"
       />
-      <p className="text-xs text-gray-500 -mt-2">Must be at least 8 characters</p>
+      <p className="text-xs text-[var(--foreground-subtle)] -mt-2">Must be at least 8 characters</p>
 
       {state?.error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-600">{state.error}</p>
+        <div className="rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/30 p-3">
+          <p className="text-sm text-[var(--error)]">{state.error}</p>
         </div>
       )}
 
-      <Button type="submit" className="w-full" isLoading={isPending}>
+      <Button type="submit" variant="gradient" className="w-full" isLoading={isPending}>
         Create account
       </Button>
 
-      <div className="text-center text-sm text-gray-600">
+      <div className="text-center text-sm text-[var(--foreground-muted)]">
         Already have an account?{' '}
-        <Link href="/login" className="text-gray-900 font-medium hover:underline">
+        <Link href="/login" className="text-[var(--primary)] font-medium hover:text-[var(--primary-hover)] transition-colors">
           Sign in
         </Link>
       </div>

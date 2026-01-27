@@ -7,12 +7,12 @@ interface DeviceChartProps {
   data: DeviceBreakdown[]
 }
 
-const COLORS = ['#111827', '#374151', '#6b7280', '#9ca3af', '#d1d5db']
+const COLORS = ['#8b5cf6', '#06b6d4', '#a78bfa', '#22d3ee', '#c4b5fd']
 
 export function DeviceChart({ data }: DeviceChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex h-[250px] items-center justify-center text-gray-500">
+      <div className="flex h-[250px] items-center justify-center text-[var(--foreground-muted)]">
         No device data available
       </div>
     )
@@ -46,14 +46,15 @@ export function DeviceChart({ data }: DeviceChartProps) {
             return [`${value} (${payload?.percentage ?? 0}%)`, name]
           }}
           contentStyle={{
-            backgroundColor: 'white',
-            border: '1px solid #e5e7eb',
-            borderRadius: '6px',
+            backgroundColor: 'var(--background-elevated)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--foreground)',
           }}
         />
         <Legend
-          formatter={(value, entry) => (
-            <span className="text-sm text-gray-600">{value}</span>
+          formatter={(value) => (
+            <span className="text-sm text-[var(--foreground-muted)]">{value}</span>
           )}
         />
       </PieChart>

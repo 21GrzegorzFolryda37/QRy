@@ -46,32 +46,32 @@ function ScanItem({ scan, isNew }: { scan: RecentScan; isNew: boolean }) {
   return (
     <div
       className={`flex items-start gap-3 p-3 rounded-lg transition-all duration-500 ${
-        isNew ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+        isNew ? 'bg-[var(--success)]/10 border border-[var(--success)]/30' : 'bg-[var(--background-elevated)]'
       }`}
     >
-      <div className="flex-shrink-0 mt-0.5 text-gray-400">
+      <div className="flex-shrink-0 mt-0.5 text-[var(--foreground-subtle)]">
         {getDeviceIcon(scan.deviceType)}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <Link
             href={`/qr-codes/${scan.qrCodeId}`}
-            className="text-sm font-medium text-gray-900 hover:underline truncate"
+            className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--primary)] transition-colors truncate"
           >
             {scan.qrCodeName}
           </Link>
           {isNew && (
-            <span className="flex-shrink-0 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+            <span className="flex-shrink-0 text-xs bg-[var(--success)]/20 text-[var(--success)] px-1.5 py-0.5 rounded">
               Nowy
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
+        <div className="flex items-center gap-2 mt-0.5 text-xs text-[var(--foreground-muted)]">
           <span>{getLocationString(scan)}</span>
           <span>-</span>
           <span>{scan.browser || 'Unknown'}</span>
         </div>
-        <div className="text-xs text-gray-400 mt-1">
+        <div className="text-xs text-[var(--foreground-subtle)] mt-1">
           {formatDistanceToNow(new Date(scan.scannedAt), { addSuffix: true, locale: pl })}
         </div>
       </div>
@@ -126,7 +126,7 @@ export function RealtimeCard({ userId }: RealtimeCardProps) {
   if (loading && scans.length === 0) {
     return (
       <div className="flex items-center justify-center h-32">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--primary)]" />
       </div>
     )
   }
@@ -135,26 +135,26 @@ export function RealtimeCard({ userId }: RealtimeCardProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="text-3xl font-bold text-green-600">{activeUsersCount}</div>
-          <div className="text-sm text-gray-600">
+          <div className="text-3xl font-bold text-[var(--secondary)]">{activeUsersCount}</div>
+          <div className="text-sm text-[var(--foreground-muted)]">
             {activeUsersCount === 1 ? 'skan' : activeUsersCount < 5 ? 'skany' : 'skanow'} w ostatnich 30 min
           </div>
         </div>
         {connectionStatus === 'connected' && (
-          <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="flex items-center gap-1.5 text-xs text-[var(--success)] bg-[var(--success)]/10 px-2 py-1 rounded-full">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" />
             Live
           </span>
         )}
       </div>
 
       {scans.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <svg className="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-8 text-[var(--foreground-muted)]">
+          <svg className="mx-auto h-8 w-8 text-[var(--foreground-subtle)] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <p className="text-sm">Brak skanow w ostatnich 30 minutach</p>
-          <p className="text-xs text-gray-400 mt-1">Nowe skany pojawia sie tutaj w czasie rzeczywistym</p>
+          <p className="text-xs text-[var(--foreground-subtle)] mt-1">Nowe skany pojawia sie tutaj w czasie rzeczywistym</p>
         </div>
       ) : (
         <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -166,7 +166,7 @@ export function RealtimeCard({ userId }: RealtimeCardProps) {
             />
           ))}
           {scans.length > 10 && (
-            <div className="text-center text-xs text-gray-500 pt-2">
+            <div className="text-center text-xs text-[var(--foreground-muted)] pt-2">
               + {scans.length - 10} wiecej skanow
             </div>
           )}

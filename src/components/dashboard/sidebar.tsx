@@ -17,10 +17,10 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-gray-200 bg-white">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-[var(--border)] bg-[var(--background-surface)]">
       <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center border-b border-gray-200 px-6">
-          <Link href="/dashboard" className="text-xl font-bold text-gray-900">
+        <div className="flex h-16 items-center border-b border-[var(--border)] px-6">
+          <Link href="/dashboard" className="text-xl font-bold gradient-text">
             EngageQR
           </Link>
         </div>
@@ -34,14 +34,14 @@ export function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30'
+                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)]'
                 )}
               >
                 <item.icon
-                  className={cn('h-5 w-5', isActive ? 'text-gray-900' : 'text-gray-400')}
+                  className={cn('h-5 w-5', isActive ? 'text-[var(--primary)]' : 'text-[var(--foreground-subtle)]')}
                 />
                 {item.name}
               </Link>
@@ -49,13 +49,13 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-[var(--border)] p-4">
           <form action={logout}>
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)] transition-all duration-200"
             >
-              <LogoutIcon className="h-5 w-5 text-gray-400" />
+              <LogoutIcon className="h-5 w-5 text-[var(--foreground-subtle)]" />
               Sign out
             </button>
           </form>

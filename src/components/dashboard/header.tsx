@@ -9,18 +9,18 @@ interface HeaderProps {
 
 export function Header({ profile }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] glass px-6">
       <div />
       <div className="flex items-center gap-4">
         {profile && (
           <>
             <Badge
-              variant={profile.plan === 'free' ? 'outline' : 'success'}
+              variant={profile.plan === 'free' ? 'outline' : 'primary'}
               className="capitalize"
             >
               {profile.plan}
             </Badge>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-[var(--foreground-muted)]">
               {profile.full_name || profile.email}
             </span>
           </>

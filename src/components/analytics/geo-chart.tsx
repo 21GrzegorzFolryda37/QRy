@@ -19,7 +19,7 @@ interface GeoChartProps {
 export function GeoChart({ data, limit = 5 }: GeoChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex h-[250px] items-center justify-center text-gray-500">
+      <div className="flex h-[250px] items-center justify-center text-[var(--foreground-muted)]">
         No geographic data available
       </div>
     )
@@ -34,24 +34,44 @@ export function GeoChart({ data, limit = 5 }: GeoChartProps) {
         layout="vertical"
         margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
-        <XAxis type="number" stroke="#9ca3af" fontSize={12} allowDecimals={false} />
+        <defs>
+          <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#06b6d4" />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+        <XAxis
+          type="number"
+          stroke="var(--foreground-subtle)"
+          fontSize={12}
+          allowDecimals={false}
+          tickLine={false}
+          axisLine={false}
+        />
         <YAxis
           type="category"
           dataKey="country"
-          stroke="#9ca3af"
+          stroke="var(--foreground-subtle)"
           fontSize={12}
           width={80}
+          tickLine={false}
+          axisLine={false}
         />
         <Tooltip
           formatter={(value) => [value, 'Scans']}
           contentStyle={{
-            backgroundColor: 'white',
-            border: '1px solid #e5e7eb',
-            borderRadius: '6px',
+            backgroundColor: 'var(--background-elevated)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--foreground)',
           }}
+          labelStyle={{
+            color: 'var(--foreground-muted)',
+          }}
+          cursor={{ fill: 'var(--primary-muted)' }}
         />
-        <Bar dataKey="scans" fill="#111827" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="scans" fill="url(#barGradient)" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

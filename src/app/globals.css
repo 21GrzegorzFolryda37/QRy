@@ -1,8 +1,43 @@
 @import 'tailwindcss';
 
+/* ========================================
+   DARK MODE COLOR PALETTE - Violet + Cyan
+   ======================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #111827;
+  /* Backgrounds */
+  --background: #0f0f14;
+  --background-surface: #16161d;
+  --background-elevated: #1c1c26;
+
+  /* Text */
+  --foreground: #f0f0f5;
+  --foreground-muted: #9393a8;
+  --foreground-subtle: #6b6b80;
+
+  /* Primary (Violet) */
+  --primary: #8b5cf6;
+  --primary-hover: #a78bfa;
+  --primary-muted: rgba(139, 92, 246, 0.15);
+
+  /* Secondary (Cyan) */
+  --secondary: #06b6d4;
+  --secondary-hover: #22d3ee;
+  --secondary-muted: rgba(6, 182, 212, 0.15);
+
+  /* Borders */
+  --border: #2a2a3a;
+  --border-hover: #3a3a4a;
+
+  /* Status colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+  --gradient-text: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
 }
 
 @theme inline {
@@ -11,26 +46,291 @@
   --font-sans: var(--font-inter);
 }
 
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
 body {
   background: var(--background);
   color: var(--foreground);
 }
 
-/* Custom scrollbar */
+/* ========================================
+   KEYFRAME ANIMATIONS
+   ======================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes glow-border {
+  0%, 100% {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-muted);
+  }
+  50% {
+    border-color: var(--secondary);
+    box-shadow: 0 0 15px var(--secondary-muted);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   ANIMATION UTILITY CLASSES
+   ======================================== */
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.animate-glow-border {
+  animation: glow-border 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Stagger delays for sequential animations */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* ========================================
+   GRADIENT UTILITIES
+   ======================================== */
+
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-glow {
+  background: var(--gradient-glow);
+}
+
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   GLASS EFFECT
+   ======================================== */
+
+.glass {
+  background: rgba(22, 22, 29, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   GLOW EFFECTS
+   ======================================== */
+
+.glow-primary {
+  box-shadow: 0 0 30px var(--primary-muted);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 30px var(--secondary-muted);
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.glow-orb-primary {
+  background: var(--primary);
+  opacity: 0.3;
+}
+
+.glow-orb-secondary {
+  background: var(--secondary);
+  opacity: 0.2;
+}
+
+/* ========================================
+   HOVER LIFT EFFECT
+   ======================================== */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR - Dark Theme
+   ======================================== */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: var(--border-hover);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--background-surface);
+}
+
+/* ========================================
+   FOCUS RING STYLES
+   ======================================== */
+
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   SURFACE VARIANTS
+   ======================================== */
+
+.surface {
+  background: var(--background-surface);
+  border: 1px solid var(--border);
+}
+
+.surface-elevated {
+  background: var(--background-elevated);
+  border: 1px solid var(--border);
+}
+
+/* ========================================
+   GRADIENT BORDER
+   ======================================== */
+
+.gradient-border {
+  position: relative;
+  background: var(--background-surface);
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--gradient-primary);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ========================================
+   TEXT SELECTION
+   ======================================== */
+
+::selection {
+  background: var(--primary-muted);
+  color: var(--foreground);
 }

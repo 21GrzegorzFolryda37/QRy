@@ -31,61 +31,65 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
   }
 
   return (
-    <Card className={isCurrentPlan ? 'border-2 border-gray-900' : ''}>
+    <Card
+      variant={isCurrentPlan ? 'glow' : 'default'}
+      hover={!isCurrentPlan}
+      className={isCurrentPlan ? 'border-[var(--primary)]' : ''}
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{plan.name}</CardTitle>
-          {isCurrentPlan && <Badge variant="success">Current Plan</Badge>}
+          {isCurrentPlan && <Badge variant="primary">Current Plan</Badge>}
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <span className="text-4xl font-bold text-gray-900">{plan.price} PLN</span>
-          {plan.price > 0 && <span className="text-gray-500">/month</span>}
+          <span className="text-4xl font-bold text-[var(--foreground)]">{plan.price} PLN</span>
+          {plan.price > 0 && <span className="text-[var(--foreground-muted)]">/month</span>}
         </div>
 
         <ul className="space-y-3">
           <li className="flex items-center gap-2 text-sm">
-            <CheckIcon className="h-4 w-4 text-green-500" />
-            <span>
+            <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+            <span className="text-[var(--foreground-muted)]">
               {plan.qrLimit === -1 ? 'Unlimited' : plan.qrLimit} QR codes
             </span>
           </li>
           <li className="flex items-center gap-2 text-sm">
-            <CheckIcon className="h-4 w-4 text-green-500" />
-            <span>
+            <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+            <span className="text-[var(--foreground-muted)]">
               {plan.scanLimit === -1 ? 'Unlimited' : plan.scanLimit.toLocaleString()} scans/month
             </span>
           </li>
           <li className="flex items-center gap-2 text-sm">
-            <CheckIcon className="h-4 w-4 text-green-500" />
-            <span>Custom QR styling</span>
+            <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+            <span className="text-[var(--foreground-muted)]">Custom QR styling</span>
           </li>
           <li className="flex items-center gap-2 text-sm">
-            <CheckIcon className="h-4 w-4 text-green-500" />
-            <span>Analytics dashboard</span>
+            <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+            <span className="text-[var(--foreground-muted)]">Analytics dashboard</span>
           </li>
           {planId !== 'free' && (
             <>
               <li className="flex items-center gap-2 text-sm">
-                <CheckIcon className="h-4 w-4 text-green-500" />
-                <span>Logo overlay</span>
+                <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+                <span className="text-[var(--foreground-muted)]">Logo overlay</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
-                <CheckIcon className="h-4 w-4 text-green-500" />
-                <span>Priority support</span>
+                <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+                <span className="text-[var(--foreground-muted)]">Priority support</span>
               </li>
             </>
           )}
           {planId === 'enterprise' && (
             <>
               <li className="flex items-center gap-2 text-sm">
-                <CheckIcon className="h-4 w-4 text-green-500" />
-                <span>API access</span>
+                <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+                <span className="text-[var(--foreground-muted)]">API access</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
-                <CheckIcon className="h-4 w-4 text-green-500" />
-                <span>Dedicated account manager</span>
+                <CheckIcon className="h-4 w-4 text-[var(--success)]" />
+                <span className="text-[var(--foreground-muted)]">Dedicated account manager</span>
               </li>
             </>
           )}
@@ -100,7 +104,7 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
             Free Forever
           </Button>
         ) : canUpgrade ? (
-          <Button className="w-full" onClick={handleUpgrade} isLoading={isLoading}>
+          <Button variant="gradient" className="w-full" onClick={handleUpgrade} isLoading={isLoading}>
             Upgrade to {plan.name}
           </Button>
         ) : (

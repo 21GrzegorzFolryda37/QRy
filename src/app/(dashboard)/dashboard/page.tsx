@@ -27,11 +27,11 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500">Welcome back! Here&apos;s an overview of your QR codes.</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Dashboard</h1>
+          <p className="text-[var(--foreground-muted)]">Welcome back! Here&apos;s an overview of your QR codes.</p>
         </div>
         <Link href="/qr-codes/new">
-          <Button>Create QR Code</Button>
+          <Button variant="gradient">Create QR Code</Button>
         </Link>
       </div>
 
@@ -69,26 +69,26 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {topQrCodes.length === 0 ? (
-              <p className="text-gray-500 text-sm">No scans recorded yet.</p>
+              <p className="text-[var(--foreground-muted)] text-sm">No scans recorded yet.</p>
             ) : (
               <div className="space-y-4">
                 {topQrCodes.map((qr, index) => (
                   <div key={qr.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-gray-400">
+                      <span className="text-sm font-medium text-[var(--foreground-subtle)]">
                         #{index + 1}
                       </span>
                       <div>
                         <Link
                           href={`/qr-codes/${qr.id}`}
-                          className="text-sm font-medium text-gray-900 hover:underline"
+                          className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--primary)] transition-colors"
                         >
                           {qr.name}
                         </Link>
-                        <p className="text-xs text-gray-500">{qr.shortCode}</p>
+                        <p className="text-xs text-[var(--foreground-muted)]">{qr.shortCode}</p>
                       </div>
                     </div>
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-[var(--primary)]">
                       {qr.scanCount} scans
                     </span>
                   </div>
@@ -104,35 +104,35 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <Link href="/qr-codes/new" className="block">
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3 hover:bg-gray-50 transition-colors">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  <PlusIcon className="h-5 w-5 text-gray-600" />
+              <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] p-3 hover:bg-[var(--background-elevated)] hover:border-[var(--primary)]/50 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary)]/10">
+                  <PlusIcon className="h-5 w-5 text-[var(--primary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Create QR Code</p>
-                  <p className="text-sm text-gray-500">Generate a new dynamic QR code</p>
+                  <p className="font-medium text-[var(--foreground)]">Create QR Code</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">Generate a new dynamic QR code</p>
                 </div>
               </div>
             </Link>
             <Link href="/analytics" className="block">
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3 hover:bg-gray-50 transition-colors">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  <ChartIcon className="h-5 w-5 text-gray-600" />
+              <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] p-3 hover:bg-[var(--background-elevated)] hover:border-[var(--secondary)]/50 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--secondary)]/10">
+                  <ChartIcon className="h-5 w-5 text-[var(--secondary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">View Analytics</p>
-                  <p className="text-sm text-gray-500">See detailed scan statistics</p>
+                  <p className="font-medium text-[var(--foreground)]">View Analytics</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">See detailed scan statistics</p>
                 </div>
               </div>
             </Link>
             <Link href="/billing" className="block">
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3 hover:bg-gray-50 transition-colors">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  <UpgradeIcon className="h-5 w-5 text-gray-600" />
+              <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] p-3 hover:bg-[var(--background-elevated)] hover:border-[var(--primary)]/50 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)]/10 to-[var(--secondary)]/10">
+                  <UpgradeIcon className="h-5 w-5 text-[var(--primary)]" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Upgrade Plan</p>
-                  <p className="text-sm text-gray-500">Get more QR codes and scans</p>
+                  <p className="font-medium text-[var(--foreground)]">Upgrade Plan</p>
+                  <p className="text-sm text-[var(--foreground-muted)]">Get more QR codes and scans</p>
                 </div>
               </div>
             </Link>

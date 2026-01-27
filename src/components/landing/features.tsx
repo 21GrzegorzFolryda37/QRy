@@ -1,58 +1,74 @@
+'use client'
+
 const features = [
   {
     name: 'Dynamic QR Codes',
     description:
       'Update your QR code destination anytime without reprinting. Change URLs, track campaigns, and adapt to your needs.',
     icon: QrCodeIcon,
+    gradient: 'from-[var(--primary)] to-[var(--primary-hover)]',
   },
   {
     name: 'Real-time Analytics',
     description:
       'Track scans in real-time. See who scanned your codes, when, where, and on what device.',
     icon: ChartIcon,
+    gradient: 'from-[var(--secondary)] to-[var(--secondary-hover)]',
   },
   {
     name: 'Custom Branding',
     description:
       'Customize colors, add your logo, and create QR codes that match your brand identity.',
     icon: PaletteIcon,
+    gradient: 'from-[var(--primary)] to-[var(--secondary)]',
   },
   {
     name: 'Easy Management',
     description:
       'Manage all your QR codes from one dashboard. Create, edit, and organize with ease.',
     icon: FolderIcon,
+    gradient: 'from-[var(--secondary-hover)] to-[var(--primary)]',
   },
 ]
 
 export function Features() {
   return (
-    <section className="bg-gray-50 py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="bg-[var(--background-surface)] py-24 sm:py-32 relative overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="glow-orb glow-orb-secondary w-96 h-96 top-0 left-1/4 opacity-10" />
+      <div className="glow-orb glow-orb-primary w-64 h-64 bottom-0 right-1/4 opacity-10" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-gray-600">
+          <h2 className="text-base font-semibold leading-7 text-[var(--primary)]">
             Everything you need
           </h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Powerful features for modern marketing
+          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
+            Powerful features for <span className="gradient-text">modern marketing</span>
           </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
+          <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
             Create QR codes that work harder for your business with features designed
             for performance and insights.
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
-            {features.map((feature) => (
-              <div key={feature.name} className="flex flex-col">
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <feature.icon
-                    className="h-5 w-5 flex-none text-gray-600"
-                    aria-hidden="true"
-                  />
+          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-4">
+            {features.map((feature, index) => (
+              <div
+                key={feature.name}
+                className="group flex flex-col p-6 rounded-xl bg-[var(--background)] border border-[var(--border)] hover-lift animate-fade-in-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-[var(--foreground)]">
+                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient}`}>
+                    <feature.icon
+                      className="h-5 w-5 text-white"
+                      aria-hidden="true"
+                    />
+                  </div>
                   {feature.name}
                 </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-[var(--foreground-muted)]">
                   <p className="flex-auto">{feature.description}</p>
                 </dd>
               </div>

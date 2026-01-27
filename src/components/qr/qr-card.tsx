@@ -26,10 +26,10 @@ export function QrCard({ qrCode }: QrCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card hover className="overflow-hidden">
       <CardContent className="p-0">
         <div className="flex">
-          <div className="relative h-32 w-32 flex-shrink-0 bg-gray-100">
+          <div className="relative h-32 w-32 flex-shrink-0 bg-[var(--background-elevated)]">
             {qrCode.qr_image_url ? (
               <Image
                 src={`${qrCode.qr_image_url}?v=${new Date(qrCode.updated_at).getTime()}`}
@@ -39,7 +39,7 @@ export function QrCard({ qrCode }: QrCardProps) {
                 unoptimized
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-gray-400">
+              <div className="flex h-full items-center justify-center text-[var(--foreground-subtle)]">
                 No image
               </div>
             )}
@@ -49,11 +49,11 @@ export function QrCard({ qrCode }: QrCardProps) {
               <div>
                 <Link
                   href={`/qr-codes/${qrCode.id}`}
-                  className="font-semibold text-gray-900 hover:underline"
+                  className="font-semibold text-[var(--foreground)] hover:text-[var(--primary)] transition-colors"
                 >
                   {qrCode.name}
                 </Link>
-                <p className="text-sm text-gray-500 truncate max-w-xs">
+                <p className="text-sm text-[var(--foreground-muted)] truncate max-w-xs">
                   {qrCode.destination_url}
                 </p>
               </div>
@@ -62,14 +62,14 @@ export function QrCard({ qrCode }: QrCardProps) {
               </Badge>
             </div>
 
-            <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
-              <span>{qrCode.scan_count} scans</span>
-              <span className="text-gray-300">|</span>
+            <div className="mt-2 flex items-center gap-4 text-sm text-[var(--foreground-muted)]">
+              <span className="text-[var(--primary)]">{qrCode.scan_count} scans</span>
+              <span className="text-[var(--border)]">|</span>
               <a
                 href={redirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-gray-900 hover:underline truncate max-w-[200px]"
+                className="hover:text-[var(--secondary)] transition-colors truncate max-w-[200px]"
               >
                 {redirectUrl}
               </a>
@@ -115,7 +115,7 @@ export function QrCard({ qrCode }: QrCardProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="ml-auto text-[var(--error)] hover:text-[var(--error)] hover:bg-[var(--error)]/10"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   Delete

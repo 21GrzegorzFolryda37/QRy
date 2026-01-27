@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   const profile = profileData as Profile | null
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-64">
         <Header profile={profile} />

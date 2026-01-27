@@ -3,47 +3,53 @@ import { Button } from '@/components/ui'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white py-20 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-[var(--background)] py-20 sm:py-32 pt-32">
+      {/* Glow orbs */}
+      <div className="glow-orb glow-orb-primary w-96 h-96 -top-48 -left-48 animate-pulse-glow" />
+      <div className="glow-orb glow-orb-secondary w-80 h-80 top-1/4 -right-40 animate-pulse-glow animate-delay-500" />
+      <div className="glow-orb glow-orb-primary w-64 h-64 bottom-0 left-1/3 animate-pulse-glow animate-delay-300" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Dynamic QR Codes with
-            <span className="text-gray-600"> Powerful Analytics</span>
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl animate-fade-in-up">
+            <span className="text-[var(--foreground)]">Dynamic QR Codes with</span>
+            <br />
+            <span className="gradient-text">Powerful Analytics</span>
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
+          <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)] animate-fade-in-up animate-delay-100">
             Create branded, trackable QR codes that help you understand your audience.
             Update destinations anytime without reprinting. Get real-time insights on
             scans, locations, and devices.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-x-6">
+          <div className="mt-10 flex items-center justify-center gap-x-6 animate-fade-in-up animate-delay-200">
             <Link href="/register">
-              <Button size="lg">Get Started Free</Button>
+              <Button variant="gradient" size="lg">Get Started Free</Button>
             </Link>
             <Link
               href="/features"
-              className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-700"
+              className="text-sm font-semibold leading-6 text-[var(--foreground-muted)] hover:text-[var(--primary)] transition-colors group"
             >
-              Learn more <span aria-hidden="true">&rarr;</span>
+              Learn more <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
             </Link>
           </div>
         </div>
 
-        <div className="mt-16 flex justify-center">
-          <div className="relative rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-            <div className="rounded-lg bg-white shadow-2xl ring-1 ring-gray-900/10 p-8">
+        <div className="mt-16 flex justify-center animate-fade-in-up animate-delay-300">
+          <div className="relative rounded-2xl gradient-border p-1">
+            <div className="rounded-xl bg-[var(--background-surface)] p-8">
               <div className="flex items-center justify-center gap-8">
-                <div className="text-center">
-                  <div className="w-40 h-40 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <QrCodeIcon className="w-24 h-24 text-gray-400" />
+                <div className="text-center animate-float">
+                  <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-primary">
+                    <QrCodeIcon className="w-24 h-24 text-[var(--primary)]" />
                   </div>
-                  <p className="mt-4 text-sm text-gray-500">Your branded QR code</p>
+                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Your branded QR code</p>
                 </div>
-                <ArrowIcon className="w-8 h-8 text-gray-400" />
-                <div className="text-center">
-                  <div className="w-40 h-40 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <ChartIcon className="w-24 h-24 text-gray-400" />
+                <ArrowIcon className="w-8 h-8 text-[var(--secondary)] animate-pulse" />
+                <div className="text-center animate-float animate-delay-200">
+                  <div className="w-40 h-40 bg-[var(--background-elevated)] rounded-xl flex items-center justify-center border border-[var(--border)] glow-secondary">
+                    <ChartIcon className="w-24 h-24 text-[var(--secondary)]" />
                   </div>
-                  <p className="mt-4 text-sm text-gray-500">Real-time analytics</p>
+                  <p className="mt-4 text-sm text-[var(--foreground-muted)]">Real-time analytics</p>
                 </div>
               </div>
             </div>
