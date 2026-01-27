@@ -528,7 +528,11 @@ export function Hero() {
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <label className="text-xs font-medium text-[var(--foreground-muted)]">Kropki</label>
-                            <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: dotColor }}>
+                                <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
+                              </div>
+                            </div>
                           </div>
                           <div className="grid grid-cols-6 gap-2">
                             {dotTypes.map((item) => (
@@ -552,21 +556,25 @@ export function Hero() {
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <label className="text-xs font-medium text-[var(--foreground-muted)]">Ramka narożnika</label>
-                            <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: cornerSquareColor }}>
+                                <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-6 gap-2">
                             {cornerSquareTypes.map((item) => (
                               <button
                                 key={item.type}
                                 onClick={() => setCornerSquareType(item.type)}
-                                className={`aspect-square rounded-lg border-2 p-3 transition-all flex items-center justify-center ${
+                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
                                   cornerSquareType === item.type
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
                                 title={item.label}
                               >
-                                <CornerSquarePreviewIcon type={item.type} className="w-8 h-8" />
+                                <CornerSquarePreviewIcon type={item.type} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
@@ -576,21 +584,25 @@ export function Hero() {
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <label className="text-xs font-medium text-[var(--foreground-muted)]">Środek narożnika</label>
-                            <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-6 h-6 rounded border border-[var(--border)] cursor-pointer" />
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg border-2 border-[var(--border)] overflow-hidden shadow-sm" style={{ backgroundColor: cornerDotColor }}>
+                                <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-12 h-12 -m-2 cursor-pointer" />
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-6 gap-2">
                             {cornerDotTypes.map((item) => (
                               <button
                                 key={item.type}
                                 onClick={() => setCornerDotType(item.type)}
-                                className={`aspect-square rounded-lg border-2 p-3 transition-all flex items-center justify-center ${
+                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
                                   cornerDotType === item.type
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
                                 title={item.label}
                               >
-                                <CornerDotPreviewIcon type={item.type} className="w-8 h-8" />
+                                <CornerDotPreviewIcon type={item.type} className="w-6 h-6" />
                               </button>
                             ))}
                           </div>
