@@ -75,7 +75,6 @@ const shapePresets: { dots: DotType; corners: CornerSquareType; label: string }[
 
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
-  const [showForm, setShowForm] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
 
   // Form fields
@@ -83,9 +82,9 @@ export function Hero() {
 
   // QR customization
   const [selectedSticker, setSelectedSticker] = useState('scan-me-1')
-  const [dotColor, setDotColor] = useState('#8b5cf6')
+  const [dotColor, setDotColor] = useState('#000000')
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
-  const [cornerColor, setCornerColor] = useState('#06b6d4')
+  const [cornerColor, setCornerColor] = useState('#000000')
   const [dotType, setDotType] = useState<DotType>('rounded')
   const [cornerType, setCornerType] = useState<CornerSquareType>('extra-rounded')
   const [logo, setLogo] = useState<string | null>(null)
@@ -188,7 +187,6 @@ export function Hero() {
 
   const handleDownloadClick = () => {
     if (!isFormValid()) {
-      setShowForm(true)
       return
     }
     setShowEmailCapture(true)
@@ -358,14 +356,14 @@ export function Hero() {
           </h1>
         </div>
 
-        {/* QR Type Selector */}
-        <div className="mb-6 overflow-x-auto scrollbar-hide">
-          <div className="flex gap-2 pb-2 min-w-max justify-center">
+        {/* QR Type Selector - Grid */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2 justify-center">
             {qrTypes.map((type) => (
               <button
                 key={type.id}
-                onClick={() => { setSelectedType(type.id); setShowForm(false); setFormData({}) }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all whitespace-nowrap ${
+                onClick={() => { setSelectedType(type.id); setFormData({}) }}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all ${
                   selectedType === type.id
                     ? 'border-[var(--success)] text-[var(--success)] bg-[var(--success)]/5'
                     : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)] bg-white'
@@ -393,21 +391,9 @@ export function Hero() {
                     {typeContent[selectedType].subtitle}
                   </p>
 
-                  {!showForm ? (
-                    <Button
-                      variant="gradient"
-                      size="lg"
-                      className="w-full sm:w-auto px-8"
-                      style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
-                      onClick={() => setShowForm(true)}
-                    >
-                      Utwórz swój kod QR
-                    </Button>
-                  ) : (
-                    <div className="animate-fade-in-up">
-                      {renderForm()}
-                    </div>
-                  )}
+                  <div className="animate-fade-in-up">
+                    {renderForm()}
+                  </div>
                 </div>
 
                 {/* Section 2: Customization */}
@@ -583,9 +569,9 @@ export function Hero() {
                     className={`w-full ${!isFormValid() ? 'opacity-50' : ''}`}
                     style={{ background: isFormValid() ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : '#9ca3af' }}
                     onClick={handleDownloadClick}
-                    disabled={!showForm}
+                    disabled={!isFormValid()}
                   >
-                    {showForm ? 'Pobierz QR' : 'Najpierw wypełnij formularz'}
+                    {isFormValid() ? 'Pobierz QR' : 'Wypełnij formularz'}
                   </Button>
                 ) : (
                   <div className="space-y-3 animate-fade-in-up">
