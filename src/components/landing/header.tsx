@@ -33,7 +33,7 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
-            <Image src="/logo.webp" alt="QRapple logo" width={32} height={32} className="w-8 h-8" />
+            <Image src="/logo.webp" alt="QRapple logo" width={40} height={40} className="w-10 h-10" />
             <span className="text-xl font-bold gradient-text">QRapple</span>
           </Link>
         </div>
@@ -105,7 +105,7 @@ export function Header() {
           <div className="fixed inset-y-0 right-0 z-[1002] w-full overflow-y-auto bg-[var(--background)] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-[var(--border)]">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <Image src="/logo.webp" alt="QRapple logo" width={32} height={32} className="w-8 h-8" />
+                <Image src="/logo.webp" alt="QRapple logo" width={40} height={40} className="w-10 h-10" />
                 <span className="text-xl font-bold gradient-text">QRapple</span>
               </Link>
               <button

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const navigation = {
   product: [
@@ -21,8 +22,9 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="text-xl font-bold gradient-text">
-              QRapple
+            <Link href="/" className="inline-flex items-center gap-2">
+              <Image src="/logo.webp" alt="QRapple logo" width={36} height={36} className="w-9 h-9" />
+              <span className="text-xl font-bold gradient-text">QRapple</span>
             </Link>
             <p className="mt-4 text-sm text-[var(--foreground-muted)]">
               Dynamiczne kody QR z zaawansowaną analityką dla nowoczesnego marketingu.
