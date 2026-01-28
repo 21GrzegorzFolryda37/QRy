@@ -76,7 +76,7 @@ export function FAQ() {
                     </span>
                     <span className="ml-6 flex-shrink-0">
                       <ChevronIcon
-                        className={`h-5 w-5 text-[var(--foreground-muted)] transition-transform duration-200 ${
+                        className={`h-5 w-5 text-[var(--foreground-muted)] transition-transform duration-500 ${
                           openIndex === index ? 'rotate-180' : ''
                         }`}
                       />
@@ -84,7 +84,7 @@ export function FAQ() {
                   </button>
                 </dt>
                 <dd
-                  className={`transition-all duration-200 ease-in-out ${
+                  className={`transition-all duration-500 ease-in-out ${
                     openIndex === index
                       ? 'max-h-96 opacity-100'
                       : 'max-h-0 opacity-0 overflow-hidden'
