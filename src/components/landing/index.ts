@@ -1,6 +1,7 @@
 export { Hero } from './hero'
 export { Features } from './features'
 export { Pricing } from './pricing'
+export { FAQ } from './faq'
 export { CTA } from './cta'
 export { Header } from './header'
 export { Footer } from './footer'
