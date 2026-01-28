@@ -56,15 +56,24 @@ const frameTemplates: { id: FrameStyle; label: string; text?: string }[] = [
   { id: 'hexagon', label: 'Heksagon', text: 'SCAN' },
 ]
 
-const colorPresets = [
-  { dots: '#000000', bg: '#ffffff', cornerSquare: '#000000', cornerDot: '#000000' },
-  { dots: '#8b5cf6', bg: '#ffffff', cornerSquare: '#06b6d4', cornerDot: '#8b5cf6' },
-  { dots: '#1e40af', bg: '#ffffff', cornerSquare: '#3b82f6', cornerDot: '#1e40af' },
-  { dots: '#059669', bg: '#ffffff', cornerSquare: '#10b981', cornerDot: '#059669' },
-  { dots: '#dc2626', bg: '#ffffff', cornerSquare: '#f87171', cornerDot: '#dc2626' },
-  { dots: '#ea580c', bg: '#ffffff', cornerSquare: '#fb923c', cornerDot: '#ea580c' },
-  { dots: '#7c3aed', bg: '#faf5ff', cornerSquare: '#a855f7', cornerDot: '#7c3aed' },
-  { dots: '#0891b2', bg: '#ecfeff', cornerSquare: '#22d3ee', cornerDot: '#0891b2' },
+// Paleta kolorów - górny rząd (9 kolorów) + dolny rząd (5 kolorów)
+const colorPaletteTop = [
+  '#000000', // Czarny
+  '#6b7280', // Szary
+  '#7f1d1d', // Ciemny czerwony/bordowy
+  '#dc2626', // Czerwony
+  '#f97316', // Pomarańczowy
+  '#92400e', // Brązowy
+  '#ec4899', // Magenta/różowy
+  '#8b5cf6', // Fioletowy
+]
+
+const colorPaletteBottom = [
+  '#1e3a5f', // Ciemny niebieski (granatowy)
+  '#3b82f6', // Niebieski
+  '#06b6d4', // Jasny niebieski/cyjan
+  '#14b8a6', // Turkusowy/morski
+  '#22c55e', // Zielony
 ]
 
 export function Hero() {
@@ -462,51 +471,69 @@ export function Hero() {
                     )}
 
                     {activeTab === 'color' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                          {colorPresets.map((preset, idx) => (
+                      <div className="space-y-3">
+                        {/* Górny rząd: gradient picker + 8 kolorów */}
+                        <div className="flex gap-2">
+                          {/* Gradient color picker */}
+                          <label className="relative w-9 h-9 rounded-lg cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                            <div
+                              className="w-full h-full"
+                              style={{
+                                background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'
+                              }}
+                            />
+                            <input
+                              type="color"
+                              value={dotColor}
+                              onChange={(e) => {
+                                const color = e.target.value
+                                setDotColor(color)
+                                setCornerSquareColor(color)
+                                setCornerDotColor(color)
+                              }}
+                              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                            />
+                          </label>
+                          {colorPaletteTop.map((color) => (
                             <button
-                              key={idx}
-                              onClick={() => { setDotColor(preset.dots); setBackgroundColor(preset.bg); setCornerSquareColor(preset.cornerSquare); setCornerDotColor(preset.cornerDot) }}
-                              className={`aspect-square rounded-lg border-2 p-1 transition-all ${
-                                dotColor === preset.dots && cornerSquareColor === preset.cornerSquare
-                                  ? 'border-[var(--success)]'
+                              key={color}
+                              onClick={() => {
+                                setDotColor(color)
+                                setCornerSquareColor(color)
+                                setCornerDotColor(color)
+                                setBackgroundColor('#ffffff')
+                              }}
+                              className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
+                                dotColor === color
+                                  ? 'border-gray-800 ring-1 ring-gray-400'
                                   : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                               }`}
-                            >
-                              <div className="w-full h-full rounded" style={{ background: `linear-gradient(135deg, ${preset.dots} 50%, ${preset.cornerSquare} 50%)` }} />
-                            </button>
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            />
                           ))}
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-                          <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Kropki</label>
-                            <div className="flex items-center gap-2">
-                              <input type="color" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
-                              <input type="text" value={dotColor} onChange={(e) => setDotColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Ramka narożnika</label>
-                            <div className="flex items-center gap-2">
-                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
-                              <input type="text" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Środek narożnika</label>
-                            <div className="flex items-center gap-2">
-                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
-                              <input type="text" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Tło</label>
-                            <div className="flex items-center gap-2">
-                              <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="w-8 h-8 rounded border border-[var(--border)] cursor-pointer" />
-                              <input type="text" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="flex-1 px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background-surface)]" />
-                            </div>
-                          </div>
+
+                        {/* Dolny rząd: 5 kolorów */}
+                        <div className="flex gap-2">
+                          {colorPaletteBottom.map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => {
+                                setDotColor(color)
+                                setCornerSquareColor(color)
+                                setCornerDotColor(color)
+                                setBackgroundColor('#ffffff')
+                              }}
+                              className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
+                                dotColor === color
+                                  ? 'border-gray-800 ring-1 ring-gray-400'
+                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                              }`}
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            />
+                          ))}
                         </div>
                       </div>
                     )}
