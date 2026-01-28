@@ -74,30 +74,6 @@ export function Analytics() {
             ))}
           </dl>
         </div>
-
-        {/* Visual showcase */}
-        <div className="mt-16 sm:mt-20 lg:mt-24">
-          <div className="relative rounded-2xl bg-gradient-to-br from-[var(--primary)]/5 to-[var(--secondary)]/5 border border-[var(--border)] p-8 lg:p-12">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="text-4xl lg:text-5xl font-bold gradient-text">99.9%</div>
-                <div className="mt-2 text-sm text-[var(--foreground-muted)]">Dostępność systemu</div>
-              </div>
-              <div>
-                <div className="text-4xl lg:text-5xl font-bold gradient-text">&lt;1s</div>
-                <div className="mt-2 text-sm text-[var(--foreground-muted)]">Czas przekierowania</div>
-              </div>
-              <div>
-                <div className="text-4xl lg:text-5xl font-bold gradient-text">190+</div>
-                <div className="mt-2 text-sm text-[var(--foreground-muted)]">Obsługiwane kraje</div>
-              </div>
-              <div>
-                <div className="text-4xl lg:text-5xl font-bold gradient-text">24/7</div>
-                <div className="mt-2 text-sm text-[var(--foreground-muted)]">Monitoring w czasie rzeczywistym</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )
