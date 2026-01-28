@@ -113,9 +113,15 @@ export function Hero() {
   const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('simple')
   const [frameText, setFrameText] = useState('SCAN ME')
   const [dotColor, setDotColor] = useState('#000000')
+  const [dotGradient, setDotGradient] = useState(false)
+  const [dotGradientColors, setDotGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
+  const [cornerSquareGradient, setCornerSquareGradient] = useState(false)
+  const [cornerSquareGradientColors, setCornerSquareGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
+  const [cornerDotGradient, setCornerDotGradient] = useState(false)
+  const [cornerDotGradientColors, setCornerDotGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
   const [dotShape, setDotShape] = useState<DotShape>('square')
   const [cornerSquareShape, setCornerSquareShape] = useState<CornerSquareShape>('square')
   const [cornerDotShape, setCornerDotShape] = useState<CornerDotShape>('square')
@@ -184,6 +190,58 @@ export function Hero() {
     })
   }, [])
 
+  // Helper function to create gradient or color options
+  const getDotsOptions = () => {
+    if (dotGradient) {
+      return {
+        type: dotShape,
+        gradient: {
+          type: 'linear' as const,
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: dotGradientColors[0] },
+            { offset: 1, color: dotGradientColors[1] }
+          ]
+        }
+      }
+    }
+    return { color: dotColor, type: dotShape }
+  }
+
+  const getCornerSquareOptions = () => {
+    if (cornerSquareGradient) {
+      return {
+        type: cornerSquareShape,
+        gradient: {
+          type: 'linear' as const,
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: cornerSquareGradientColors[0] },
+            { offset: 1, color: cornerSquareGradientColors[1] }
+          ]
+        }
+      }
+    }
+    return { color: cornerSquareColor, type: cornerSquareShape }
+  }
+
+  const getCornerDotOptions = () => {
+    if (cornerDotGradient) {
+      return {
+        type: cornerDotShape,
+        gradient: {
+          type: 'linear' as const,
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: cornerDotGradientColors[0] },
+            { offset: 1, color: cornerDotGradientColors[1] }
+          ]
+        }
+      }
+    }
+    return { color: cornerDotColor, type: cornerDotShape }
+  }
+
   // Initialize QR code
   useEffect(() => {
     if (!QRCodeStyling || !qrRef.current) return
@@ -193,9 +251,9 @@ export function Hero() {
       height: 200,
       type: 'svg',
       data: getQRData(),
-      dotsOptions: { color: dotColor, type: dotShape },
-      cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareShape },
-      cornersDotOptions: { color: cornerDotColor, type: cornerDotShape },
+      dotsOptions: getDotsOptions(),
+      cornersSquareOptions: getCornerSquareOptions(),
+      cornersDotOptions: getCornerDotOptions(),
       backgroundOptions: { color: backgroundColor },
       imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
     })
@@ -208,14 +266,14 @@ export function Hero() {
     if (qrCodeRef.current) {
       qrCodeRef.current.update({
         data: getQRData(),
-        dotsOptions: { color: dotColor, type: dotShape },
-        cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareShape },
-        cornersDotOptions: { color: cornerDotColor, type: cornerDotShape },
+        dotsOptions: getDotsOptions(),
+        cornersSquareOptions: getCornerSquareOptions(),
+        cornersDotOptions: getCornerDotOptions(),
         backgroundOptions: { color: backgroundColor },
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotShape, cornerSquareShape, cornerDotShape, logo])
+  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, backgroundColor, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerDotColor, cornerDotGradient, cornerDotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -503,69 +561,117 @@ export function Hero() {
 
                     {activeTab === 'color' && (
                       <div className="space-y-3">
-                        {/* Górny rząd: gradient picker + 8 kolorów */}
-                        <div className="flex gap-2">
-                          {/* Gradient color picker */}
-                          <label className="relative w-9 h-9 rounded-lg cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
-                            <div
-                              className="w-full h-full"
-                              style={{
-                                background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'
-                              }}
-                            />
-                            <input
-                              type="color"
-                              value={dotColor}
-                              onChange={(e) => {
-                                const color = e.target.value
-                                setDotColor(color)
-                                setCornerSquareColor(color)
-                                setCornerDotColor(color)
-                              }}
-                              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                            />
-                          </label>
-                          {colorPaletteTop.map((color) => (
-                            <button
-                              key={color}
-                              onClick={() => {
-                                setDotColor(color)
-                                setCornerSquareColor(color)
-                                setCornerDotColor(color)
-                                setBackgroundColor('#ffffff')
-                              }}
-                              className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
-                                dotColor === color
-                                  ? 'border-gray-800 ring-1 ring-gray-400'
-                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                              }`}
-                              style={{ backgroundColor: color }}
-                              title={color}
-                            />
-                          ))}
+                        {/* Toggle gradient */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setDotGradient(false)}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                              !dotGradient
+                                ? 'bg-[var(--primary)] text-white'
+                                : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
+                            }`}
+                          >
+                            Kolor
+                          </button>
+                          <button
+                            onClick={() => setDotGradient(true)}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                              dotGradient
+                                ? 'bg-[var(--primary)] text-white'
+                                : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
+                            }`}
+                          >
+                            Gradient
+                          </button>
                         </div>
 
-                        {/* Dolny rząd: 5 kolorów */}
-                        <div className="flex gap-2">
-                          {colorPaletteBottom.map((color) => (
-                            <button
-                              key={color}
-                              onClick={() => {
-                                setDotColor(color)
-                                setCornerSquareColor(color)
-                                setCornerDotColor(color)
-                                setBackgroundColor('#ffffff')
-                              }}
-                              className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
-                                dotColor === color
-                                  ? 'border-gray-800 ring-1 ring-gray-400'
-                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                              }`}
-                              style={{ backgroundColor: color }}
-                              title={color}
+                        {!dotGradient ? (
+                          <>
+                            {/* Górny rząd: color picker + 8 kolorów */}
+                            <div className="flex gap-2">
+                              <label className="relative w-9 h-9 rounded-lg cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                <input
+                                  type="color"
+                                  value={dotColor}
+                                  onChange={(e) => setDotColor(e.target.value)}
+                                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                />
+                              </label>
+                              {colorPaletteTop.map((color) => (
+                                <button
+                                  key={color}
+                                  onClick={() => setDotColor(color)}
+                                  className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
+                                    dotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                  }`}
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                            {/* Dolny rząd: 5 kolorów */}
+                            <div className="flex gap-2">
+                              {colorPaletteBottom.map((color) => (
+                                <button
+                                  key={color}
+                                  onClick={() => setDotColor(color)}
+                                  className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
+                                    dotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                  }`}
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="space-y-3">
+                            {/* Gradient preview */}
+                            <div
+                              className="h-8 rounded-lg border border-[var(--border)]"
+                              style={{ background: `linear-gradient(90deg, ${dotGradientColors[0]}, ${dotGradientColors[1]})` }}
                             />
-                          ))}
-                        </div>
+                            {/* Kolor 1 */}
+                            <div>
+                              <p className="text-xs text-[var(--foreground-muted)] mb-1">Kolor 1</p>
+                              <div className="flex gap-1.5 flex-wrap">
+                                <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={dotGradientColors[0]} onChange={(e) => setDotGradientColors([e.target.value, dotGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                                </label>
+                                {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                                  <button
+                                    key={`g1-${color}`}
+                                    onClick={() => setDotGradientColors([color, dotGradientColors[1]])}
+                                    className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                      dotGradientColors[0] === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            {/* Kolor 2 */}
+                            <div>
+                              <p className="text-xs text-[var(--foreground-muted)] mb-1">Kolor 2</p>
+                              <div className="flex gap-1.5 flex-wrap">
+                                <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={dotGradientColors[1]} onChange={(e) => setDotGradientColors([dotGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                                </label>
+                                {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                                  <button
+                                    key={`g2-${color}`}
+                                    onClick={() => setDotGradientColors([dotGradientColors[0], color])}
+                                    className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                      dotGradientColors[1] === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -597,7 +703,27 @@ export function Hero() {
                       <div className="space-y-4">
                         {/* Ramka narożnika */}
                         <div>
-                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-medium text-[var(--foreground-muted)]">Ramka narożnika</p>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => setCornerSquareGradient(false)}
+                                className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                  !cornerSquareGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                }`}
+                              >
+                                Kolor
+                              </button>
+                              <button
+                                onClick={() => setCornerSquareGradient(true)}
+                                className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                  cornerSquareGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                }`}
+                              >
+                                Gradient
+                              </button>
+                            </div>
+                          </div>
                           <div className="flex gap-2 mb-2">
                             {cornerSquareShapes.map((shape) => (
                               <button
@@ -614,27 +740,70 @@ export function Hero() {
                               </button>
                             ))}
                           </div>
-                          <div className="flex gap-1.5 flex-wrap">
-                            <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
-                              <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-                            </label>
-                            {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
-                              <button
-                                key={`csq-${color}`}
-                                onClick={() => setCornerSquareColor(color)}
-                                className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                  cornerSquareColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                }`}
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                          </div>
+                          {!cornerSquareGradient ? (
+                            <div className="flex gap-1.5 flex-wrap">
+                              <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                              </label>
+                              {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                                <button
+                                  key={`csq-${color}`}
+                                  onClick={() => setCornerSquareColor(color)}
+                                  className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                    cornerSquareColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                  }`}
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="h-6 rounded border border-[var(--border)]" style={{ background: `linear-gradient(90deg, ${cornerSquareGradientColors[0]}, ${cornerSquareGradientColors[1]})` }} />
+                              <div className="flex gap-1.5 flex-wrap">
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={cornerSquareGradientColors[0]} onChange={(e) => setCornerSquareGradientColors([e.target.value, cornerSquareGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                                {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
+                                  <button key={`csqg1-${color}`} onClick={() => setCornerSquareGradientColors([color, cornerSquareGradientColors[1]])} className={`w-6 h-6 rounded border ${cornerSquareGradientColors[0] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
+                                ))}
+                                <span className="text-[10px] text-[var(--foreground-subtle)] self-center mx-1">→</span>
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={cornerSquareGradientColors[1]} onChange={(e) => setCornerSquareGradientColors([cornerSquareGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                                {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
+                                  <button key={`csqg2-${color}`} onClick={() => setCornerSquareGradientColors([cornerSquareGradientColors[0], color])} className={`w-6 h-6 rounded border ${cornerSquareGradientColors[1] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Środek narożnika */}
                         <div>
-                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-medium text-[var(--foreground-muted)]">Środek narożnika</p>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => setCornerDotGradient(false)}
+                                className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                  !cornerDotGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                }`}
+                              >
+                                Kolor
+                              </button>
+                              <button
+                                onClick={() => setCornerDotGradient(true)}
+                                className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                  cornerDotGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                }`}
+                              >
+                                Gradient
+                              </button>
+                            </div>
+                          </div>
                           <div className="flex gap-2 mb-2">
                             {cornerDotShapes.map((shape) => (
                               <button
@@ -651,22 +820,45 @@ export function Hero() {
                               </button>
                             ))}
                           </div>
-                          <div className="flex gap-1.5 flex-wrap">
-                            <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
-                              <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-                            </label>
-                            {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
-                              <button
-                                key={`cd-${color}`}
-                                onClick={() => setCornerDotColor(color)}
-                                className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                  cornerDotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                }`}
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
-                          </div>
+                          {!cornerDotGradient ? (
+                            <div className="flex gap-1.5 flex-wrap">
+                              <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                              </label>
+                              {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                                <button
+                                  key={`cd-${color}`}
+                                  onClick={() => setCornerDotColor(color)}
+                                  className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                    cornerDotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                  }`}
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="h-6 rounded border border-[var(--border)]" style={{ background: `linear-gradient(90deg, ${cornerDotGradientColors[0]}, ${cornerDotGradientColors[1]})` }} />
+                              <div className="flex gap-1.5 flex-wrap">
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={cornerDotGradientColors[0]} onChange={(e) => setCornerDotGradientColors([e.target.value, cornerDotGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                                {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
+                                  <button key={`cdg1-${color}`} onClick={() => setCornerDotGradientColors([color, cornerDotGradientColors[1]])} className={`w-6 h-6 rounded border ${cornerDotGradientColors[0] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
+                                ))}
+                                <span className="text-[10px] text-[var(--foreground-subtle)] self-center mx-1">→</span>
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={cornerDotGradientColors[1]} onChange={(e) => setCornerDotGradientColors([cornerDotGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                                {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
+                                  <button key={`cdg2-${color}`} onClick={() => setCornerDotGradientColors([cornerDotGradientColors[0], color])} className={`w-6 h-6 rounded border ${cornerDotGradientColors[1] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
