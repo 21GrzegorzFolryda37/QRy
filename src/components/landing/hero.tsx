@@ -117,7 +117,7 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
   {
     id: 'instagram',
     name: 'Instagram',
-    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='ig' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23FFDC80'/%3E%3Cstop offset='50%25' stop-color='%23F77737'/%3E%3Cstop offset='100%25' stop-color='%23C13584'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='url(%23ig)'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='white' stroke-width='2'/%3E%3Ccircle cx='18' cy='6' r='1.5' fill='white'/%3E%3C/svg%3E"
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3CradialGradient id='ig1' cx='30%25' cy='107%25' r='150%25'%3E%3Cstop offset='0%25' stop-color='%23fdf497'/%3E%3Cstop offset='5%25' stop-color='%23fdf497'/%3E%3Cstop offset='45%25' stop-color='%23fd5949'/%3E%3Cstop offset='60%25' stop-color='%23d6249f'/%3E%3Cstop offset='90%25' stop-color='%23285AEB'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='url(%23ig1)'/%3E%3Crect x='3' y='3' width='18' height='18' rx='4' fill='none' stroke='white' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='white' stroke-width='1.5'/%3E%3Ccircle cx='17.5' cy='6.5' r='1.2' fill='white'/%3E%3C/svg%3E"
   },
   {
     id: 'telegram',
@@ -147,7 +147,7 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
   {
     id: 'gmail',
     name: 'Gmail',
-    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285F4' d='M22 6v12c0 1.1-.9 2-2 2h-1V8l-7 4.5L5 8v12H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h.01L12 9l7.99-5H20c1.1 0 2 .9 2 2z'/%3E%3Cpath fill='%23EA4335' d='M22 6l-10 6.5L2 6V4c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v2z'/%3E%3C/svg%3E"
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23EA4335' d='M1 5.5V18.5C1 19.88 2.12 21 3.5 21H5V8L12 13L19 8V21H20.5C21.88 21 23 19.88 23 18.5V5.5C23 3.5 21 2 19 3L12 8L5 3C3 2 1 3.5 1 5.5Z'/%3E%3Cpath fill='%2334A853' d='M5 21H3.5C2.12 21 1 19.88 1 18.5V5.5L5 8V21Z'/%3E%3Cpath fill='%234285F4' d='M19 21H20.5C21.88 21 23 19.88 23 18.5V5.5L19 8V21Z'/%3E%3Cpath fill='%23FBBC05' d='M19 8L23 5.5C23 3.5 21 2 19 3L12 8L19 13V8Z'/%3E%3Cpath fill='%23C5221F' d='M5 8L1 5.5C1 3.5 3 2 5 3L12 8L5 13V8Z'/%3E%3C/svg%3E"
   },
 ]
 
