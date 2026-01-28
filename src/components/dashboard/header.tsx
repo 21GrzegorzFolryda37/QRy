@@ -15,7 +15,7 @@ export function Header({ profile }: HeaderProps) {
       <div className="flex items-center gap-4">
         <MobileSidebarToggle />
         {/* Mobile logo */}
-        <span className="lg:hidden text-lg font-bold gradient-text">EngageQR</span>
+        <span className="lg:hidden text-lg font-bold gradient-text">QRapple</span>
       </div>
 
       {/* User info */}

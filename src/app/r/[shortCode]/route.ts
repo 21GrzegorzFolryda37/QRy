@@ -157,7 +157,7 @@ function generateRedirectPage(destinationUrl: string): string {
 </head>
 <body>
   <div class="container">
-    <div class="logo">EngageQR</div>
+    <div class="logo">QRapple</div>
     <div class="spinner"></div>
     <div class="status">Przekierowywanie...</div>
     <div class="url">${safeUrl}</div>

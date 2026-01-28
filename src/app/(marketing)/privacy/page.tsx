@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Polityka Prywatnosci - EngageQR',
-  description: 'Polityka prywatnosci serwisu EngageQR - dowiedz sie jak przetwarzamy Twoje dane.',
+  title: 'Polityka Prywatnosci - QRapple',
+  description: 'Polityka prywatnosci serwisu QRapple - dowiedz sie jak przetwarzamy Twoje dane.',
 }
 
 export default function PrivacyPage() {
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-gray-900">1. Administrator danych</h2>
             <p className="mt-4">
-              Administratorem Twoich danych osobowych jest EngageQR. Mozesz sie z nami skontaktowac
+              Administratorem Twoich danych osobowych jest QRapple. Mozesz sie z nami skontaktowac
               poprzez formularz kontaktowy na naszej stronie lub mailowo.
             </p>
           </section>

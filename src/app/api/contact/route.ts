@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     const supportEmail = process.env.SUPPORT_EMAIL || 'contact@engageqr.com'
 
     const { error: sendError } = await resend.emails.send({
-      from: 'EngageQR Contact <noreply@engageqr.com>',
+      from: 'QRapple Contact <noreply@engageqr.com>',
       to: [supportEmail],
       replyTo: email,
       subject: `[Kontakt] ${subject}`,
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
           </div>
 
           <p style="color: #888; font-size: 12px; margin-top: 20px;">
-            Ta wiadomosc zostala wyslana z formularza kontaktowego EngageQR.
+            Ta wiadomosc zostala wyslana z formularza kontaktowego QRapple.
             Aby odpowiedziec, uzyj przycisku "Odpowiedz" - wiadomosc zostanie wyslana bezposrednio do ${email}.
           </p>
         </div>
@@ -142,9 +142,9 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation to user
     await resend.emails.send({
-      from: 'EngageQR <noreply@engageqr.com>',
+      from: 'QRapple <noreply@engageqr.com>',
       to: [email],
-      subject: 'Potwierdzenie otrzymania wiadomosci - EngageQR',
+      subject: 'Potwierdzenie otrzymania wiadomosci - QRapple',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">Dziekujemy za kontakt!</h2>
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
 
           <p style="color: #555;">
             Pozdrawiamy,<br/>
-            Zespol EngageQR
+            Zespol QRapple
           </p>
 
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;"/>

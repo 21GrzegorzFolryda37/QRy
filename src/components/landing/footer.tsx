@@ -22,7 +22,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-xl font-bold gradient-text">
-              EngageQR
+              QRapple
             </Link>
             <p className="mt-4 text-sm text-[var(--foreground-muted)]">
               Dynamiczne kody QR z zaawansowaną analityką dla nowoczesnego marketingu.
@@ -76,7 +76,7 @@ export function Footer() {
         </div>
         <div className="mt-12 border-t border-[var(--border)] pt-8">
           <p className="text-sm text-[var(--foreground-subtle)] text-center">
-            &copy; {new Date().getFullYear()} EngageQR. Wszelkie prawa zastrzeżone.
+            &copy; {new Date().getFullYear()} QRapple. Wszelkie prawa zastrzeżone.
           </p>
         </div>
       </div>

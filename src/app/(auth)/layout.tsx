@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center">
           <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold gradient-text">EngageQR</h1>
+            <h1 className="text-3xl font-bold gradient-text">QRapple</h1>
           </Link>
         </div>
         <div className="bg-[var(--background-surface)] rounded-xl border border-[var(--border)] shadow-lg p-8">
