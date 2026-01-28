@@ -5,7 +5,8 @@ import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type TabType = 'sticker' | 'color' | 'logo'
+type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo'
+type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -76,6 +77,16 @@ const colorPaletteBottom = [
   '#22c55e', // Zielony
 ]
 
+// Kształty kropek QR
+const dotShapes: { id: DotShape; label: string }[] = [
+  { id: 'square', label: 'Kwadrat' },
+  { id: 'dots', label: 'Kropki' },
+  { id: 'rounded', label: 'Zaokrąglone' },
+  { id: 'extra-rounded', label: 'Bardzo zaokrąglone' },
+  { id: 'classy', label: 'Eleganckie' },
+  { id: 'classy-rounded', label: 'Eleganckie zaokrąglone' },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
@@ -90,6 +101,7 @@ export function Hero() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
+  const [dotShape, setDotShape] = useState<DotShape>('square')
   const [logo, setLogo] = useState<string | null>(null)
 
   // Download state
@@ -164,7 +176,7 @@ export function Hero() {
       height: 200,
       type: 'svg',
       data: getQRData(),
-      dotsOptions: { color: dotColor, type: 'square' },
+      dotsOptions: { color: dotColor, type: dotShape },
       cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
       cornersDotOptions: { color: cornerDotColor, type: 'square' },
       backgroundOptions: { color: backgroundColor },
@@ -179,14 +191,14 @@ export function Hero() {
     if (qrCodeRef.current) {
       qrCodeRef.current.update({
         data: getQRData(),
-        dotsOptions: { color: dotColor, type: 'square' },
+        dotsOptions: { color: dotColor, type: dotShape },
         cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
         cornersDotOptions: { color: cornerDotColor, type: 'square' },
         backgroundOptions: { color: backgroundColor },
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, logo])
+  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -234,6 +246,8 @@ export function Hero() {
   const tabs: { id: TabType; label: string }[] = [
     { id: 'sticker', label: 'RAMKA' },
     { id: 'color', label: 'KOLOR' },
+    { id: 'shape', label: 'KSZTAŁT' },
+    { id: 'edges', label: 'KRAWĘDZIE' },
     { id: 'logo', label: 'LOGO' },
   ]
 
@@ -538,6 +552,36 @@ export function Hero() {
                       </div>
                     )}
 
+                    {activeTab === 'shape' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                          {dotShapes.map((shape) => (
+                            <button
+                              key={shape.id}
+                              onClick={() => setDotShape(shape.id)}
+                              className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
+                                dotShape === shape.id
+                                  ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                              }`}
+                              title={shape.label}
+                            >
+                              <DotShapePreview shapeId={shape.id} />
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-xs text-[var(--foreground-muted)]">
+                          Wybrany: <span className="font-medium">{dotShapes.find(s => s.id === dotShape)?.label}</span>
+                        </p>
+                      </div>
+                    )}
+
+                    {activeTab === 'edges' && (
+                      <div className="flex items-center justify-center h-28 text-[var(--foreground-muted)]">
+                        <p className="text-sm">Wkrótce dostępne</p>
+                      </div>
+                    )}
+
                     {activeTab === 'logo' && (
                       <div>
                         {!logo ? (
@@ -623,6 +667,72 @@ function CheckIcon({ className }: { className?: string }) {
 
 function UploadIcon({ className }: { className?: string }) {
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+}
+
+function DotShapePreview({ shapeId }: { shapeId: DotShape }) {
+  const shapes: Record<DotShape, React.ReactNode> = {
+    square: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="10" height="10" fill="currentColor" />
+        <rect x="18" y="4" width="10" height="10" fill="currentColor" />
+        <rect x="4" y="18" width="10" height="10" fill="currentColor" />
+        <rect x="26" y="18" width="10" height="10" fill="currentColor" />
+        <rect x="11" y="26" width="10" height="10" fill="currentColor" />
+        <rect x="26" y="26" width="10" height="10" fill="currentColor" />
+      </svg>
+    ),
+    dots: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <circle cx="9" cy="9" r="5" fill="currentColor" />
+        <circle cx="23" cy="9" r="5" fill="currentColor" />
+        <circle cx="9" cy="23" r="5" fill="currentColor" />
+        <circle cx="31" cy="23" r="5" fill="currentColor" />
+        <circle cx="16" cy="31" r="5" fill="currentColor" />
+        <circle cx="31" cy="31" r="5" fill="currentColor" />
+      </svg>
+    ),
+    rounded: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="18" y="4" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="4" y="18" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="26" y="18" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="11" y="26" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
+      </svg>
+    ),
+    'extra-rounded': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="10" height="10" rx="4" fill="currentColor" />
+        <rect x="18" y="4" width="10" height="10" rx="4" fill="currentColor" />
+        <rect x="4" y="18" width="10" height="10" rx="4" fill="currentColor" />
+        <rect x="26" y="18" width="10" height="10" rx="4" fill="currentColor" />
+        <rect x="11" y="26" width="10" height="10" rx="4" fill="currentColor" />
+        <rect x="26" y="26" width="10" height="10" rx="4" fill="currentColor" />
+      </svg>
+    ),
+    classy: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M4 4h10v10H4z" fill="currentColor" />
+        <path d="M18 4h10v6a4 4 0 01-4 4h-6V4z" fill="currentColor" />
+        <path d="M4 18h6a4 4 0 014 4v6H4V18z" fill="currentColor" />
+        <path d="M26 18h10v10H26z" fill="currentColor" />
+        <path d="M11 26h10v10H11z" fill="currentColor" />
+        <path d="M26 26h10v10H26z" fill="currentColor" />
+      </svg>
+    ),
+    'classy-rounded': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="10" height="10" rx="2" fill="currentColor" />
+        <path d="M18 6a2 2 0 012-2h6a2 2 0 012 2v4a6 6 0 01-6 6h-2a2 2 0 01-2-2V6z" fill="currentColor" />
+        <path d="M6 18a2 2 0 00-2 2v6a2 2 0 002 2h4a6 6 0 006-6v-2a2 2 0 00-2-2H6z" fill="currentColor" />
+        <rect x="26" y="18" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="11" y="26" width="10" height="10" rx="2" fill="currentColor" />
+        <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
+      </svg>
+    ),
+  }
+  return shapes[shapeId] || shapes.square
 }
 
 function TypeIcon({ type, className }: { type: string; className?: string }) {
