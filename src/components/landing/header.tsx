@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 
@@ -31,8 +32,9 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-[var(--background)] border-b border-[var(--border)] shadow-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5">
-            <span className="text-xl font-bold gradient-text">EngageQR</span>
+          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+            <Image src="/logo.webp" alt="QRapple logo" width={32} height={32} className="w-8 h-8" />
+            <span className="text-xl font-bold gradient-text">QRapple</span>
           </Link>
         </div>
 
@@ -102,8 +104,9 @@ export function Header() {
           <div className="fixed inset-0 z-[1001]" onClick={() => setMobileMenuOpen(false)} />
           <div className="fixed inset-y-0 right-0 z-[1002] w-full overflow-y-auto bg-[var(--background)] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-[var(--border)]">
             <div className="flex items-center justify-between">
-              <Link href="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)}>
-                <span className="text-xl font-bold gradient-text">EngageQR</span>
+              <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                <Image src="/logo.webp" alt="QRapple logo" width={32} height={32} className="w-8 h-8" />
+                <span className="text-xl font-bold gradient-text">QRapple</span>
               </Link>
               <button
                 type="button"
