@@ -102,6 +102,55 @@ const cornerDotShapes: { id: CornerDotShape; label: string }[] = [
   { id: 'dot', label: 'Kropka' },
 ]
 
+// Predefiniowane loga marek
+const brandLogos: { id: string; name: string; svg: string }[] = [
+  {
+    id: 'x',
+    name: 'X (Twitter)',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231877F2'%3E%3Cpath d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='ig' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23FFDC80'/%3E%3Cstop offset='50%25' stop-color='%23F77737'/%3E%3Cstop offset='100%25' stop-color='%23C13584'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='url(%23ig)'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='white' stroke-width='2'/%3E%3Ccircle cx='18' cy='6' r='1.5' fill='white'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'telegram',
+    name: 'Telegram',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2326A5E4'%3E%3Cpath d='M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.1.154.234.17.332.015.098.034.321.019.495z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'whatsapp',
+    name: 'WhatsApp',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2325D366'%3E%3Cpath d='M12.031 0C5.505 0 .162 5.335.157 11.852c-.002 2.09.544 4.13 1.58 5.93L0 24l6.387-1.674a11.88 11.88 0 005.641 1.436h.005c6.52 0 11.863-5.335 11.868-11.852C23.904 5.336 18.557 0 12.031 0zm5.985 16.644c-.25.703-1.46 1.303-2.042 1.387-.583.084-1.124.398-3.683-.767-3.075-1.4-5.02-4.537-5.172-4.747-.152-.21-1.24-1.649-1.24-3.145s.784-2.232 1.063-2.537c.278-.304.608-.38.81-.38.203 0 .405.002.583.01.187.01.438-.07.685.523.25.602.853 2.08.928 2.232.075.152.125.33.025.531-.1.202-.15.329-.298.505-.15.177-.315.394-.45.528-.15.152-.306.316-.132.62.175.305.779 1.284 1.672 2.08 1.15 1.023 2.12 1.34 2.42 1.49.302.152.478.127.654-.076.177-.202.757-.883.96-1.187.202-.304.404-.253.683-.152.278.101 1.769.834 2.07.987.303.152.506.228.58.355.078.127.078.733-.17 1.436z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230A66C2'%3E%3Cpath d='M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'pinterest',
+    name: 'Pinterest',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E60023'%3E%3Cpath d='M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z'/%3E%3C/svg%3E"
+  },
+  {
+    id: 'gmail',
+    name: 'Gmail',
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285F4' d='M22 6v12c0 1.1-.9 2-2 2h-1V8l-7 4.5L5 8v12H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h.01L12 9l7.99-5H20c1.1 0 2 .9 2 2z'/%3E%3Cpath fill='%23EA4335' d='M22 6l-10 6.5L2 6V4c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v2z'/%3E%3C/svg%3E"
+  },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
@@ -864,22 +913,56 @@ export function Hero() {
                     )}
 
                     {activeTab === 'logo' && (
-                      <div>
-                        {!logo ? (
-                          <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-muted)] transition-all">
-                            <UploadIcon className="w-7 h-7 text-[var(--foreground-muted)] mb-1" />
-                            <span className="text-sm text-[var(--foreground-muted)]">Dodaj logo</span>
-                            <span className="text-xs text-[var(--foreground-subtle)]">PNG, JPG, SVG</span>
-                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                          </label>
-                        ) : (
-                          <div className="flex items-center gap-4 p-4 bg-[var(--background-surface)] rounded-xl">
-                            <img src={logo} alt="Logo" className="w-14 h-14 object-contain rounded-lg border border-[var(--border)]" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-[var(--foreground)]">Logo dodane</p>
-                              <button onClick={() => { setLogo(null); if (fileInputRef.current) fileInputRef.current.value = '' }} className="text-sm text-[var(--error)] hover:underline">Usuń</button>
-                            </div>
+                      <div className="space-y-4">
+                        {/* Predefiniowane loga */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Popularne marki</p>
+                          <div className="grid grid-cols-5 sm:grid-cols-9 gap-2">
+                            {brandLogos.map((brand) => (
+                              <button
+                                key={brand.id}
+                                onClick={() => setLogo(brand.svg)}
+                                className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
+                                  logo === brand.svg
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)] bg-white'
+                                }`}
+                                title={brand.name}
+                              >
+                                <img src={brand.svg} alt={brand.name} className="w-6 h-6 object-contain" />
+                              </button>
+                            ))}
                           </div>
+                        </div>
+
+                        {/* Upload własnego logo */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Własne logo</p>
+                          {!logo || brandLogos.some(b => b.svg === logo) ? (
+                            <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-muted)] transition-all">
+                              <UploadIcon className="w-5 h-5 text-[var(--foreground-muted)] mb-1" />
+                              <span className="text-xs text-[var(--foreground-muted)]">Dodaj własne logo</span>
+                              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                            </label>
+                          ) : (
+                            <div className="flex items-center gap-3 p-3 bg-[var(--background-surface)] rounded-xl">
+                              <img src={logo} alt="Logo" className="w-10 h-10 object-contain rounded-lg border border-[var(--border)]" />
+                              <div className="flex-1">
+                                <p className="text-xs font-medium text-[var(--foreground)]">Własne logo</p>
+                                <button onClick={() => { setLogo(null); if (fileInputRef.current) fileInputRef.current.value = '' }} className="text-xs text-[var(--error)] hover:underline">Usuń</button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Usuń logo */}
+                        {logo && (
+                          <button
+                            onClick={() => { setLogo(null); if (fileInputRef.current) fileInputRef.current.value = '' }}
+                            className="w-full py-2 text-xs text-[var(--foreground-muted)] hover:text-[var(--error)] transition-colors"
+                          >
+                            Usuń logo
+                          </button>
                         )}
                       </div>
                     )}
