@@ -515,10 +515,10 @@ export function Hero() {
   }
 
   return (
-    <section className="pt-24 pb-16 sm:pt-28 sm:pb-24">
+    <section className="pt-32 pb-16 sm:pt-40 sm:pb-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-10">
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
             <span className="text-[var(--foreground)]">Darmowy generator </span>
             <span className="gradient-text">kodów QR</span>
