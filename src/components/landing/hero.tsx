@@ -519,8 +519,9 @@ export function Hero() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-14">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl gradient-text">
-            Generator Kodów QR
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            <span className="text-[var(--foreground)]">Generator Kodów </span>
+            <span className="gradient-text">QR</span>
           </h1>
         </div>
 
