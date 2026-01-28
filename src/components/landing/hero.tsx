@@ -147,7 +147,7 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
   {
     id: 'gmail',
     name: 'Gmail',
-    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23e0e0e0' d='M5 8h38v32H5z'/%3E%3Cpath fill='%23fff' d='M6 9h36v30H6z'/%3E%3Cpath fill='%23ea4335' d='M43 40H5l19-16z'/%3E%3Cpath fill='%23c5221f' d='M24 24L5 8h38z'/%3E%3Cpath fill='%2334a853' d='M6 8l18 16v16H6z'/%3E%3Cpath fill='%234285f4' d='M42 8L24 24v16h18z'/%3E%3Cpath fill='%23fbbc05' d='M42 40V8L24 24z'/%3E%3Cpath fill='%231e8e3e' d='M6 40V8l18 16z'/%3E%3C/svg%3E"
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='6' width='28' height='20' rx='2' fill='%23fff' stroke='%23e0e0e0' stroke-width='1'/%3E%3Cpath d='M2 8l14 10L30 8' fill='none' stroke='%23ea4335' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M2 8v16' stroke='%2334a853' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M30 8v16' stroke='%234285f4' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M2 24h8' stroke='%23fbbc04' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M22 24h8' stroke='%234285f4' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E"
   },
   {
     id: 'youtube',
