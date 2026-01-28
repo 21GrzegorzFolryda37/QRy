@@ -7,6 +7,8 @@ import type QRCodeStylingType from 'qr-code-styling'
 type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo'
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
+type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
+type CornerDotShape = 'square' | 'dot'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -87,6 +89,19 @@ const dotShapes: { id: DotShape; label: string }[] = [
   { id: 'classy-rounded', label: 'Eleganckie zaokrąglone' },
 ]
 
+// Kształty ramki narożnika (zewnętrzny element)
+const cornerSquareShapes: { id: CornerSquareShape; label: string }[] = [
+  { id: 'square', label: 'Kwadrat' },
+  { id: 'dot', label: 'Kropka' },
+  { id: 'extra-rounded', label: 'Zaokrąglone' },
+]
+
+// Kształty środka narożnika (wewnętrzny element)
+const cornerDotShapes: { id: CornerDotShape; label: string }[] = [
+  { id: 'square', label: 'Kwadrat' },
+  { id: 'dot', label: 'Kropka' },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('sticker')
@@ -102,6 +117,8 @@ export function Hero() {
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
   const [dotShape, setDotShape] = useState<DotShape>('square')
+  const [cornerSquareShape, setCornerSquareShape] = useState<CornerSquareShape>('square')
+  const [cornerDotShape, setCornerDotShape] = useState<CornerDotShape>('square')
   const [logo, setLogo] = useState<string | null>(null)
 
   // Download state
@@ -177,8 +194,8 @@ export function Hero() {
       type: 'svg',
       data: getQRData(),
       dotsOptions: { color: dotColor, type: dotShape },
-      cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
-      cornersDotOptions: { color: cornerDotColor, type: 'square' },
+      cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareShape },
+      cornersDotOptions: { color: cornerDotColor, type: cornerDotShape },
       backgroundOptions: { color: backgroundColor },
       imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
     })
@@ -192,13 +209,13 @@ export function Hero() {
       qrCodeRef.current.update({
         data: getQRData(),
         dotsOptions: { color: dotColor, type: dotShape },
-        cornersSquareOptions: { color: cornerSquareColor, type: 'square' },
-        cornersDotOptions: { color: cornerDotColor, type: 'square' },
+        cornersSquareOptions: { color: cornerSquareColor, type: cornerSquareShape },
+        cornersDotOptions: { color: cornerDotColor, type: cornerDotShape },
         backgroundOptions: { color: backgroundColor },
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotShape, logo])
+  }, [formData, selectedType, dotColor, backgroundColor, cornerSquareColor, cornerDotColor, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -577,8 +594,80 @@ export function Hero() {
                     )}
 
                     {activeTab === 'edges' && (
-                      <div className="flex items-center justify-center h-28 text-[var(--foreground-muted)]">
-                        <p className="text-sm">Wkrótce dostępne</p>
+                      <div className="space-y-4">
+                        {/* Ramka narożnika */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Ramka narożnika</p>
+                          <div className="flex gap-2 mb-2">
+                            {cornerSquareShapes.map((shape) => (
+                              <button
+                                key={shape.id}
+                                onClick={() => setCornerSquareShape(shape.id)}
+                                className={`w-10 h-10 rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
+                                  cornerSquareShape === shape.id
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                                title={shape.label}
+                              >
+                                <CornerSquareShapePreview shapeId={shape.id} />
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex gap-1.5 flex-wrap">
+                            <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                              <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                              <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                            </label>
+                            {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                              <button
+                                key={`csq-${color}`}
+                                onClick={() => setCornerSquareColor(color)}
+                                className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                  cornerSquareColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Środek narożnika */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Środek narożnika</p>
+                          <div className="flex gap-2 mb-2">
+                            {cornerDotShapes.map((shape) => (
+                              <button
+                                key={shape.id}
+                                onClick={() => setCornerDotShape(shape.id)}
+                                className={`w-10 h-10 rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
+                                  cornerDotShape === shape.id
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                                title={shape.label}
+                              >
+                                <CornerDotShapePreview shapeId={shape.id} />
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex gap-1.5 flex-wrap">
+                            <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                              <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                              <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                            </label>
+                            {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                              <button
+                                key={`cd-${color}`}
+                                onClick={() => setCornerDotColor(color)}
+                                className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                  cornerDotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     )}
 
@@ -729,6 +818,43 @@ function DotShapePreview({ shapeId }: { shapeId: DotShape }) {
         <rect x="26" y="18" width="10" height="10" rx="2" fill="currentColor" />
         <rect x="11" y="26" width="10" height="10" rx="2" fill="currentColor" />
         <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
+      </svg>
+    ),
+  }
+  return shapes[shapeId] || shapes.square
+}
+
+function CornerSquareShapePreview({ shapeId }: { shapeId: CornerSquareShape }) {
+  const shapes: Record<CornerSquareShape, React.ReactNode> = {
+    square: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="6" />
+      </svg>
+    ),
+    dot: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" strokeWidth="6" />
+      </svg>
+    ),
+    'extra-rounded': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="32" height="32" rx="10" fill="none" stroke="currentColor" strokeWidth="6" />
+      </svg>
+    ),
+  }
+  return shapes[shapeId] || shapes.square
+}
+
+function CornerDotShapePreview({ shapeId }: { shapeId: CornerDotShape }) {
+  const shapes: Record<CornerDotShape, React.ReactNode> = {
+    square: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="10" y="10" width="20" height="20" fill="currentColor" />
+      </svg>
+    ),
+    dot: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <circle cx="20" cy="20" r="10" fill="currentColor" />
       </svg>
     ),
   }
