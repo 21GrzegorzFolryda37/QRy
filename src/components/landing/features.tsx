@@ -33,16 +33,16 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-24 sm:py-32">
+    <section className="py-24 sm:py-32" style={{ backgroundColor: 'rgba(139, 92, 246, 0.9)' }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-[var(--primary)]">
+          <h2 className="text-base font-semibold leading-7 text-white/80">
             Wszystko czego potrzebujesz
           </h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Potężne funkcje dla <span className="gradient-text">nowoczesnego marketingu</span>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Potężne funkcje dla <span className="text-cyan-300">nowoczesnego marketingu</span>
           </p>
-          <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
+          <p className="mt-6 text-lg leading-8 text-white/80">
             Twórz kody QR, które pracują ciężej dla Twojego biznesu dzięki funkcjom
             zaprojektowanym z myślą o wydajności i wglądzie w dane.
           </p>
@@ -52,11 +52,11 @@ export function Features() {
             {features.map((feature, index) => (
               <div
                 key={feature.name}
-                className="group flex flex-col p-6 rounded-xl bg-white border border-[var(--border)] shadow-sm hover-lift animate-fade-in-up"
+                className="group flex flex-col p-6 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-sm hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient} shadow-md`}>
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-white">
+                  <div className="p-2 rounded-lg bg-white/20 shadow-md">
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
@@ -64,7 +64,7 @@ export function Features() {
                   </div>
                   {feature.name}
                 </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-[var(--foreground-muted)]">
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-white/80">
                   <p className="flex-auto">{feature.description}</p>
                 </dd>
               </div>
