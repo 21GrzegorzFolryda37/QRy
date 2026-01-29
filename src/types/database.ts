@@ -31,6 +31,7 @@ export interface QrCode {
   short_code: string
   destination_url: string
   content_type?: QrCodeContentType // Optional until database column is added
+  content_data?: LinkPageData | SurveyData | null // Data for linkpage/survey types
   style: QrStyle
   logo_url: string | null
   logo_size: number | null
@@ -59,6 +60,54 @@ export type QrCodeContentType =
   | 'location'
   | 'pdf'
   | 'menu'
+  | 'linkpage'
+  | 'survey'
+
+// Strona linków (Link-in-bio)
+export interface LinkPageLink {
+  id: string
+  title: string
+  url: string
+  icon?: string
+  order: number
+}
+
+export interface LinkPageData {
+  title: string
+  description?: string
+  avatarUrl?: string
+  backgroundColor?: string
+  textColor?: string
+  buttonColor?: string
+  buttonTextColor?: string
+  links: LinkPageLink[]
+}
+
+// Ankiety
+export interface SurveyQuestion {
+  id: string
+  question: string
+  type: 'single' | 'multiple' | 'text' | 'rating'
+  options?: string[]
+  required: boolean
+  order: number
+}
+
+export interface SurveyData {
+  title: string
+  description?: string
+  questions: SurveyQuestion[]
+  thankYouMessage?: string
+  backgroundColor?: string
+  textColor?: string
+}
+
+export interface SurveyResponse {
+  id: string
+  qr_code_id: string
+  answers: Record<string, string | string[] | number>
+  submitted_at: string
+}
 
 // Typy kształtów modułów QR
 export type DotsType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'

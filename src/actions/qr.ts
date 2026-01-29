@@ -7,7 +7,7 @@ import { createQrSchema, updateQrSchema } from '@/lib/validations/qr'
 import { generateShortCode } from '@/lib/utils/short-code'
 import { getRedirectUrl } from '@/lib/utils'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
-import { QrCode, QrStyle, QrCodeContentType } from '@/types/database'
+import { QrCode, QrStyle, QrCodeContentType, LinkPageData, SurveyData } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 
 export type QrActionResponse = {
@@ -110,6 +110,12 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
   const finalStyle: QrStyle = { ...DEFAULT_QR_STYLE, ...validatedFields.data.style }
   const contentType = (formData.get('contentType') as QrCodeContentType) || 'website'
 
+  // Parse content data for linkpage/survey types
+  const rawContentData = formData.get('contentData')
+  const contentData: LinkPageData | SurveyData | null = rawContentData
+    ? JSON.parse(rawContentData as string)
+    : null
+
   // Check QR limit
   const { data: profile } = await supabase
     .from('profiles')
@@ -142,7 +148,6 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
   const qrImageUrl = await uploadQrImage(qrBuffer, fileName)
 
   // Insert QR code record
-  // Note: content_type column may not exist in older databases, so we include it conditionally
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from('qr_codes') as any)
     .insert({
@@ -150,7 +155,8 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
       name,
       short_code: shortCode,
       destination_url: destinationUrl,
-      // content_type: contentType, // Uncomment after adding column to database
+      content_type: contentType,
+      content_data: contentData,
       style: finalStyle,
       logo_url: logoUrl || null,
       logo_size: logoSize || null,
@@ -214,6 +220,13 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
   const migratedExistingStyle = migrateQrStyle(existingQr.style)
   const finalStyle: QrStyle = { ...migratedExistingStyle, ...updates.style }
 
+  // Parse content data for linkpage/survey types
+  const rawContentData = formData.get('contentData')
+  const contentData: LinkPageData | SurveyData | null = rawContentData
+    ? JSON.parse(rawContentData as string)
+    : existingQr.content_data || null
+  const contentType = (formData.get('contentType') as QrCodeContentType) || existingQr.content_type || 'website'
+
   // Check if client sent a new QR image
   const qrImageDataUrl = formData.get('qrImageDataUrl') as string | null
   let qrImageUrl = existingQr.qr_image_url
@@ -231,6 +244,8 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
     .update({
       name: updates.name,
       destination_url: updates.destinationUrl,
+      content_type: contentType,
+      content_data: contentData,
       style: finalStyle,
       logo_url: updates.logoUrl !== undefined ? updates.logoUrl : existingQr.logo_url,
       logo_size: updates.logoSize !== undefined ? updates.logoSize : existingQr.logo_size,

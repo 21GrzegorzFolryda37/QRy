@@ -30,6 +30,14 @@ export function getRedirectUrl(shortCode: string): string {
   return `${getBaseUrl()}/r/${shortCode}`
 }
 
+export function getLinkPageUrl(shortCode: string): string {
+  return `${getBaseUrl()}/l/${shortCode}`
+}
+
+export function getSurveyUrl(shortCode: string): string {
+  return `${getBaseUrl()}/s/${shortCode}`
+}
+
 export function extractUtmParams(url: URL): Record<string, string | null> {
   return {
     utm_source: url.searchParams.get('utm_source'),

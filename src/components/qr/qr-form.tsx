@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type QRCodeStylingType from 'qr-code-styling'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
-import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType } from '@/types/database'
+import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType, LinkPageData, SurveyData } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
-import { getRedirectUrl } from '@/lib/utils'
+import { getRedirectUrl, getLinkPageUrl, getSurveyUrl } from '@/lib/utils'
 import { generateQrDataUrl } from '@/lib/qr/options'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
@@ -16,6 +16,8 @@ import { GradientEditor } from './gradient-editor'
 import { LogoUploader } from './logo-uploader'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
 import { FrameSelector } from './frame-selector'
+import { LinkPageEditor, defaultLinkPageData } from './linkpage-editor'
+import { SurveyEditor, defaultSurveyData } from './survey-editor'
 
 interface QrFormProps {
   qrCode?: QrCode
@@ -67,8 +69,28 @@ export function QrForm({ qrCode }: QrFormProps) {
   const [name, setName] = useState(qrCode?.name || '')
   const [destinationUrl, setDestinationUrl] = useState(qrCode?.destination_url || '')
   const [contentType, setContentType] = useState<QrCodeContentType>(qrCode?.content_type || 'website')
+  const [contentData, setContentData] = useState<LinkPageData | SurveyData | null>(
+    qrCode?.content_data || null
+  )
   const [logoUrl, setLogoUrl] = useState(qrCode?.logo_url || '')
   const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 60)
+
+  // Obsługa zmiany typu - inicjalizacja danych dla linkpage/survey
+  const handleContentTypeChange = (newType: QrCodeContentType) => {
+    setContentType(newType)
+    if (newType === 'linkpage' && (!contentData || !('links' in contentData))) {
+      setContentData(defaultLinkPageData)
+      setDestinationUrl('') // URL będzie generowany automatycznie
+    } else if (newType === 'survey' && (!contentData || !('questions' in contentData))) {
+      setContentData(defaultSurveyData)
+      setDestinationUrl('') // URL będzie generowany automatycznie
+    } else if (newType !== 'linkpage' && newType !== 'survey') {
+      setContentData(null)
+    }
+  }
+
+  // Sprawdź czy typ wymaga edytora zamiast URL
+  const isSpecialType = contentType === 'linkpage' || contentType === 'survey'
 
   // Migruj stary styl do nowego formatu
   const initialStyle = qrCode?.style ? migrateQrStyle(qrCode.style) : DEFAULT_QR_STYLE
@@ -104,7 +126,6 @@ export function QrForm({ qrCode }: QrFormProps) {
       if (isEditing) {
         // Use existing short code for updates
         shortCode = qrCode.short_code
-        redirectUrl = getRedirectUrl(shortCode)
       } else {
         // Reserve a new short code for new QR codes
         const reserveResult = await reserveShortCode()
@@ -114,7 +135,15 @@ export function QrForm({ qrCode }: QrFormProps) {
           return
         }
         shortCode = reserveResult.shortCode
-        redirectUrl = reserveResult.redirectUrl
+      }
+
+      // Generate appropriate URL based on content type
+      if (contentType === 'linkpage') {
+        redirectUrl = getLinkPageUrl(shortCode)
+      } else if (contentType === 'survey') {
+        redirectUrl = getSurveyUrl(shortCode)
+      } else {
+        redirectUrl = getRedirectUrl(shortCode)
       }
 
       // Generate QR code image client-side with the REDIRECT URL
@@ -136,11 +165,20 @@ export function QrForm({ qrCode }: QrFormProps) {
       // Build form data
       const formData = new FormData()
       formData.set('name', name)
-      formData.set('destinationUrl', destinationUrl)
       formData.set('contentType', contentType)
       formData.set('style', JSON.stringify(style))
       formData.set('logoUrl', logoUrl)
       formData.set('qrImageDataUrl', qrImageDataUrl)
+
+      // Dla linkpage/survey, URL będzie generowany automatycznie
+      if (isSpecialType) {
+        formData.set('destinationUrl', redirectUrl) // Używamy redirect URL jako placeholder
+        if (contentData) {
+          formData.set('contentData', JSON.stringify(contentData))
+        }
+      } else {
+        formData.set('destinationUrl', destinationUrl)
+      }
 
       if (logoUrl) {
         formData.set('logoSize', logoSize.toString())
@@ -178,7 +216,7 @@ export function QrForm({ qrCode }: QrFormProps) {
             <CardTitle>Typ kodu QR</CardTitle>
           </CardHeader>
           <CardContent>
-            <ContentTypeSelector value={contentType} onChange={setContentType} />
+            <ContentTypeSelector value={contentType} onChange={handleContentTypeChange} />
           </CardContent>
         </Card>
 
@@ -195,21 +233,53 @@ export function QrForm({ qrCode }: QrFormProps) {
               placeholder="Moj kod QR"
               required
             />
-            <div>
-              <Input
-                label="Adres URL"
-                type="url"
-                value={destinationUrl}
-                onChange={(e) => setDestinationUrl(e.target.value)}
-                placeholder={contentTypeInfo.placeholder}
-                required
-              />
-              {contentTypeInfo.hint && (
-                <p className="mt-1 text-xs text-[var(--foreground-muted)]">{contentTypeInfo.hint}</p>
-              )}
-            </div>
+            {!isSpecialType && (
+              <div>
+                <Input
+                  label="Adres URL"
+                  type="url"
+                  value={destinationUrl}
+                  onChange={(e) => setDestinationUrl(e.target.value)}
+                  placeholder={contentTypeInfo.placeholder}
+                  required
+                />
+                {contentTypeInfo.hint && (
+                  <p className="mt-1 text-xs text-[var(--foreground-muted)]">{contentTypeInfo.hint}</p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Edytor strony linków */}
+        {contentType === 'linkpage' && contentData && 'links' in contentData && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Strona linków</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LinkPageEditor
+                value={contentData}
+                onChange={(data) => setContentData(data)}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Edytor ankiety */}
+        {contentType === 'survey' && contentData && 'questions' in contentData && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Ankieta</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SurveyEditor
+                value={contentData}
+                onChange={(data) => setContentData(data)}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Ramka dekoracyjna */}
         <CollapsibleSection title="Ramka dekoracyjna" defaultOpen={false}>
