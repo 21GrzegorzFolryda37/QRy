@@ -52,11 +52,11 @@ export function Features() {
             {features.map((feature, index) => (
               <div
                 key={feature.name}
-                className="group flex flex-col p-6 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-sm hover-lift animate-fade-in-up"
+                className="group flex flex-col p-6 rounded-xl bg-white shadow-lg hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-white">
-                  <div className="p-2 rounded-lg bg-white/20 shadow-md">
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient} shadow-md`}>
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
@@ -64,7 +64,7 @@ export function Features() {
                   </div>
                   {feature.name}
                 </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-white/80">
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
                   <p className="flex-auto">{feature.description}</p>
                 </dd>
               </div>
