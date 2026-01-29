@@ -516,21 +516,12 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden bg-white">
-      {/* Animated Background */}
+      {/* Animated Background - tylko gradienty */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        {/* Gradient orbs */}
-        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#8b5cf6] rounded-full filter blur-[120px] opacity-20 animate-blob" />
-        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] bg-[#06b6d4] rounded-full filter blur-[120px] opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-[-10%] left-[30%] w-[450px] h-[450px] bg-[#8b5cf6] rounded-full filter blur-[120px] opacity-15 animate-blob animation-delay-4000" />
-
-        {/* Floating dots */}
-        <div className="absolute top-[15%] left-[8%] w-2 h-2 bg-[#8b5cf6] rounded-full opacity-60 animate-float" />
-        <div className="absolute top-[25%] right-[12%] w-3 h-3 bg-[#06b6d4] rounded-full opacity-50 animate-float animation-delay-1000" />
-        <div className="absolute top-[60%] left-[5%] w-2.5 h-2.5 bg-[#06b6d4] rounded-full opacity-40 animate-float animation-delay-2000" />
-        <div className="absolute top-[40%] right-[6%] w-2 h-2 bg-[#8b5cf6] rounded-full opacity-50 animate-float animation-delay-3000" />
-        <div className="absolute bottom-[20%] left-[15%] w-1.5 h-1.5 bg-[#8b5cf6] rounded-full opacity-45 animate-float animation-delay-4000" />
-        <div className="absolute bottom-[30%] right-[18%] w-2 h-2 bg-[#06b6d4] rounded-full opacity-40 animate-float animation-delay-1000" />
-        <div className="absolute top-[70%] right-[35%] w-1.5 h-1.5 bg-[#8b5cf6] rounded-full opacity-35 animate-float animation-delay-3000" />
+        <div className="absolute top-[-30%] left-[-20%] w-[600px] h-[600px] bg-[#8b5cf6] rounded-full filter blur-[100px] opacity-30 animate-blob" />
+        <div className="absolute top-[0%] right-[-15%] w-[500px] h-[500px] bg-[#06b6d4] rounded-full filter blur-[100px] opacity-25 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-[-20%] left-[20%] w-[550px] h-[550px] bg-[#8b5cf6] rounded-full filter blur-[100px] opacity-25 animate-blob animation-delay-4000" />
+        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-[#06b6d4] rounded-full filter blur-[100px] opacity-20 animate-blob animation-delay-3000" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
