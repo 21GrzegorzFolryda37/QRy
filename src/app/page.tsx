@@ -8,8 +8,8 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero z własnym animowanym tłem */}
         <Hero />
-        {/* Reszta strony z landing-canvas */}
-        <div className="landing-canvas">
+        {/* Reszta strony - białe tło */}
+        <div className="bg-white">
           <HowItWorks />
           <Features />
           <Pricing />
