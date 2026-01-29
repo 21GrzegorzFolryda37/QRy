@@ -135,6 +135,21 @@ body {
   }
 }
 
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -30px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(30px, 10px) scale(1.05);
+  }
+}
+
 /* ========================================
    ANIMATION UTILITY CLASSES
    ======================================== */
@@ -170,12 +185,21 @@ body {
   animation: spin-slow 8s linear infinite;
 }
 
+.animate-blob {
+  animation: blob 7s infinite ease-in-out;
+}
+
 /* Stagger delays for sequential animations */
 .animate-delay-100 { animation-delay: 100ms; }
 .animate-delay-200 { animation-delay: 200ms; }
 .animate-delay-300 { animation-delay: 300ms; }
 .animate-delay-400 { animation-delay: 400ms; }
 .animate-delay-500 { animation-delay: 500ms; }
+
+.animation-delay-1000 { animation-delay: 1000ms; }
+.animation-delay-2000 { animation-delay: 2000ms; }
+.animation-delay-3000 { animation-delay: 3000ms; }
+.animation-delay-4000 { animation-delay: 4000ms; }
 
 /* ========================================
    GRADIENT UTILITIES
