@@ -13,7 +13,7 @@ const analyticsFeatures = [
   },
   {
     name: 'Urządzenia i przeglądarki',
-    description: 'Sprawdź na jakich urządzeniach skanowane są Twoje kody - smartfony, tablety czy komputery. Poznaj popularne przeglądarki.',
+    description: 'Sprawdź na jakich urządzeniach i systemach operacyjnych skanowane są Twoje kody - smartfony, tablety czy komputery. Poznaj popularne przeglądarki.',
     icon: DeviceIcon,
   },
   {
@@ -22,12 +22,12 @@ const analyticsFeatures = [
     icon: ClockIcon,
   },
   {
-    name: 'Śledzenie UTM',
-    description: 'Integruj z Google Analytics dzięki parametrom UTM. Śledź źródła ruchu i efektywność różnych kanałów marketingowych.',
+    name: 'Porównanie kodów',
+    description: 'Porównuj wyniki różnych kodów QR obok siebie. Analizuj, które kampanie osiągają najlepsze rezultaty i optymalizuj strategię.',
     icon: LinkIcon,
   },
   {
-    name: 'Eksport raportów',
+    name: 'Wygodny eksport raportów',
     description: 'Pobieraj szczegółowe raporty w formacie PDF. Udostępniaj statystyki zespołowi lub klientom jednym kliknięciem.',
     icon: DocumentIcon,
   },
