@@ -3,16 +3,20 @@ import { Header, Footer } from '@/components/landing'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
+        {/* Hero z własnym animowanym tłem */}
         <Hero />
-        <HowItWorks />
-        <Features />
-        <Pricing />
-        <Analytics />
-        <FAQ />
-        <CTA />
+        {/* Reszta strony z landing-canvas */}
+        <div className="landing-canvas">
+          <HowItWorks />
+          <Features />
+          <Pricing />
+          <Analytics />
+          <FAQ />
+          <CTA />
+        </div>
       </main>
       <Footer />
     </div>

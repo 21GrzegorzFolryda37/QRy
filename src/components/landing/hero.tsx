@@ -515,7 +515,7 @@ export function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden bg-white">
       {/* Animated Background */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         {/* Gradient orbs */}
