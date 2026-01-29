@@ -515,59 +515,74 @@ export function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden bg-white">
-      {/* Animated Background - gradienty */}
+    <section
+      className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #6B8DD6 50%, #8E37D7 75%, #06b6d4 100%)',
+        backgroundSize: '400% 400%',
+        animation: 'gradientShift 15s ease infinite',
+      }}
+    >
+      {/* Floating color blobs */}
       <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
         <div
           className="absolute rounded-full"
           style={{
-            top: '-20%',
-            left: '-10%',
-            width: '600px',
-            height: '600px',
-            background: '#8b5cf6',
-            filter: 'blur(100px)',
-            opacity: 0.35,
-            animation: 'blob 7s infinite ease-in-out',
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            top: '10%',
-            right: '-10%',
+            top: '-10%',
+            left: '-5%',
             width: '500px',
             height: '500px',
-            background: '#06b6d4',
-            filter: 'blur(100px)',
-            opacity: 0.3,
-            animation: 'blob 7s infinite ease-in-out 2s',
+            background: 'rgba(139, 92, 246, 0.6)',
+            filter: 'blur(80px)',
+            animation: 'blob 8s infinite ease-in-out',
           }}
         />
         <div
           className="absolute rounded-full"
           style={{
-            bottom: '-15%',
-            left: '25%',
-            width: '550px',
-            height: '550px',
-            background: '#8b5cf6',
-            filter: 'blur(100px)',
-            opacity: 0.3,
-            animation: 'blob 7s infinite ease-in-out 4s',
+            top: '20%',
+            right: '-5%',
+            width: '450px',
+            height: '450px',
+            background: 'rgba(6, 182, 212, 0.5)',
+            filter: 'blur(80px)',
+            animation: 'blob 8s infinite ease-in-out 2s',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            bottom: '-5%',
+            left: '30%',
+            width: '500px',
+            height: '500px',
+            background: 'rgba(167, 139, 250, 0.5)',
+            filter: 'blur(80px)',
+            animation: 'blob 8s infinite ease-in-out 4s',
           }}
         />
         <div
           className="absolute rounded-full"
           style={{
             top: '50%',
-            right: '20%',
-            width: '400px',
-            height: '400px',
-            background: '#06b6d4',
-            filter: 'blur(100px)',
-            opacity: 0.25,
-            animation: 'blob 7s infinite ease-in-out 3s',
+            left: '10%',
+            width: '350px',
+            height: '350px',
+            background: 'rgba(34, 211, 238, 0.4)',
+            filter: 'blur(70px)',
+            animation: 'blob 8s infinite ease-in-out 3s',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '30%',
+            right: '25%',
+            width: '300px',
+            height: '300px',
+            background: 'rgba(139, 92, 246, 0.4)',
+            filter: 'blur(60px)',
+            animation: 'blob 8s infinite ease-in-out 1s',
           }}
         />
       </div>
