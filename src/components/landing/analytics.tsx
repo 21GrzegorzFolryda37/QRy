@@ -35,7 +35,7 @@ const analyticsFeatures = [
 
 export function Analytics() {
   return (
-    <section className="py-24 sm:py-32" style={{ backgroundColor: 'rgba(6, 182, 212, 0.25)' }}>
+    <section className="py-24 sm:py-32" style={{ backgroundColor: 'rgba(167, 139, 250, 0.15)' }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">
