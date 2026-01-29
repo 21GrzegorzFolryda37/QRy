@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 
 const faqs = [
   {
@@ -56,63 +55,48 @@ export function FAQ() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Image on the left */}
-            <div className="hidden lg:flex justify-start items-start -ml-8">
-              <Image
-                src="/FAQ.webp"
-                alt="FAQ illustration"
-                width={500}
-                height={500}
-                className="rounded-2xl"
-                style={{ transform: 'rotate(15deg)' }}
-              />
-            </div>
-
-            {/* Questions on the right */}
-            <dl className="space-y-4">
-              {faqs.map((faq, index) => (
-                <div
-                  key={index}
-                  className={`rounded-xl border bg-white overflow-hidden transition-all duration-200 ${
+        <div className="mx-auto mt-16 max-w-3xl">
+          <dl className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className={`rounded-xl border bg-white overflow-hidden transition-all duration-200 ${
+                  openIndex === index
+                    ? 'border-[var(--primary)] shadow-md'
+                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                }`}
+              >
+                <dt>
+                  <button
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                    className="flex w-full items-center justify-between px-6 py-5 text-left"
+                  >
+                    <span className="text-base font-semibold text-[var(--foreground)]">
+                      {faq.question}
+                    </span>
+                    <span className="ml-6 flex-shrink-0">
+                      <ChevronIcon
+                        className={`h-5 w-5 text-[var(--foreground-muted)] transition-transform duration-500 ${
+                          openIndex === index ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </span>
+                  </button>
+                </dt>
+                <dd
+                  className={`transition-all duration-500 ease-in-out ${
                     openIndex === index
-                      ? 'border-[var(--primary)] shadow-md'
-                      : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                      ? 'max-h-96 opacity-100'
+                      : 'max-h-0 opacity-0 overflow-hidden'
                   }`}
                 >
-                  <dt>
-                    <button
-                      onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                      className="flex w-full items-center justify-between px-6 py-5 text-left"
-                    >
-                      <span className="text-base font-semibold text-[var(--foreground)]">
-                        {faq.question}
-                      </span>
-                      <span className="ml-6 flex-shrink-0">
-                        <ChevronIcon
-                          className={`h-5 w-5 text-[var(--foreground-muted)] transition-transform duration-500 ${
-                            openIndex === index ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </span>
-                    </button>
-                  </dt>
-                  <dd
-                    className={`transition-all duration-500 ease-in-out ${
-                      openIndex === index
-                        ? 'max-h-96 opacity-100'
-                        : 'max-h-0 opacity-0 overflow-hidden'
-                    }`}
-                  >
-                    <p className="px-6 pb-5 text-base text-[var(--foreground-muted)] leading-7">
-                      {faq.answer}
-                    </p>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+                  <p className="px-6 pb-5 text-base text-[var(--foreground-muted)] leading-7">
+                    {faq.answer}
+                  </p>
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>
