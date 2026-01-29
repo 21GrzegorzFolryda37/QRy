@@ -59,13 +59,14 @@ export function FAQ() {
         <div className="mx-auto mt-16 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Image on the left */}
-            <div className="hidden lg:flex justify-center items-start">
+            <div className="hidden lg:flex justify-start items-start -ml-8">
               <Image
                 src="/FAQ.webp"
                 alt="FAQ illustration"
                 width={500}
                 height={500}
                 className="rounded-2xl"
+                style={{ transform: 'rotate(15deg)' }}
               />
             </div>
 
