@@ -146,27 +146,21 @@ export function AnimatedBackground() {
 // Simpler CSS-based animated background (alternative, lighter on performance)
 export function AnimatedBackgroundCSS() {
   return (
-    <div className="absolute inset-0 -z-10 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
       {/* Gradient orbs */}
-      <div className="absolute top-0 -left-40 w-80 h-80 bg-[#8b5cf6] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob" />
-      <div className="absolute top-0 -right-40 w-80 h-80 bg-[#06b6d4] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000" />
-      <div className="absolute -bottom-40 left-1/2 w-80 h-80 bg-[#8b5cf6] rounded-full mix-blend-multiply filter blur-[128px] opacity-15 animate-blob animation-delay-4000" />
-
-      {/* Grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `linear-gradient(#8b5cf6 1px, transparent 1px), linear-gradient(90deg, #8b5cf6 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-      />
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#8b5cf6] rounded-full filter blur-[150px] opacity-25 animate-blob" />
+      <div className="absolute top-[10%] right-[-5%] w-[400px] h-[400px] bg-[#06b6d4] rounded-full filter blur-[150px] opacity-20 animate-blob animation-delay-2000" />
+      <div className="absolute bottom-[20%] left-[30%] w-[350px] h-[350px] bg-[#8b5cf6] rounded-full filter blur-[150px] opacity-15 animate-blob animation-delay-4000" />
+      <div className="absolute bottom-[-5%] right-[20%] w-[300px] h-[300px] bg-[#06b6d4] rounded-full filter blur-[130px] opacity-20 animate-blob animation-delay-3000" />
 
       {/* Floating shapes */}
-      <div className="absolute top-20 left-[10%] w-2 h-2 bg-[#8b5cf6] rounded-full opacity-40 animate-float" />
-      <div className="absolute top-40 right-[15%] w-3 h-3 bg-[#06b6d4] rounded-full opacity-30 animate-float animation-delay-1000" />
-      <div className="absolute bottom-40 left-[20%] w-2 h-2 bg-[#8b5cf6] rounded-full opacity-35 animate-float animation-delay-2000" />
-      <div className="absolute top-60 left-[60%] w-1.5 h-1.5 bg-[#06b6d4] rounded-full opacity-40 animate-float animation-delay-3000" />
-      <div className="absolute bottom-60 right-[25%] w-2.5 h-2.5 bg-[#8b5cf6] rounded-full opacity-25 animate-float animation-delay-4000" />
+      <div className="absolute top-[15%] left-[10%] w-2 h-2 bg-[#8b5cf6] rounded-full opacity-50 animate-float" />
+      <div className="absolute top-[25%] right-[15%] w-3 h-3 bg-[#06b6d4] rounded-full opacity-40 animate-float animation-delay-1000" />
+      <div className="absolute top-[45%] left-[5%] w-2 h-2 bg-[#06b6d4] rounded-full opacity-35 animate-float animation-delay-2000" />
+      <div className="absolute top-[35%] right-[8%] w-1.5 h-1.5 bg-[#8b5cf6] rounded-full opacity-45 animate-float animation-delay-3000" />
+      <div className="absolute top-[55%] left-[85%] w-2.5 h-2.5 bg-[#8b5cf6] rounded-full opacity-30 animate-float animation-delay-4000" />
+      <div className="absolute top-[70%] left-[15%] w-2 h-2 bg-[#06b6d4] rounded-full opacity-35 animate-float animation-delay-1000" />
+      <div className="absolute top-[80%] right-[25%] w-1.5 h-1.5 bg-[#8b5cf6] rounded-full opacity-40 animate-float animation-delay-2000" />
     </div>
   )
 }

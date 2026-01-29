@@ -3,19 +3,21 @@ import { Header, Footer } from '@/components/landing'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col landing-canvas relative">
+    <div className="min-h-screen flex flex-col bg-white relative">
       <AnimatedBackgroundCSS />
-      <Header />
-      <main className="flex-1">
-        <Hero />
-        <HowItWorks />
-        <Features />
-        <Pricing />
-        <Analytics />
-        <FAQ />
-        <CTA />
-      </main>
-      <Footer />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">
+          <Hero />
+          <HowItWorks />
+          <Features />
+          <Pricing />
+          <Analytics />
+          <FAQ />
+          <CTA />
+        </main>
+        <Footer />
+      </div>
     </div>
   )
 }
