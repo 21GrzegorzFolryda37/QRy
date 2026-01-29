@@ -520,10 +520,10 @@ export function Hero() {
       style={{
         background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 25%, #e0f2fe 50%, #f0e7fe 75%, #ecfeff 100%)',
         backgroundSize: '400% 400%',
-        animation: 'gradientShift 20s ease infinite',
+        animation: 'gradientShift 8s ease infinite',
       }}
     >
-      {/* Floating color blobs - subtle */}
+      {/* Floating color blobs - subtle but dynamic */}
       <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
         <div
           className="absolute rounded-full"
@@ -534,7 +534,7 @@ export function Hero() {
             height: '600px',
             background: 'rgba(139, 92, 246, 0.15)',
             filter: 'blur(100px)',
-            animation: 'blob 10s infinite ease-in-out',
+            animation: 'blob 5s infinite ease-in-out',
           }}
         />
         <div
@@ -546,7 +546,7 @@ export function Hero() {
             height: '550px',
             background: 'rgba(6, 182, 212, 0.12)',
             filter: 'blur(100px)',
-            animation: 'blob 10s infinite ease-in-out 2s',
+            animation: 'blob 6s infinite ease-in-out 1s',
           }}
         />
         <div
@@ -558,7 +558,7 @@ export function Hero() {
             height: '600px',
             background: 'rgba(167, 139, 250, 0.12)',
             filter: 'blur(100px)',
-            animation: 'blob 10s infinite ease-in-out 4s',
+            animation: 'blob 5.5s infinite ease-in-out 2s',
           }}
         />
         <div
@@ -570,7 +570,7 @@ export function Hero() {
             height: '400px',
             background: 'rgba(34, 211, 238, 0.1)',
             filter: 'blur(80px)',
-            animation: 'blob 10s infinite ease-in-out 3s',
+            animation: 'blob 6s infinite ease-in-out 0.5s',
           }}
         />
       </div>
