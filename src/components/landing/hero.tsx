@@ -516,15 +516,63 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden bg-white">
-      {/* Animated Background - tylko gradienty */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-30%] left-[-20%] w-[600px] h-[600px] bg-[#8b5cf6] rounded-full filter blur-[100px] opacity-30 animate-blob" />
-        <div className="absolute top-[0%] right-[-15%] w-[500px] h-[500px] bg-[#06b6d4] rounded-full filter blur-[100px] opacity-25 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-[-20%] left-[20%] w-[550px] h-[550px] bg-[#8b5cf6] rounded-full filter blur-[100px] opacity-25 animate-blob animation-delay-4000" />
-        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-[#06b6d4] rounded-full filter blur-[100px] opacity-20 animate-blob animation-delay-3000" />
+      {/* Animated Background - gradienty */}
+      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '-20%',
+            left: '-10%',
+            width: '600px',
+            height: '600px',
+            background: '#8b5cf6',
+            filter: 'blur(100px)',
+            opacity: 0.35,
+            animation: 'blob 7s infinite ease-in-out',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '10%',
+            right: '-10%',
+            width: '500px',
+            height: '500px',
+            background: '#06b6d4',
+            filter: 'blur(100px)',
+            opacity: 0.3,
+            animation: 'blob 7s infinite ease-in-out 2s',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            bottom: '-15%',
+            left: '25%',
+            width: '550px',
+            height: '550px',
+            background: '#8b5cf6',
+            filter: 'blur(100px)',
+            opacity: 0.3,
+            animation: 'blob 7s infinite ease-in-out 4s',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '50%',
+            right: '20%',
+            width: '400px',
+            height: '400px',
+            background: '#06b6d4',
+            filter: 'blur(100px)',
+            opacity: 0.25,
+            animation: 'blob 7s infinite ease-in-out 3s',
+          }}
+        />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div className="text-center mb-14">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
