@@ -15,9 +15,12 @@ export const metadata: Metadata = {
     'Twórz markowe, śledzalne kody QR, które pomogą Ci zrozumieć odbiorców. Aktualizuj cele w dowolnym momencie bez ponownego drukowania. Uzyskaj wgląd w skany, lokalizacje i urządzenia w czasie rzeczywistym.',
   keywords: ['kod QR', 'generator kodów QR', 'dynamiczny kod QR', 'analityka QR', 'markowy kod QR'],
   icons: {
-    icon: '/logo.webp',
+    icon: [
+      { url: '/logo.webp', sizes: '32x32', type: 'image/webp' },
+      { url: '/logo.webp', sizes: '192x192', type: 'image/webp' },
+    ],
     shortcut: '/logo.webp',
-    apple: '/logo.webp',
+    apple: { url: '/logo.webp', sizes: '180x180' },
   },
 }
 
