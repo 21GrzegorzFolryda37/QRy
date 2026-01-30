@@ -183,7 +183,7 @@ export function Hero() {
   const [frameText, setFrameText] = useState('SCAN ME')
   const [dotColor, setDotColor] = useState('#000000')
   const [dotGradient, setDotGradient] = useState(false)
-  const [dotGradientColors, setDotGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
+  const [dotGradientColors, setDotGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
   const [dotGradientType, setDotGradientType] = useState<'linear' | 'radial'>('linear')
   const [dotGradientRotation, setDotGradientRotation] = useState(45)
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
@@ -264,15 +264,16 @@ export function Hero() {
   // Helper function to create gradient or color options
   const getDotsOptions = () => {
     if (dotGradient) {
+      const colorStops = dotGradientColors.map((color, index) => ({
+        offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
+        color
+      }))
       return {
         type: dotShape,
         gradient: {
           type: dotGradientType as 'linear' | 'radial',
           rotation: dotGradientRotation,
-          colorStops: [
-            { offset: 0, color: dotGradientColors[0] },
-            { offset: 1, color: dotGradientColors[1] }
-          ]
+          colorStops
         }
       }
     }
@@ -660,14 +661,19 @@ export function Hero() {
                           {/* Szablon Instagram */}
                           <button
                             onClick={() => {
+                              // Okrągłe kropki
+                              setDotShape('dots')
                               setDotGradient(true)
-                              setDotGradientColors(['#F58529', '#8134AF'])
+                              setDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
                               setDotGradientType('linear')
                               setDotGradientRotation(45)
+                              // Narożniki - zaokrąglone z gradientem
+                              setCornerSquareShape('dot')
                               setCornerSquareGradient(true)
-                              setCornerSquareGradientColors(['#DD2A7B', '#515BD4'])
+                              setCornerSquareGradientColors(['#F58529', '#515BD4'])
+                              setCornerDotShape('dot')
                               setCornerDotGradient(true)
-                              setCornerDotGradientColors(['#F58529', '#515BD4'])
+                              setCornerDotGradientColors(['#DD2A7B', '#8134AF'])
                             }}
                             className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all group"
                           >
@@ -789,8 +795,8 @@ export function Hero() {
                               className="h-8 rounded-lg border border-[var(--border)]"
                               style={{
                                 background: dotGradientType === 'linear'
-                                  ? `linear-gradient(${dotGradientRotation}deg, ${dotGradientColors[0]}, ${dotGradientColors[1]})`
-                                  : `radial-gradient(circle, ${dotGradientColors[0]}, ${dotGradientColors[1]})`
+                                  ? `linear-gradient(${dotGradientRotation}deg, ${dotGradientColors.join(', ')})`
+                                  : `radial-gradient(circle, ${dotGradientColors.join(', ')})`
                               }}
                             />
 
