@@ -654,14 +654,30 @@ export function Hero() {
                   {/* Tab Content */}
                   <div className="min-h-[160px]">
                     {activeTab === 'templates' && (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <div className="w-12 h-12 rounded-full bg-[var(--primary-muted)] flex items-center justify-center mb-3">
-                          <svg className="w-6 h-6 text-[var(--primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                          </svg>
+                      <div className="space-y-3">
+                        <p className="text-xs text-[var(--foreground-muted)]">Wybierz gotowy szablon kolorystyczny</p>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                          {/* Szablon Instagram */}
+                          <button
+                            onClick={() => {
+                              setDotGradient(true)
+                              setDotGradientColors(['#F58529', '#8134AF'])
+                              setDotGradientType('linear')
+                              setDotGradientRotation(45)
+                              setCornerSquareGradient(true)
+                              setCornerSquareGradientColors(['#DD2A7B', '#515BD4'])
+                              setCornerDotGradient(true)
+                              setCornerDotGradientColors(['#F58529', '#515BD4'])
+                            }}
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all group"
+                          >
+                            <div
+                              className="w-12 h-12 rounded-lg"
+                              style={{ background: 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
+                            />
+                            <span className="text-xs font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">Instagram</span>
+                          </button>
                         </div>
-                        <p className="text-sm font-medium text-[var(--foreground)]">Gotowe szablony</p>
-                        <p className="text-xs text-[var(--foreground-muted)] mt-1">Wkrótce dostępne</p>
                       </div>
                     )}
 
