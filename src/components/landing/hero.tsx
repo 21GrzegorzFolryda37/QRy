@@ -5,7 +5,7 @@ import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo'
+type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
 type CornerDotShape = 'square' | 'dot'
@@ -390,6 +390,7 @@ export function Hero() {
 
   const currentFrame = frameTemplates.find(f => f.id === selectedFrame)
   const tabs: { id: TabType; label: string }[] = [
+    { id: 'templates', label: 'SZABLONY' },
     { id: 'sticker', label: 'RAMKA' },
     { id: 'color', label: 'KOLOR' },
     { id: 'shape', label: 'KSZTAŁT' },
@@ -652,6 +653,18 @@ export function Hero() {
 
                   {/* Tab Content */}
                   <div className="min-h-[160px]">
+                    {activeTab === 'templates' && (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <div className="w-12 h-12 rounded-full bg-[var(--primary-muted)] flex items-center justify-center mb-3">
+                          <svg className="w-6 h-6 text-[var(--primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                          </svg>
+                        </div>
+                        <p className="text-sm font-medium text-[var(--foreground)]">Gotowe szablony</p>
+                        <p className="text-xs text-[var(--foreground-muted)] mt-1">Wkrótce dostępne</p>
+                      </div>
+                    )}
+
                     {activeTab === 'sticker' && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-6 gap-2">
