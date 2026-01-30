@@ -661,19 +661,20 @@ export function Hero() {
                           {/* Szablon Instagram */}
                           <button
                             onClick={() => {
-                              // Okrągłe kropki
+                              // Okrągłe kropki z gradientem Instagram
                               setDotShape('dots')
                               setDotGradient(true)
                               setDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
                               setDotGradientType('linear')
                               setDotGradientRotation(45)
-                              // Narożniki - zaokrąglone z gradientem
-                              setCornerSquareShape('dot')
+                              // Narożniki - kwadrat z zaokrąglonymi rogami, ten sam gradient
+                              setCornerSquareShape('extra-rounded')
                               setCornerSquareGradient(true)
                               setCornerSquareGradientColors(['#F58529', '#515BD4'])
+                              // Środek narożnika - kropka, ten sam gradient
                               setCornerDotShape('dot')
                               setCornerDotGradient(true)
-                              setCornerDotGradientColors(['#DD2A7B', '#8134AF'])
+                              setCornerDotGradientColors(['#F58529', '#515BD4'])
                             }}
                             className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all group"
                           >
