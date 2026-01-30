@@ -202,6 +202,10 @@ export function Hero() {
   const [cornerSquareShape, setCornerSquareShape] = useState<CornerSquareShape>('square')
   const [cornerDotShape, setCornerDotShape] = useState<CornerDotShape>('square')
   const [logo, setLogo] = useState<string | null>(null)
+  // Globalny gradient - jeden płynny gradient na całym kodzie QR
+  const [useGlobalGradient, setUseGlobalGradient] = useState(false)
+  const [globalGradientColors, setGlobalGradientColors] = useState<string[]>(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
+  const [globalGradientRotation, setGlobalGradientRotation] = useState(45)
 
   // Download state
   const [showEmailCapture, setShowEmailCapture] = useState(false)
@@ -391,6 +395,63 @@ export function Hero() {
       })
     }
   }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo])
+
+  // Apply global gradient to SVG (post-processing)
+  useEffect(() => {
+    if (!useGlobalGradient || !qrRef.current) return
+
+    const timer = setTimeout(() => {
+      const svg = qrRef.current?.querySelector('svg')
+      if (!svg) return
+
+      // Create gradient definition
+      const angle = globalGradientRotation
+      const angleRad = (angle * Math.PI) / 180
+      const x1 = 50 - Math.cos(angleRad) * 50
+      const y1 = 50 + Math.sin(angleRad) * 50
+      const x2 = 50 + Math.cos(angleRad) * 50
+      const y2 = 50 - Math.sin(angleRad) * 50
+
+      // Check if defs exists, create if not
+      let defs = svg.querySelector('defs')
+      if (!defs) {
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+        svg.insertBefore(defs, svg.firstChild)
+      }
+
+      // Remove old global gradient if exists
+      const oldGradient = defs.querySelector('#globalQrGradient')
+      if (oldGradient) oldGradient.remove()
+
+      // Create new gradient
+      const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
+      gradient.setAttribute('id', 'globalQrGradient')
+      gradient.setAttribute('x1', `${x1}%`)
+      gradient.setAttribute('y1', `${y1}%`)
+      gradient.setAttribute('x2', `${x2}%`)
+      gradient.setAttribute('y2', `${y2}%`)
+
+      globalGradientColors.forEach((color, index) => {
+        const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
+        stop.setAttribute('offset', `${(index / (globalGradientColors.length - 1)) * 100}%`)
+        stop.setAttribute('stop-color', color)
+        gradient.appendChild(stop)
+      })
+
+      defs.appendChild(gradient)
+
+      // Apply gradient to all paths, rects, circles (except background)
+      const elements = svg.querySelectorAll('path, rect, circle')
+      elements.forEach((el) => {
+        const fill = el.getAttribute('fill')
+        // Skip background (usually white) and images
+        if (fill === backgroundColor || fill === '#ffffff' || fill === '#FFFFFF' || fill === 'none') return
+        el.setAttribute('fill', 'url(#globalQrGradient)')
+      })
+    }, 50)
+
+    return () => clearTimeout(timer)
+  }, [useGlobalGradient, globalGradientColors, globalGradientRotation, backgroundColor, formData, selectedType, dotColor, dotGradient, dotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -708,13 +769,16 @@ export function Hero() {
                             onClick={() => {
                               // Bez ramki zewnętrznej
                               setSelectedFrame('none')
-                              // Okrągłe kropki z gradientem Instagram
+                              // Okrągłe kropki
                               setDotShape('dots')
-                              setDotGradient(true)
-                              setDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
-                              setDotGradientType('linear')
-                              setDotGradientRotation(45) // Od lewego górnego do prawego dolnego (klasyczny Instagram)
-                              // Krawędzie dziedziczą kolor z sekcji KOLOR
+                              // Włącz globalny gradient - jeden płynny gradient na całym QR
+                              setUseGlobalGradient(true)
+                              setGlobalGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
+                              setGlobalGradientRotation(45)
+                              // Wyłącz indywidualne gradienty (będą nadpisane przez globalny)
+                              setDotGradient(false)
+                              setDotColor('#000000')
+                              // Krawędzie - kształty
                               setCornerSquareColorMode('inherit')
                               setCornerSquareShape('extra-rounded')
                               setCornerDotColorMode('inherit')
