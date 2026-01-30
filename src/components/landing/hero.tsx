@@ -189,10 +189,12 @@ export function Hero() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerSquareGradient, setCornerSquareGradient] = useState(false)
-  const [cornerSquareGradientColors, setCornerSquareGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
+  const [cornerSquareGradientColors, setCornerSquareGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
+  const [cornerSquareGradientRotation, setCornerSquareGradientRotation] = useState(45)
   const [cornerDotColor, setCornerDotColor] = useState('#000000')
   const [cornerDotGradient, setCornerDotGradient] = useState(false)
-  const [cornerDotGradientColors, setCornerDotGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
+  const [cornerDotGradientColors, setCornerDotGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
+  const [cornerDotGradientRotation, setCornerDotGradientRotation] = useState(45)
   const [dotShape, setDotShape] = useState<DotShape>('square')
   const [cornerSquareShape, setCornerSquareShape] = useState<CornerSquareShape>('square')
   const [cornerDotShape, setCornerDotShape] = useState<CornerDotShape>('square')
@@ -282,15 +284,16 @@ export function Hero() {
 
   const getCornerSquareOptions = () => {
     if (cornerSquareGradient) {
+      const colorStops = cornerSquareGradientColors.map((color, index) => ({
+        offset: cornerSquareGradientColors.length === 1 ? 0 : index / (cornerSquareGradientColors.length - 1),
+        color
+      }))
       return {
         type: cornerSquareShape,
         gradient: {
           type: 'linear' as const,
-          rotation: 45,
-          colorStops: [
-            { offset: 0, color: cornerSquareGradientColors[0] },
-            { offset: 1, color: cornerSquareGradientColors[1] }
-          ]
+          rotation: cornerSquareGradientRotation,
+          colorStops
         }
       }
     }
@@ -299,15 +302,16 @@ export function Hero() {
 
   const getCornerDotOptions = () => {
     if (cornerDotGradient) {
+      const colorStops = cornerDotGradientColors.map((color, index) => ({
+        offset: cornerDotGradientColors.length === 1 ? 0 : index / (cornerDotGradientColors.length - 1),
+        color
+      }))
       return {
         type: cornerDotShape,
         gradient: {
           type: 'linear' as const,
-          rotation: 45,
-          colorStops: [
-            { offset: 0, color: cornerDotGradientColors[0] },
-            { offset: 1, color: cornerDotGradientColors[1] }
-          ]
+          rotation: cornerDotGradientRotation,
+          colorStops
         }
       }
     }
@@ -345,7 +349,7 @@ export function Hero() {
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerDotColor, cornerDotGradient, cornerDotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
+  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -666,21 +670,27 @@ export function Hero() {
                               setDotGradient(true)
                               setDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
                               setDotGradientType('linear')
-                              setDotGradientRotation(45)
+                              setDotGradientRotation(135) // Lewy dolny → prawy górny
                               // Narożniki - kwadrat z zaokrąglonymi rogami, ten sam gradient
                               setCornerSquareShape('extra-rounded')
                               setCornerSquareGradient(true)
-                              setCornerSquareGradientColors(['#F58529', '#515BD4'])
+                              setCornerSquareGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
+                              setCornerSquareGradientRotation(135)
                               // Środek narożnika - kropka, ten sam gradient
                               setCornerDotShape('dot')
                               setCornerDotGradient(true)
-                              setCornerDotGradientColors(['#F58529', '#515BD4'])
+                              setCornerDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
+                              setCornerDotGradientRotation(135)
+                              // Białe tło
+                              setBackgroundColor('#ffffff')
+                              // Logo Instagram
+                              setLogo(brandLogos.find(b => b.id === 'instagram')?.svg || null)
                             }}
                             className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all group"
                           >
                             <div
                               className="w-12 h-12 rounded-lg"
-                              style={{ background: 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
+                              style={{ background: 'linear-gradient(135deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
                             />
                             <span className="text-xs font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">Instagram</span>
                           </button>
