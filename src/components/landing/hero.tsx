@@ -184,6 +184,8 @@ export function Hero() {
   const [dotColor, setDotColor] = useState('#000000')
   const [dotGradient, setDotGradient] = useState(false)
   const [dotGradientColors, setDotGradientColors] = useState<[string, string]>(['#000000', '#3b82f6'])
+  const [dotGradientType, setDotGradientType] = useState<'linear' | 'radial'>('linear')
+  const [dotGradientRotation, setDotGradientRotation] = useState(45)
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
   const [cornerSquareGradient, setCornerSquareGradient] = useState(false)
@@ -265,8 +267,8 @@ export function Hero() {
       return {
         type: dotShape,
         gradient: {
-          type: 'linear' as const,
-          rotation: 45,
+          type: dotGradientType as 'linear' | 'radial',
+          rotation: dotGradientRotation,
           colorStops: [
             { offset: 0, color: dotGradientColors[0] },
             { offset: 1, color: dotGradientColors[1] }
@@ -342,7 +344,7 @@ export function Hero() {
         image: logo || undefined,
       })
     }
-  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, backgroundColor, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerDotColor, cornerDotGradient, cornerDotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
+  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerDotColor, cornerDotGradient, cornerDotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -756,8 +758,82 @@ export function Hero() {
                             {/* Gradient preview */}
                             <div
                               className="h-8 rounded-lg border border-[var(--border)]"
-                              style={{ background: `linear-gradient(90deg, ${dotGradientColors[0]}, ${dotGradientColors[1]})` }}
+                              style={{
+                                background: dotGradientType === 'linear'
+                                  ? `linear-gradient(${dotGradientRotation}deg, ${dotGradientColors[0]}, ${dotGradientColors[1]})`
+                                  : `radial-gradient(circle, ${dotGradientColors[0]}, ${dotGradientColors[1]})`
+                              }}
                             />
+
+                            {/* Predefiniowane gradienty */}
+                            <div>
+                              <p className="text-xs text-[var(--foreground-muted)] mb-1">Popularne gradienty</p>
+                              <div className="flex gap-1.5 flex-wrap">
+                                {[
+                                  { colors: ['#8b5cf6', '#06b6d4'] as [string, string], name: 'Fiolet-Cyan' },
+                                  { colors: ['#f97316', '#ec4899'] as [string, string], name: 'Pomarańcz-Róż' },
+                                  { colors: ['#22c55e', '#06b6d4'] as [string, string], name: 'Zieleń-Cyan' },
+                                  { colors: ['#3b82f6', '#8b5cf6'] as [string, string], name: 'Niebieski-Fiolet' },
+                                  { colors: ['#ef4444', '#f97316'] as [string, string], name: 'Czerw-Pomarańcz' },
+                                  { colors: ['#000000', '#6b7280'] as [string, string], name: 'Czarny-Szary' },
+                                ].map((preset, idx) => (
+                                  <button
+                                    key={`preset-${idx}`}
+                                    onClick={() => setDotGradientColors(preset.colors)}
+                                    className={`w-9 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                      dotGradientColors[0] === preset.colors[0] && dotGradientColors[1] === preset.colors[1]
+                                        ? 'border-gray-800 ring-1 ring-gray-400'
+                                        : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    }`}
+                                    style={{ background: `linear-gradient(90deg, ${preset.colors[0]}, ${preset.colors[1]})` }}
+                                    title={preset.name}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Typ gradientu i rotacja */}
+                            <div className="flex gap-3">
+                              <div className="flex-1">
+                                <p className="text-xs text-[var(--foreground-muted)] mb-1">Typ</p>
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => setDotGradientType('linear')}
+                                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                      dotGradientType === 'linear'
+                                        ? 'bg-[var(--primary)] text-white'
+                                        : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
+                                    }`}
+                                  >
+                                    Liniowy
+                                  </button>
+                                  <button
+                                    onClick={() => setDotGradientType('radial')}
+                                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                      dotGradientType === 'radial'
+                                        ? 'bg-[var(--primary)] text-white'
+                                        : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
+                                    }`}
+                                  >
+                                    Promieniowy
+                                  </button>
+                                </div>
+                              </div>
+                              {dotGradientType === 'linear' && (
+                                <div className="flex-1">
+                                  <p className="text-xs text-[var(--foreground-muted)] mb-1">Kąt: {dotGradientRotation}°</p>
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="360"
+                                    value={dotGradientRotation}
+                                    onChange={(e) => setDotGradientRotation(Number(e.target.value))}
+                                    className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
                             {/* Kolor 1 */}
                             <div>
                               <p className="text-xs text-[var(--foreground-muted)] mb-1">Kolor 1</p>
