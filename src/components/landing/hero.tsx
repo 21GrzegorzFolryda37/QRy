@@ -706,12 +706,14 @@ export function Hero() {
                           {/* Szablon Instagram */}
                           <button
                             onClick={() => {
+                              // Bez ramki zewnętrznej
+                              setSelectedFrame('none')
                               // Okrągłe kropki z gradientem Instagram
                               setDotShape('dots')
                               setDotGradient(true)
                               setDotGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
                               setDotGradientType('linear')
-                              setDotGradientRotation(135) // Lewy dolny → prawy górny
+                              setDotGradientRotation(45) // Od lewego górnego do prawego dolnego (klasyczny Instagram)
                               // Krawędzie dziedziczą kolor z sekcji KOLOR
                               setCornerSquareColorMode('inherit')
                               setCornerSquareShape('extra-rounded')
@@ -726,7 +728,7 @@ export function Hero() {
                           >
                             <div
                               className="w-12 h-12 rounded-lg"
-                              style={{ background: 'linear-gradient(135deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
+                              style={{ background: 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
                             />
                             <span className="text-xs font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">Instagram</span>
                           </button>
