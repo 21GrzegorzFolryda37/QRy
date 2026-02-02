@@ -21,3 +21,4 @@ export {
   type Toast,
   type ToastVariant,
 } from './toast'
+export { PhoneMockup } from './phone-mockup'
