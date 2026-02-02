@@ -214,14 +214,14 @@ export function QRComparison() {
               className="hidden lg:block absolute pointer-events-none"
               style={{
                 top: 0,
-                left: '-280px',
-                width: '300px',
+                left: '-320px',
+                width: '340px',
                 height: '100%',
               }}
             >
               {/* Line 1: Box 1 → Dot 1 (top-left finder) */}
               <path
-                d="M 20 75 L 260 75 L 260 175 L 295 175"
+                d="M 20 45 L 300 45 L 300 175 L 335 175"
                 fill="none"
                 stroke="#6d28d9"
                 strokeWidth="2"
@@ -229,7 +229,7 @@ export function QRComparison() {
               />
               {/* Line 2: Box 2 → Dot 2 (center) */}
               <path
-                d="M 20 240 L 295 240"
+                d="M 20 240 L 335 240"
                 fill="none"
                 stroke="#6d28d9"
                 strokeWidth="2"
@@ -237,7 +237,7 @@ export function QRComparison() {
               />
               {/* Line 3: Box 3 → Dot 3 (bottom-left modules) */}
               <path
-                d="M 20 405 L 260 405 L 260 295 L 295 295"
+                d="M 20 435 L 300 435 L 300 295 L 335 295"
                 fill="none"
                 stroke="#6d28d9"
                 strokeWidth="2"
@@ -246,9 +246,9 @@ export function QRComparison() {
             </svg>
 
             {/* Annotation labels - outside phone, left side */}
-            <div className="hidden lg:block absolute right-[calc(100%+80px)] top-0 bottom-0">
+            <div className="hidden lg:block absolute right-[calc(100%+120px)] top-0 bottom-0">
               {/* Box 1 - top */}
-              <div className="absolute top-[60px] right-0 flex items-center">
+              <div className="absolute top-[30px] right-0 flex items-center">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Identyczny wzór</p>
                   <p className="text-[11px] text-gray-500 mt-1">Każdy kod wygląda tak samo</p>
@@ -262,7 +262,7 @@ export function QRComparison() {
                 </div>
               </div>
               {/* Box 3 - bottom */}
-              <div className="absolute bottom-[60px] right-0 flex items-center">
+              <div className="absolute bottom-[30px] right-0 flex items-center">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Kwadratowe moduły</p>
                   <p className="text-[11px] text-gray-500 mt-1">Nudny, techniczny wygląd</p>
