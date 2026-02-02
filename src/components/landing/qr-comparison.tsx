@@ -210,24 +210,27 @@ export function QRComparison() {
             </PhoneMockup>
 
             {/* Annotation labels - outside phone, left side */}
-            <div className="hidden lg:flex flex-col gap-3 absolute right-[calc(100%+20px)] top-1/2 -translate-y-1/2">
-              <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
-                  Zawsze taki sam wzór
+            <div className="hidden lg:flex flex-col gap-4 absolute right-[calc(100%+40px)] top-1/2 -translate-y-1/2">
+              <div className="flex items-center gap-4">
+                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
+                  <p className="text-[13px] font-semibold text-gray-900">Identyczny wzór</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Każdy kod wygląda tak samo</p>
                 </div>
-                <div className="w-8 h-[1px] bg-white/40" />
+                <div className="w-6 h-[2px] bg-[#6d28d9]" />
               </div>
-              <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
-                  Brak miejsca na logo
+              <div className="flex items-center gap-4">
+                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
+                  <p className="text-[13px] font-semibold text-gray-900">Brak miejsca na logo</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Nie wyróżnisz swojej marki</p>
                 </div>
-                <div className="w-8 h-[1px] bg-white/40" />
+                <div className="w-6 h-[2px] bg-[#6d28d9]" />
               </div>
-              <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
-                  Kwadratowe, nudne moduły
+              <div className="flex items-center gap-4">
+                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
+                  <p className="text-[13px] font-semibold text-gray-900">Kwadratowe moduły</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Nudny, techniczny wygląd</p>
                 </div>
-                <div className="w-8 h-[1px] bg-white/40" />
+                <div className="w-6 h-[2px] bg-[#6d28d9]" />
               </div>
             </div>
           </div>
