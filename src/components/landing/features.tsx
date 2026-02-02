@@ -1,75 +1,155 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
+
 const features = [
   {
     name: 'Dynamiczne kody QR',
     description:
       'Aktualizuj adres docelowy kodu QR w dowolnym momencie bez ponownego drukowania. Zmieniaj URL-e, śledź kampanie i dostosowuj się do potrzeb.',
     icon: QrCodeIcon,
-    gradient: 'from-[var(--primary)] to-[var(--primary-hover)]',
+    gradient: 'from-[#a855f7] to-[#c084fc]',
+    glow: 'rgba(168, 85, 247, 0.3)',
   },
   {
     name: 'Analityka w czasie rzeczywistym',
     description:
       'Śledź skany w czasie rzeczywistym. Zobacz kto skanował Twoje kody, kiedy, gdzie i na jakim urządzeniu.',
     icon: ChartIcon,
-    gradient: 'from-[var(--secondary)] to-[var(--secondary-hover)]',
+    gradient: 'from-[#22d3ee] to-[#67e8f9]',
+    glow: 'rgba(34, 211, 238, 0.3)',
   },
   {
     name: 'Personalizacja marki',
     description:
       'Dostosuj kolory, dodaj logo i twórz kody QR, które pasują do identyfikacji wizualnej Twojej marki.',
     icon: PaletteIcon,
-    gradient: 'from-[var(--primary)] to-[var(--secondary)]',
+    gradient: 'from-[#f472b6] to-[#f9a8d4]',
+    glow: 'rgba(244, 114, 182, 0.3)',
   },
   {
     name: 'Łatwe zarządzanie',
     description:
       'Zarządzaj wszystkimi kodami QR z jednego panelu. Twórz, edytuj i organizuj z łatwością.',
     icon: FolderIcon,
-    gradient: 'from-[var(--secondary-hover)] to-[var(--primary)]',
+    gradient: 'from-[#10b981] to-[#34d399]',
+    glow: 'rgba(16, 185, 129, 0.3)',
   },
 ]
 
 export function Features() {
+  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            features.forEach((_, index) => {
+              setTimeout(() => {
+                setVisibleCards((prev) => [...prev, index])
+              }, index * 150)
+            })
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section className="py-24 sm:py-32" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)' }}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-[var(--primary)]">
-            Wszystko czego potrzebujesz
+    <section
+      ref={sectionRef}
+      className="relative py-24 sm:py-32 overflow-hidden"
+    >
+      {/* Background */}
+      <div className="absolute inset-0 bg-[var(--background)]" />
+
+      {/* Mesh gradient overlay */}
+      <div className="absolute inset-0 opacity-50">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
+      </div>
+
+      {/* Grid pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-30" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="text-sm font-medium text-[var(--primary)]">Wszystko czego potrzebujesz</span>
+          </div>
+
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
+            <span className="text-[var(--foreground)]">Potężne funkcje dla </span>
+            <span className="gradient-text">nowoczesnego marketingu</span>
           </h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Potężne funkcje dla <span className="gradient-text">nowoczesnego marketingu</span>
-          </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
+
+          <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed max-w-xl mx-auto">
             Twórz kody QR, które pracują ciężej dla Twojego biznesu dzięki funkcjom
             zaprojektowanym z myślą o wydajności i wglądzie w dane.
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-4">
-            {features.map((feature, index) => (
+
+        {/* Features grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+          {features.map((feature, index) => (
+            <div
+              key={feature.name}
+              className={`group relative p-8 rounded-2xl bg-[var(--background-surface)] border border-[var(--border)] transition-all duration-500 ${
+                visibleCards.includes(index)
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-8'
+              }`}
+              style={{
+                transitionDelay: `${index * 100}ms`,
+              }}
+            >
+              {/* Glow effect on hover */}
               <div
-                key={feature.name}
-                className="group flex flex-col p-6 rounded-xl bg-white shadow-lg hover-lift animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.gradient} shadow-md`}>
-                    <feature.icon
-                      className="h-5 w-5 text-white"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  {feature.name}
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                  <p className="flex-auto">{feature.description}</p>
-                </dd>
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                style={{
+                  boxShadow: `0 0 60px ${feature.glow}`,
+                }}
+              />
+
+              {/* Top gradient line */}
+              <div
+                className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${feature.gradient} rounded-t-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}
+              />
+
+              {/* Icon */}
+              <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-5`}>
+                <feature.icon className="w-6 h-6 text-white" />
               </div>
-            ))}
-          </dl>
+
+              {/* Content */}
+              <h3 className="text-xl font-semibold text-[var(--foreground)] mb-3 font-display">
+                {feature.name}
+              </h3>
+              <p className="text-[var(--foreground-muted)] leading-relaxed">
+                {feature.description}
+              </p>
+
+              {/* Arrow indicator */}
+              <div className="mt-5 flex items-center gap-2 text-[var(--primary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-sm font-medium">Dowiedz się więcej</span>
+                <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

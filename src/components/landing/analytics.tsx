@@ -1,65 +1,128 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
+
 const analyticsFeatures = [
   {
     name: 'Statystyki skanowania',
     description: 'Śledź liczbę skanów w czasie rzeczywistym. Zobacz dokładnie ile osób zeskanowało Twój kod QR każdego dnia, tygodnia czy miesiąca.',
     icon: ChartBarIcon,
+    color: 'primary',
   },
   {
     name: 'Lokalizacja użytkowników',
     description: 'Dowiedz się skąd pochodzą Twoi odbiorcy. Mapa świata pokazuje kraje i miasta, z których skanowano Twoje kody.',
     icon: MapIcon,
+    color: 'secondary',
   },
   {
     name: 'Urządzenia i przeglądarki',
-    description: 'Sprawdź na jakich urządzeniach i systemach operacyjnych skanowane są Twoje kody - smartfony, tablety czy komputery. Poznaj popularne przeglądarki.',
+    description: 'Sprawdź na jakich urządzeniach i systemach operacyjnych skanowane są Twoje kody - smartfony, tablety czy komputery.',
     icon: DeviceIcon,
+    color: 'accent',
   },
   {
     name: 'Analiza czasowa',
     description: 'Odkryj kiedy Twoje kody są najczęściej skanowane. Godziny szczytu i dni tygodnia pomogą Ci zoptymalizować kampanie.',
     icon: ClockIcon,
+    color: 'primary',
   },
   {
     name: 'Porównanie kodów',
-    description: 'Porównuj wyniki różnych kodów QR obok siebie. Analizuj, które kampanie osiągają najlepsze rezultaty i optymalizuj strategię.',
+    description: 'Porównuj wyniki różnych kodów QR obok siebie. Analizuj, które kampanie osiągają najlepsze rezultaty.',
     icon: LinkIcon,
+    color: 'secondary',
   },
   {
     name: 'Wygodny eksport raportów',
     description: 'Pobieraj szczegółowe raporty w formacie PDF. Udostępniaj statystyki zespołowi lub klientom jednym kliknięciem.',
     icon: DocumentIcon,
+    color: 'accent',
   },
 ]
 
 export function Analytics() {
+  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            analyticsFeatures.forEach((_, index) => {
+              setTimeout(() => {
+                setVisibleCards((prev) => [...prev, index])
+              }, index * 100)
+            })
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section className="py-24 sm:py-32" style={{ backgroundColor: 'rgba(167, 139, 250, 0.15)' }}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">
-            Zaawansowana analityka
+    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[var(--background-surface)]" />
+
+      {/* Mesh gradient */}
+      <div className="absolute inset-0 opacity-50">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[var(--accent)] rounded-full mix-blend-screen filter blur-[150px] opacity-10" />
+      </div>
+
+      {/* Grid pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-20" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mx-auto max-w-2xl text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--secondary-muted)] border border-[var(--secondary)]/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[var(--secondary)] animate-pulse" />
+            <span className="text-sm font-medium text-[var(--secondary)]">Zaawansowana analityka</span>
+          </div>
+
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
+            <span className="text-[var(--foreground)]">Poznaj swoich </span>
+            <span className="gradient-text">odbiorców</span>
           </h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Poznaj swoich <span className="gradient-text">odbiorców</span>
-          </p>
-          <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
+
+          <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
             Każdy skan to cenna informacja. Nasze narzędzia analityczne pomogą Ci zrozumieć
             kto, kiedy i gdzie korzysta z Twoich kodów QR.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3">
+        {/* Features grid */}
+        <div className="mx-auto max-w-2xl lg:max-w-none">
+          <dl className="grid max-w-xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-3">
             {analyticsFeatures.map((feature, index) => (
               <div
                 key={feature.name}
-                className="group relative flex flex-col p-6 rounded-xl bg-white border border-[var(--border)] shadow-sm hover-lift animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
+                className={`group relative flex flex-col p-6 rounded-2xl bg-[var(--background-surface)] border border-[var(--border)] transition-all duration-500 hover:border-[var(--${feature.color})]/50 hover:shadow-lg hover:shadow-[var(--${feature.color})]/10 ${
+                  visibleCards.includes(index)
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-8'
+                }`}
               >
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] shadow-md">
+                {/* Hover glow effect */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--${feature.color})]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                {/* Gradient line on top */}
+                <div className={`absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-[var(--${feature.color})] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                <dt className="relative flex items-center gap-x-4 text-base font-semibold leading-7 text-[var(--foreground)]">
+                  <div className={`flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-[var(--${feature.color})] to-[var(--${feature.color})]/70 shadow-lg shadow-[var(--${feature.color})]/30 group-hover:shadow-[var(--${feature.color})]/50 transition-shadow`}>
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
@@ -67,12 +130,35 @@ export function Analytics() {
                   </div>
                   {feature.name}
                 </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-[var(--foreground-muted)]">
+                <dd className="relative mt-4 flex flex-auto flex-col text-sm leading-relaxed text-[var(--foreground-muted)]">
                   <p className="flex-auto">{feature.description}</p>
                 </dd>
               </div>
             ))}
           </dl>
+        </div>
+
+        {/* Stats row */}
+        <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {[
+            { value: '99.9%', label: 'Uptime' },
+            { value: '<50ms', label: 'Czas odpowiedzi' },
+            { value: '10M+', label: 'Skanów/miesiąc' },
+            { value: '24/7', label: 'Monitoring' },
+          ].map((stat, index) => (
+            <div
+              key={stat.label}
+              className={`text-center p-6 rounded-xl bg-[var(--background-elevated)] border border-[var(--border)] transition-all duration-500 ${
+                visibleCards.includes(0)
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-4'
+              }`}
+              style={{ transitionDelay: `${(index + 6) * 100}ms` }}
+            >
+              <div className="text-2xl sm:text-3xl font-bold gradient-text font-display">{stat.value}</div>
+              <div className="mt-1 text-sm text-[var(--foreground-muted)]">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -3,20 +3,18 @@ import { Header, Footer } from '@/components/landing'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[var(--background)]">
       <Header />
       <main className="flex-1">
-        {/* Hero z własnym animowanym tłem */}
+        {/* Hero z generatorem kodów QR */}
         <Hero />
-        {/* Reszta strony - białe tło */}
-        <div className="bg-white">
-          <HowItWorks />
-          <Features />
-          <Pricing />
-          <Analytics />
-          <FAQ />
-          <CTA />
-        </div>
+        {/* Reszta strony */}
+        <HowItWorks />
+        <Features />
+        <Pricing />
+        <Analytics />
+        <FAQ />
+        <CTA />
       </main>
       <Footer />
     </div>

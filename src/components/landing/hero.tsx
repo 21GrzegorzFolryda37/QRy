@@ -506,7 +506,7 @@ export function Hero() {
   ]
 
   const renderForm = () => {
-    const inputClass = "w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--success)] focus:border-transparent transition-all"
+    const inputClass = "w-full px-4 py-3 rounded-xl bg-[var(--background-elevated)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all"
 
     switch (selectedType) {
       case 'website':
@@ -625,89 +625,86 @@ export function Hero() {
   }
 
   return (
-    <section
-      className="relative min-h-screen flex flex-col justify-center pt-20 pb-16 overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 25%, #e0f2fe 50%, #f0e7fe 75%, #ecfeff 100%)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientShift 8s ease infinite',
-      }}
-    >
-      {/* Floating color blobs - subtle but dynamic */}
-      <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-[var(--background)]">
+      {/* Mesh gradient background */}
+      <div className="absolute inset-0 gradient-mesh opacity-70" />
+
+      {/* Animated gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden">
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-blob"
           style={{
-            top: '-10%',
-            left: '-5%',
+            top: '-15%',
+            left: '-10%',
+            width: '700px',
+            height: '700px',
+            background: 'var(--primary)',
+            filter: 'blur(150px)',
+            opacity: 0.15,
+          }}
+        />
+        <div
+          className="absolute rounded-full animate-blob animation-delay-2000"
+          style={{
+            top: '10%',
+            right: '-10%',
             width: '600px',
             height: '600px',
-            background: 'rgba(139, 92, 246, 0.15)',
-            filter: 'blur(100px)',
-            animation: 'blob 5s infinite ease-in-out',
+            background: 'var(--secondary)',
+            filter: 'blur(150px)',
+            opacity: 0.12,
           }}
         />
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-blob animation-delay-3000"
           style={{
-            top: '20%',
-            right: '-5%',
-            width: '550px',
-            height: '550px',
-            background: 'rgba(6, 182, 212, 0.12)',
-            filter: 'blur(100px)',
-            animation: 'blob 6s infinite ease-in-out 1s',
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            bottom: '-5%',
-            left: '30%',
-            width: '600px',
-            height: '600px',
-            background: 'rgba(167, 139, 250, 0.12)',
-            filter: 'blur(100px)',
-            animation: 'blob 5.5s infinite ease-in-out 2s',
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            top: '50%',
-            left: '10%',
-            width: '400px',
-            height: '400px',
-            background: 'rgba(34, 211, 238, 0.1)',
-            filter: 'blur(80px)',
-            animation: 'blob 6s infinite ease-in-out 0.5s',
+            bottom: '-10%',
+            left: '20%',
+            width: '700px',
+            height: '700px',
+            background: 'var(--accent)',
+            filter: 'blur(150px)',
+            opacity: 0.1,
           }}
         />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style={{ position: 'relative', zIndex: 1 }}>
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-20" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-14">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/30 mb-6 animate-fade-in-up">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--primary)]" />
+            </span>
+            <span className="text-sm font-medium text-[var(--primary)]">Darmowy generator online</span>
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up animate-delay-100">
             <span className="text-[var(--foreground)]">Generator Kodów </span>
             <span className="gradient-text">QR</span>
           </h1>
+          <p className="mt-4 text-lg text-[var(--foreground-muted)] max-w-2xl mx-auto animate-fade-in-up animate-delay-200">
+            Stwórz profesjonalny kod QR w kilka sekund. Personalizuj kolory, kształty i dodaj logo.
+          </p>
         </div>
 
         {/* QR Type Selector - Scrollable on mobile */}
-        <div className="mb-6 -mx-4 sm:mx-0">
+        <div className="mb-8 -mx-4 sm:mx-0 animate-fade-in-up animate-delay-300">
           <div className="flex gap-2 overflow-x-auto px-4 sm:px-0 pb-2 sm:pb-0 sm:flex-wrap sm:justify-center scrollbar-hide">
             {qrTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => { setSelectedType(type.id); setFormData({}) }}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedType === type.id
-                    ? 'border-[var(--success)] text-[var(--success)] bg-[var(--success)]/5'
-                    : 'border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-hover)] bg-white'
+                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-lg shadow-[var(--primary)]/25'
+                    : 'bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--primary)]/50 hover:text-[var(--foreground)]'
                 }`}
               >
-                <TypeIcon type={type.icon} className={`w-4 h-4 ${selectedType === type.id ? 'text-[var(--success)]' : ''}`} />
+                <TypeIcon type={type.icon} className="w-4 h-4" />
                 {type.label}
               </button>
             ))}
@@ -715,42 +712,47 @@ export function Hero() {
         </div>
 
         {/* Generator Card */}
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl border border-[var(--border)] overflow-hidden">
+        <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
+          <div className="glass-card rounded-3xl overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Column */}
               <div className="lg:col-span-8 p-6 lg:p-8 space-y-6">
                 {/* Section 1: Content */}
                 <div>
-                  <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">
-                    {typeContent[selectedType].title}
-                  </h2>
-                  <p className="text-[var(--foreground-muted)] mb-4">
-                    {typeContent[selectedType].subtitle}
-                  </p>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white text-sm font-bold shadow-lg shadow-[var(--primary)]/25">1</span>
+                    <div>
+                      <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">
+                        {typeContent[selectedType].title}
+                      </h2>
+                      <p className="text-sm text-[var(--foreground-muted)]">
+                        {typeContent[selectedType].subtitle}
+                      </p>
+                    </div>
+                  </div>
 
-                  <div className="animate-fade-in-up">
+                  <div className="animate-fade-in-scale">
                     {renderForm()}
                   </div>
                 </div>
 
                 {/* Section 2: Customization */}
                 <div className="pt-6 border-t border-[var(--border)]">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--warning)] text-white text-sm font-bold">2</span>
-                    <h2 className="text-lg font-semibold text-[var(--foreground)]">Zaprojektuj kod QR <span className="text-[var(--foreground-muted)] font-normal">(opcjonalnie)</span></h2>
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--primary)] text-white text-sm font-bold shadow-lg shadow-[var(--secondary)]/25">2</span>
+                    <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Zaprojektuj kod QR <span className="text-[var(--foreground-muted)] font-normal text-sm">(opcjonalnie)</span></h2>
                   </div>
 
                   {/* Tabs */}
-                  <div className="flex border-b border-[var(--border)] mb-4">
+                  <div className="flex gap-1 p-1 bg-[var(--background-elevated)] rounded-xl mb-5 overflow-x-auto scrollbar-hide">
                     {tabs.map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`px-4 py-2.5 text-sm font-medium transition-all border-b-2 -mb-px ${
+                        className={`flex-1 px-3 py-2 text-xs font-medium transition-all rounded-lg whitespace-nowrap ${
                           activeTab === tab.id
-                            ? 'border-[var(--primary)] text-[var(--primary)] font-semibold'
-                            : 'border-transparent text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
+                            ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-md'
+                            : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-surface)]'
                         }`}
                       >
                         {tab.label}
@@ -1322,17 +1324,22 @@ export function Hero() {
               </div>
 
               {/* Right Column - Preview */}
-              <div className="lg:col-span-4 p-6 lg:p-8 bg-[var(--background-surface)] border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:sticky lg:top-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--success)] text-white text-sm font-bold">3</span>
-                  <h2 className="text-lg font-semibold text-[var(--foreground)]">Pobierz swój kod QR</h2>
+              <div className="lg:col-span-4 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:sticky lg:top-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
+                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Pobierz swój kod QR</h2>
                 </div>
 
                 {/* QR Preview */}
-                <div className="flex items-center justify-center mb-6">
-                  <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
-                    <div ref={qrRef} className="w-[180px] h-[180px] flex items-center justify-center" />
-                  </QRFrameWrapper>
+                <div className="relative mb-6">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
+
+                  <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                    <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
+                      <div ref={qrRef} className="w-[180px] h-[180px] flex items-center justify-center" />
+                    </QRFrameWrapper>
+                  </div>
                 </div>
 
                 {/* Download */}
@@ -1340,25 +1347,32 @@ export function Hero() {
                   <Button
                     variant="gradient"
                     size="lg"
-                    className={`w-full ${!isFormValid() ? 'opacity-50' : ''}`}
-                    style={{ background: isFormValid() ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : '#9ca3af' }}
+                    className={`w-full ${!isFormValid() ? 'opacity-50 cursor-not-allowed' : 'shadow-lg shadow-[var(--success)]/30 hover:shadow-xl hover:shadow-[var(--success)]/40'}`}
+                    style={{ background: isFormValid() ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'var(--background-elevated)' }}
                     onClick={handleDownloadClick}
                     disabled={!isFormValid()}
                   >
-                    {isFormValid() ? 'Pobierz QR' : 'Wypełnij formularz'}
+                    <span className="flex items-center justify-center gap-2">
+                      {isFormValid() ? (
+                        <>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                          Pobierz QR
+                        </>
+                      ) : 'Wypełnij formularz'}
+                    </span>
                   </Button>
                 ) : (
-                  <div className="space-y-3 animate-fade-in-up">
+                  <div className="space-y-4 animate-fade-in-up">
                     {sendStatus === 'success' ? (
-                      <div className="text-center p-4 bg-[var(--success)]/10 rounded-xl">
-                        <CheckIcon className="w-8 h-8 text-[var(--success)] mx-auto mb-2" />
+                      <div className="text-center p-6 bg-[var(--success)]/10 rounded-xl border border-[var(--success)]/30">
+                        <CheckIcon className="w-10 h-10 text-[var(--success)] mx-auto mb-3" />
                         <p className="text-sm font-medium text-[var(--success)]">Wysłano na {userEmail}!</p>
                       </div>
                     ) : (
                       <>
                         <p className="text-sm text-[var(--foreground-muted)] text-center">Podaj e-mail, aby otrzymać kod QR</p>
-                        <input type="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder="twoj@email.com" className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--success)]" />
-                        <Button variant="gradient" size="lg" className="w-full" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }} onClick={handleSendToEmail} disabled={isSending || !userEmail.includes('@')}>
+                        <input type="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder="twoj@email.com" className="w-full px-4 py-3 rounded-xl bg-[var(--background-elevated)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--success)]/50 focus:border-[var(--success)] transition-all" />
+                        <Button variant="gradient" size="lg" className="w-full shadow-lg shadow-[var(--success)]/30" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }} onClick={handleSendToEmail} disabled={isSending || !userEmail.includes('@')}>
                           {isSending ? 'Wysyłanie...' : 'Wyślij na e-mail'}
                         </Button>
                         {sendStatus === 'error' && <p className="text-xs text-[var(--error)] text-center">Błąd. Spróbuj ponownie.</p>}
@@ -1366,6 +1380,16 @@ export function Hero() {
                     )}
                   </div>
                 )}
+
+                {/* Trust badge */}
+                <div className="mt-6 pt-4 border-t border-[var(--border)]">
+                  <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
+                    <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                    </svg>
+                    <span>100% darmowe, bez limitu</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -1,5 +1,8 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Button, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Button } from '@/components/ui'
 import { PLANS } from '@/lib/stripe/plans'
 
 const tiers = [
@@ -46,72 +49,136 @@ const tiers = [
 ]
 
 export function Pricing() {
+  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tiers.forEach((_, index) => {
+              setTimeout(() => {
+                setVisibleCards((prev) => [...prev, index])
+              }, index * 150)
+            })
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-[var(--secondary)]">Cennik</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Wybierz odpowiedni <span className="gradient-text">plan dla siebie</span>
-          </p>
-          <p className="mt-6 text-lg leading-8 text-[var(--foreground-muted)]">
+    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[var(--background-surface)]" />
+
+      {/* Mesh gradient */}
+      <div className="absolute inset-0 opacity-50">
+        <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
+        <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mx-auto max-w-2xl text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent-muted)] border border-[var(--accent)]/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+            <span className="text-sm font-medium text-[var(--accent)]">Przejrzyste ceny</span>
+          </div>
+
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
+            <span className="text-[var(--foreground)]">Wybierz odpowiedni </span>
+            <span className="gradient-text">plan dla siebie</span>
+          </h2>
+
+          <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
             Zacznij za darmo i skaluj w miarę rozwoju. Wszystkie plany zawierają 14-dniowy okres próbny.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
+        {/* Pricing cards */}
+        <div className="mx-auto grid max-w-lg grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
           {tiers.map((tier, index) => (
-            <Card
+            <div
               key={tier.id}
-              variant={tier.featured ? 'gradient-border' : 'default'}
-              hover
-              className={`animate-fade-in-up ${tier.featured ? 'lg:scale-105 shadow-xl shadow-[var(--primary)]/10' : ''}`}
-              style={{ animationDelay: `${index * 100}ms` }}
+              className={`relative p-8 rounded-2xl transition-all duration-500 ${
+                visibleCards.includes(index)
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-8'
+              } ${
+                tier.featured
+                  ? 'bg-gradient-to-b from-[var(--primary-muted)] to-[var(--background-surface)] border-2 border-[var(--primary)]/50 lg:scale-105 shadow-2xl shadow-[var(--primary)]/20'
+                  : 'bg-[var(--background-surface)] border border-[var(--border)]'
+              }`}
             >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>{tier.name}</CardTitle>
-                  {tier.featured && (
-                    <span className="rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] px-3 py-1 text-xs font-semibold text-white">
-                      Popularny
-                    </span>
-                  )}
+              {/* Popular badge */}
+              {tier.featured && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white text-xs font-semibold shadow-lg shadow-[var(--primary)]/30">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Popularny
+                  </span>
                 </div>
-                <p className="text-sm text-[var(--foreground-muted)]">{tier.description}</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <span className="text-4xl font-bold text-[var(--foreground)]">{tier.price} PLN</span>
-                  {tier.price > 0 && <span className="text-[var(--foreground-muted)]">/miesiąc</span>}
-                </div>
+              )}
 
-                <ul className="space-y-3">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm">
-                      <CheckIcon className={`h-4 w-4 ${tier.featured ? 'text-[var(--secondary)]' : 'text-[var(--success)]'}`} />
-                      <span className="text-[var(--foreground-muted)]">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+              {/* Header */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[var(--foreground)] font-display">{tier.name}</h3>
+                <p className="text-sm text-[var(--foreground-muted)] mt-1">{tier.description}</p>
+              </div>
 
-                <Link href="/register" className="block">
-                  <Button
-                    className="w-full"
-                    variant={tier.featured ? 'gradient' : 'outline'}
-                  >
-                    Rozpocznij
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+              {/* Price */}
+              <div className="mb-8">
+                <span className="text-5xl font-bold text-[var(--foreground)] font-display">{tier.price}</span>
+                <span className="text-lg text-[var(--foreground-muted)]"> PLN</span>
+                {tier.price > 0 && <span className="text-[var(--foreground-subtle)]">/miesiąc</span>}
+              </div>
+
+              {/* Features */}
+              <ul className="space-y-4 mb-8">
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
+                      tier.featured ? 'bg-[var(--primary-muted)]' : 'bg-[var(--success)]/10'
+                    }`}>
+                      <CheckIcon className={`w-3 h-3 ${tier.featured ? 'text-[var(--primary)]' : 'text-[var(--success)]'}`} />
+                    </div>
+                    <span className="text-sm text-[var(--foreground-muted)]">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <Link href="/register" className="block">
+                <Button
+                  className={`w-full ${tier.featured ? 'shadow-lg shadow-[var(--primary)]/30' : ''}`}
+                  variant={tier.featured ? 'gradient' : 'outline'}
+                  size="lg"
+                >
+                  Rozpocznij
+                </Button>
+              </Link>
+            </div>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        {/* Contact link */}
+        <div className="mt-16 text-center">
           <p className="text-[var(--foreground-muted)]">
-            Masz pytania?{' '}
-            <Link href="/contact" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors">
-              Skontaktuj sie z nami
+            Potrzebujesz planu enterprise?{' '}
+            <Link href="/contact" className="font-semibold text-[var(--primary)] hover:text-[var(--secondary)] transition-colors">
+              Skontaktuj się z nami
             </Link>
           </p>
         </div>
@@ -122,7 +189,7 @@ export function Pricing() {
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
     </svg>
   )
