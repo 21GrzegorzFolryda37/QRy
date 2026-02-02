@@ -151,32 +151,32 @@ export function QRComparison() {
               Zwykły QR
             </h3>
 
-            {/* Annotation lines - hidden on mobile */}
-            <div className="hidden lg:block absolute right-full top-1/2 -translate-y-1/2 mr-4">
-              {/* Line 1 - pointing to top-left corner */}
-              <div className="absolute -top-16 right-0 flex items-center">
+            {/* Annotation lines - hidden on mobile, positioned to point at actual QR elements */}
+            <div className="hidden lg:block">
+              {/* Line 1 - pointing to top-left corner square (position marker) */}
+              <div className="absolute left-0 top-[195px] -translate-x-full flex items-center pr-2">
                 <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
                   Zwykłe kwadraty
                 </div>
-                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
                 <div className="w-2 h-2 rounded-full bg-white/50" />
               </div>
 
-              {/* Line 2 - pointing to middle elements */}
-              <div className="absolute top-0 right-0 flex items-center">
+              {/* Line 2 - pointing to smaller data modules */}
+              <div className="absolute left-0 top-[270px] -translate-x-full flex items-center pr-2">
                 <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
                   Brak wyróżnienia
                 </div>
-                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
                 <div className="w-2 h-2 rounded-full bg-white/50" />
               </div>
 
               {/* Line 3 - pointing to center */}
-              <div className="absolute top-16 right-0 flex items-center">
+              <div className="absolute left-0 top-[320px] -translate-x-full flex items-center pr-2">
                 <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
                   Puste miejsce
                 </div>
-                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
                 <div className="w-2 h-2 rounded-full bg-white/50" />
               </div>
             </div>
