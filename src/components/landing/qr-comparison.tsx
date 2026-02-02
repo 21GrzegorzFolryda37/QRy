@@ -115,11 +115,7 @@ export function QRComparison() {
   }, [visible])
 
   return (
-    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-white" />
-      <div className="absolute inset-0 animated-gradient-bg blur-3xl" />
-      <div className="absolute inset-0 grid-pattern opacity-50" />
+    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden bg-white">
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -145,10 +141,8 @@ export function QRComparison() {
             }`}
           >
             <div className="text-center">
-              <div className="inline-block p-4 rounded-2xl bg-gray-50 mb-6">
-                <div ref={basicQrRef} className="w-[200px] h-[200px] flex items-center justify-center">
-                  <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                </div>
+              <div ref={basicQrRef} className="w-[200px] h-[200px] mx-auto mb-6 flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
               </div>
               <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-2">
                 Standardowy kod QR
@@ -177,10 +171,8 @@ export function QRComparison() {
             </div>
 
             <div className="text-center">
-              <div className="inline-block p-4 rounded-2xl bg-white shadow-md mb-6">
-                <div ref={customQrRef} className="w-[200px] h-[200px] flex items-center justify-center">
-                  <div className="w-12 h-12 border-4 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
-                </div>
+              <div ref={customQrRef} className="w-[200px] h-[200px] mx-auto mb-6 flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
               </div>
               <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-2">
                 Spersonalizowany kod QR
