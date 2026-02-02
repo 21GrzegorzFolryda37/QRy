@@ -42,27 +42,20 @@ export function FAQ() {
 
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-white" />
-
-      {/* Subtle gradient */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
-      </div>
-
-      {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
+      {/* Indigo to Slate gradient background - same as QR comparison */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95] via-[#2e1065] to-[#0f172a]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(109,40,217,0.25),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(15,23,42,0.6),transparent_50%)]" />
 
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-6">
-            <span className="text-[var(--foreground)]">Często zadawane </span>
-            <span className="gradient-text">pytania</span>
+            <span className="text-white">Często zadawane </span>
+            <span className="text-violet-300">pytania</span>
           </h2>
 
-          <p className="text-lg text-[var(--foreground-muted)] leading-relaxed">
+          <p className="text-lg text-violet-200/80 leading-relaxed">
             Znajdź odpowiedzi na najczęściej zadawane pytania dotyczące naszego generatora kodów QR.
           </p>
         </div>
@@ -72,10 +65,10 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`rounded-2xl transition-colors duration-300 ${
+              className={`rounded-2xl transition-all duration-300 ${
                 openIndex === index
-                  ? 'bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/30 shadow-md'
-                  : 'bg-white border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border-hover)]'
+                  ? 'bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg'
+                  : 'bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/15 hover:border-white/20'
               }`}
             >
               <button
@@ -83,14 +76,14 @@ export function FAQ() {
                 className="flex w-full items-center justify-between px-6 py-5 text-left"
               >
                 <span className={`text-base font-semibold transition-colors ${
-                  openIndex === index ? 'text-[var(--foreground)]' : 'text-[var(--foreground-muted)]'
+                  openIndex === index ? 'text-white' : 'text-violet-200'
                 }`}>
                   {faq.question}
                 </span>
                 <span className={`ml-6 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                   openIndex === index
-                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white rotate-180'
-                    : 'bg-[var(--background-elevated)] text-[var(--foreground-muted)]'
+                    ? 'bg-[#6d28d9] text-white rotate-180'
+                    : 'bg-white/10 text-violet-300'
                 }`}>
                   <ChevronIcon className="h-4 w-4" />
                 </span>
@@ -103,7 +96,7 @@ export function FAQ() {
                 }}
               >
                 <div className="overflow-hidden">
-                  <p className="px-6 pb-5 text-[var(--foreground-muted)] leading-relaxed">
+                  <p className="px-6 pb-5 text-violet-200/80 leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>
