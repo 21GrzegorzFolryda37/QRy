@@ -1,19 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
-
-const comparisonFeatures = [
-  { feature: 'Pierwsze wrażenie', boring: 'Ignorowany', qrapple: 'Przyciąga wzrok' },
-  { feature: 'Skanowalność', boring: 'Standardowa', qrapple: 'Wysoka (korekcja błędów)' },
-  { feature: 'Branding', boring: 'Brak', qrapple: 'Logo + kolory marki' },
-  { feature: 'Konwersja', boring: 'Niska', qrapple: 'Nawet +80%' },
-  { feature: 'Profesjonalizm', boring: 'Amatorski', qrapple: 'Premium' },
-  { feature: 'Zapamiętywalność', boring: 'Żadna', qrapple: 'Buduje rozpoznawalność' },
-]
 
 export function QRComparison() {
   const [visible, setVisible] = useState(false)
@@ -149,7 +138,7 @@ export function QRComparison() {
         </div>
 
         {/* Visual Comparison */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-4 items-center mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-4 items-center">
           {/* Boring QR */}
           <div
             className={`relative p-8 rounded-3xl bg-white/95 backdrop-blur-sm shadow-xl transition-all duration-700 ${
@@ -236,52 +225,6 @@ export function QRComparison() {
           </div>
         </div>
 
-        {/* Comparison Table */}
-        <div
-          className={`rounded-2xl overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md shadow-2xl mb-12 transition-all duration-700 delay-300 ${
-            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          <div className="grid grid-cols-3 text-center font-semibold">
-            <div className="p-4 bg-white/5 text-violet-200">Cecha</div>
-            <div className="p-4 bg-red-500/20 text-red-300">Zwykły QR</div>
-            <div className="p-4 bg-green-500/20 text-green-300">QRapple</div>
-          </div>
-          {comparisonFeatures.map((row, i) => (
-            <div key={i} className="grid grid-cols-3 text-center border-t border-white/10">
-              <div className="p-4 text-white font-medium bg-white/5">{row.feature}</div>
-              <div className="p-4 text-red-300/80 bg-red-500/5">{row.boring}</div>
-              <div className="p-4 text-green-300 bg-green-500/5 font-medium">{row.qrapple}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Punchline + CTA */}
-        <div
-          className={`text-center transition-all duration-700 delay-500 ${
-            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 mb-8">
-            <span className="text-3xl">📈</span>
-            <p className="text-lg font-medium text-white">
-              Brandowane kody QR są skanowane nawet <span className="text-violet-300 font-bold">o 80% częściej</span>
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button variant="gradient" size="lg" className="shadow-lg shadow-[var(--primary)]/25">
-                Stwórz swój kod QRapple
-              </Button>
-            </Link>
-            <Link href="/features">
-              <Button variant="outline" size="lg">
-                Zobacz wszystkie funkcje
-              </Button>
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Scanline animation */}
