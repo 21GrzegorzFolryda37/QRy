@@ -152,67 +152,71 @@ export function QRComparison() {
             </h3>
 
             <div className="relative">
-              {/* Annotation lines with elbow connectors - hidden on mobile */}
+              {/* Annotation system - hidden on mobile */}
               <div className="hidden lg:block">
-                {/* Line 1 - top-left corner "eye" → "Zawsze taki sam wzór" */}
-                <div className="absolute top-[178px] left-[48px] z-10">
-                  {/* Dot on element */}
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
-                  {/* Elbow connector: horizontal then vertical */}
-                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="100" height="60" style={{ overflow: 'visible' }}>
-                    <path
-                      d="M 0 0 L -40 0 L -40 -35"
-                      fill="none"
-                      stroke="#94a3b8"
-                      strokeWidth="1.5"
-                      strokeDasharray="4 2"
-                    />
-                  </svg>
-                  {/* Label box */}
-                  <div className="absolute -top-[52px] -left-[155px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                {/* Label boxes - positioned to the left of phone */}
+                <div className="absolute right-[calc(100%+50px)] top-[160px] flex flex-col gap-8">
+                  {/* Box 1 */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
                     Zawsze taki sam wzór
                   </div>
-                </div>
-
-                {/* Line 2 - center → "Brak miejsca na logo" */}
-                <div className="absolute top-[268px] left-[118px] z-10">
-                  {/* Dot on element */}
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
-                  {/* Elbow connector: horizontal then vertical */}
-                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="120" height="60" style={{ overflow: 'visible' }}>
-                    <path
-                      d="M 0 0 L -70 0 L -70 0"
-                      fill="none"
-                      stroke="#94a3b8"
-                      strokeWidth="1.5"
-                      strokeDasharray="4 2"
-                    />
-                  </svg>
-                  {/* Label box */}
-                  <div className="absolute top-1/2 -translate-y-1/2 -left-[180px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                  {/* Box 2 */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
                     Brak miejsca na logo
                   </div>
-                </div>
-
-                {/* Line 3 - bottom module → "Kwadratowe, nudne moduły" */}
-                <div className="absolute top-[320px] left-[65px] z-10">
-                  {/* Dot on element */}
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
-                  {/* Elbow connector: horizontal then vertical */}
-                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="100" height="60" style={{ overflow: 'visible' }}>
-                    <path
-                      d="M 0 0 L -30 0 L -30 35"
-                      fill="none"
-                      stroke="#94a3b8"
-                      strokeWidth="1.5"
-                      strokeDasharray="4 2"
-                    />
-                  </svg>
-                  {/* Label box */}
-                  <div className="absolute top-[48px] -left-[175px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                  {/* Box 3 */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
                     Kwadratowe, nudne moduły
                   </div>
                 </div>
+
+                {/* SVG overlay for lines and dots */}
+                <svg
+                  className="absolute pointer-events-none"
+                  style={{
+                    top: 0,
+                    left: '-200px',
+                    width: 'calc(100% + 200px)',
+                    height: '100%',
+                    overflow: 'visible'
+                  }}
+                >
+                  {/* Line 1: Top-left finder pattern → Box 1 */}
+                  {/* Dot position: center of top-left finder pattern */}
+                  <circle cx="248" cy="198" r="4" fill="rgba(255,255,255,0.6)" />
+                  {/* L-shaped line: horizontal left, then vertical up to box */}
+                  <path
+                    d="M 248 198 L 180 198 L 180 175"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.4)"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+
+                  {/* Line 2: Center of QR → Box 2 */}
+                  {/* Dot position: exact center of QR code */}
+                  <circle cx="318" cy="268" r="4" fill="rgba(255,255,255,0.6)" />
+                  {/* L-shaped line: horizontal left to box */}
+                  <path
+                    d="M 318 268 L 180 268 L 180 228"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.4)"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+
+                  {/* Line 3: Bottom-left module → Box 3 */}
+                  {/* Dot position: small module in bottom-left area */}
+                  <circle cx="265" cy="318" r="4" fill="rgba(255,255,255,0.6)" />
+                  {/* L-shaped line: horizontal left, then vertical down to box */}
+                  <path
+                    d="M 265 318 L 180 318 L 180 282"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.4)"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+                </svg>
               </div>
 
               <PhoneMockup className="w-[260px]">
