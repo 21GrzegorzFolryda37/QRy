@@ -94,7 +94,7 @@ export function Analytics() {
             {analyticsFeatures.map((feature, index) => (
               <div
                 key={feature.name}
-                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1 ${
+                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-[0_10px_40px_-10px_rgba(109,40,217,0.3)] transition-all duration-500 hover:-translate-y-1 ${
                   visibleCards.includes(index)
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-8'
