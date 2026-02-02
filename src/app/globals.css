@@ -485,6 +485,43 @@ body {
   );
 }
 
+.topographic {
+  background-image:
+    repeating-radial-gradient(
+      ellipse at 20% 30%,
+      transparent 0px,
+      transparent 40px,
+      rgba(109, 40, 217, 0.04) 40px,
+      rgba(109, 40, 217, 0.04) 41px,
+      transparent 41px,
+      transparent 80px,
+      rgba(109, 40, 217, 0.03) 80px,
+      rgba(109, 40, 217, 0.03) 81px
+    ),
+    repeating-radial-gradient(
+      ellipse at 80% 70%,
+      transparent 0px,
+      transparent 50px,
+      rgba(109, 40, 217, 0.04) 50px,
+      rgba(109, 40, 217, 0.04) 51px,
+      transparent 51px,
+      transparent 100px,
+      rgba(109, 40, 217, 0.03) 100px,
+      rgba(109, 40, 217, 0.03) 101px
+    ),
+    repeating-radial-gradient(
+      ellipse at 50% 50%,
+      transparent 0px,
+      transparent 60px,
+      rgba(109, 40, 217, 0.03) 60px,
+      rgba(109, 40, 217, 0.03) 61px,
+      transparent 61px,
+      transparent 120px,
+      rgba(109, 40, 217, 0.025) 120px,
+      rgba(109, 40, 217, 0.025) 121px
+    );
+}
+
 /* ========================================
    QR PREVIEW CONTAINER
    ======================================== */

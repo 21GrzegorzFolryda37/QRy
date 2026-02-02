@@ -626,8 +626,8 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
-      {/* Diagonal lines pattern */}
-      <div className="absolute inset-0 diagonal-lines" />
+      {/* Topographic pattern */}
+      <div className="absolute inset-0 topographic" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
