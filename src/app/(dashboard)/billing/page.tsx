@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardContent, Button, Badge } from '@/components/ui'
 import { PricingCard } from '@/components/billing'
-import { getUserPlan, createPortalSession } from '@/actions/billing'
+import { getUserPlan, createPortalSession, createCheckoutSession } from '@/actions/billing'
 import { PLANS, PlanId } from '@/lib/stripe'
 
 export default function BillingPage() {
@@ -13,9 +13,11 @@ export default function BillingPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [portalLoading, setPortalLoading] = useState(false)
+  const checkoutInitiated = useRef(false)
 
   const success = searchParams.get('success')
   const canceled = searchParams.get('canceled')
+  const checkoutPlan = searchParams.get('checkout') as PlanId | null
 
   useEffect(() => {
     async function fetchPlan() {
@@ -29,6 +31,21 @@ export default function BillingPage() {
 
     fetchPlan()
   }, [])
+
+  // Auto-start checkout if redirected from landing page
+  useEffect(() => {
+    async function startCheckout() {
+      if (checkoutPlan && PLANS[checkoutPlan] && !checkoutInitiated.current && !loading) {
+        checkoutInitiated.current = true
+        const result = await createCheckoutSession(checkoutPlan)
+        if (result.url) {
+          window.location.href = result.url
+        }
+      }
+    }
+
+    startCheckout()
+  }, [checkoutPlan, loading])
 
   async function handleManageSubscription() {
     setPortalLoading(true)
