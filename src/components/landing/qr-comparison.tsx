@@ -195,11 +195,11 @@ export function QRComparison() {
                     {/* Annotation dots - positioned on QR elements */}
                     <div className="hidden lg:block">
                       {/* Dot 1: Top-left finder pattern */}
-                      <div className="absolute top-[24px] left-[24px] w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
+                      <div className="absolute top-[24px] left-[24px] w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
                       {/* Dot 2: Center of QR */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
                       {/* Dot 3: Bottom-left module area */}
-                      <div className="absolute bottom-[35px] left-[35px] w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
+                      <div className="absolute bottom-[35px] left-[35px] w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
                     </div>
                   </div>
                 </div>
