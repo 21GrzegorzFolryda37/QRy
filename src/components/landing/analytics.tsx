@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui'
 
 const analyticsFeatures = [
   {
@@ -115,6 +117,15 @@ export function Analytics() {
               </div>
             ))}
           </dl>
+        </div>
+
+        {/* CTA */}
+        <div className="mt-16 text-center">
+          <Link href="/register">
+            <Button variant="gradient" size="lg" className="shadow-lg shadow-[#6d28d9]/25">
+              Zacznij śledzić za darmo
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
