@@ -151,37 +151,38 @@ export function QRComparison() {
               Zwykły QR
             </h3>
 
-            {/* Annotation lines - hidden on mobile, positioned to point at actual QR elements */}
-            <div className="hidden lg:block">
-              {/* Line 1 - pointing to top-left corner square (position marker) */}
-              <div className="absolute left-0 top-[195px] -translate-x-full flex items-center pr-2">
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                  Zwykłe kwadraty
+            <div className="relative">
+              {/* Annotation lines - hidden on mobile */}
+              <div className="hidden lg:block">
+                {/* Line 1 - dot on top-left corner square (position marker) */}
+                <div className="absolute top-[175px] left-[47px] z-10 flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-white border-2 border-white shadow-lg" />
+                  <div className="w-16 h-[2px] bg-white/60" />
+                  <div className="absolute right-full mr-[72px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                    Zwykłe kwadraty
+                  </div>
                 </div>
-                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
-                <div className="w-2 h-2 rounded-full bg-white/50" />
+
+                {/* Line 2 - dot on smaller data modules (between corners) */}
+                <div className="absolute top-[220px] left-[70px] z-10 flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-white border-2 border-white shadow-lg" />
+                  <div className="w-20 h-[2px] bg-white/60" />
+                  <div className="absolute right-full mr-[88px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                    Brak wyróżnienia
+                  </div>
+                </div>
+
+                {/* Line 3 - dot on center */}
+                <div className="absolute top-[270px] left-[118px] z-10 flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-white border-2 border-white shadow-lg" />
+                  <div className="w-28 h-[2px] bg-white/60" />
+                  <div className="absolute right-full mr-[120px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                    Puste miejsce
+                  </div>
+                </div>
               </div>
 
-              {/* Line 2 - pointing to smaller data modules */}
-              <div className="absolute left-0 top-[270px] -translate-x-full flex items-center pr-2">
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                  Brak wyróżnienia
-                </div>
-                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
-                <div className="w-2 h-2 rounded-full bg-white/50" />
-              </div>
-
-              {/* Line 3 - pointing to center */}
-              <div className="absolute left-0 top-[320px] -translate-x-full flex items-center pr-2">
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                  Puste miejsce
-                </div>
-                <div className="w-8 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
-                <div className="w-2 h-2 rounded-full bg-white/50" />
-              </div>
-            </div>
-
-            <PhoneMockup className="w-[260px]">
+              <PhoneMockup className="w-[260px]">
               <div className="w-full h-full bg-gray-50 flex flex-col">
                 {/* Status bar - iPhone style */}
                 <div className="relative h-14 flex items-end justify-between px-6 pb-1">
@@ -227,6 +228,7 @@ export function QRComparison() {
                 <div className="h-8" />
               </div>
             </PhoneMockup>
+            </div>
           </div>
 
           {/* VS Element */}
