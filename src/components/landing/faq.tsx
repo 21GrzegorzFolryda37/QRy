@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 
 const faqs = [
   {
@@ -73,17 +72,21 @@ export function FAQ() {
               Znajdź odpowiedzi na najczęściej zadawane pytania dotyczące naszego generatora kodów QR.
             </p>
 
-            {/* Decorative image */}
+            {/* Decorative gradient element */}
             <div className="hidden lg:block relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-2xl opacity-20" />
-              <div className="relative p-8 rounded-2xl bg-[var(--background-surface)] border border-[var(--border)]">
-                <Image
-                  src="/FAQ.webp"
-                  alt="FAQ Illustration"
-                  width={400}
-                  height={300}
-                  className="w-full h-auto rounded-xl"
-                />
+              <div className="relative h-80 rounded-2xl bg-gradient-to-br from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)] p-[2px] overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)] animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
+                <div className="relative h-full w-full rounded-2xl bg-white/95 backdrop-blur flex items-center justify-center">
+                  <div className="text-center p-8">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg">
+                      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">Masz pytania?</h3>
+                    <p className="text-[var(--foreground-muted)]">Znajdziesz tu odpowiedzi na najczęstsze pytania</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
