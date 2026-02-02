@@ -630,7 +630,7 @@ export function Hero() {
       <div className="absolute inset-0 animated-gradient-bg blur-3xl" />
 
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-60" />
+      <div className="absolute inset-0 grid-pattern opacity-75" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
