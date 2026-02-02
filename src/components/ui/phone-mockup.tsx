@@ -28,25 +28,25 @@ export function PhoneMockup({
         />
       )}
 
-      {/* Phone frame */}
+      {/* Phone frame - white iPhone style */}
       <div
         className={cn(
-          'relative bg-[#0f0f23] rounded-[50px] p-3 shadow-2xl',
+          'relative bg-[#f5f5f7] rounded-[50px] p-3 shadow-2xl border border-[#d2d2d7]',
           isHighlighted && 'ring-1 ring-violet-500/30'
         )}
         style={{
           boxShadow: isHighlighted
             ? `0 25px 50px -12px rgba(109, 40, 217, 0.4), 0 0 0 1px rgba(109, 40, 217, 0.1)`
-            : '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)'
+            : '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.8)'
         }}
       >
         {/* Side buttons - left */}
-        <div className="absolute -left-[2px] top-[80px] w-[2px] h-[25px] bg-[#1a1a2e] rounded-l-sm" />
-        <div className="absolute -left-[2px] top-[120px] w-[2px] h-[50px] bg-[#1a1a2e] rounded-l-sm" />
-        <div className="absolute -left-[2px] top-[180px] w-[2px] h-[50px] bg-[#1a1a2e] rounded-l-sm" />
+        <div className="absolute -left-[2px] top-[80px] w-[2px] h-[25px] bg-[#d2d2d7] rounded-l-sm" />
+        <div className="absolute -left-[2px] top-[120px] w-[2px] h-[50px] bg-[#d2d2d7] rounded-l-sm" />
+        <div className="absolute -left-[2px] top-[180px] w-[2px] h-[50px] bg-[#d2d2d7] rounded-l-sm" />
 
         {/* Side button - right (power) */}
-        <div className="absolute -right-[2px] top-[140px] w-[2px] h-[70px] bg-[#1a1a2e] rounded-r-sm" />
+        <div className="absolute -right-[2px] top-[140px] w-[2px] h-[70px] bg-[#d2d2d7] rounded-r-sm" />
 
         {/* Inner bezel */}
         <div className="relative bg-black rounded-[42px] p-[2px]">
