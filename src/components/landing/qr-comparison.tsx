@@ -55,19 +55,19 @@ export function QRComparison() {
           height: 180,
           data: QR_URL,
           dotsOptions: {
-            color: '#374151',
+            color: '#000000',
             type: 'square',
           },
           cornersSquareOptions: {
             type: 'square',
-            color: '#374151',
+            color: '#000000',
           },
           cornersDotOptions: {
             type: 'square',
-            color: '#374151',
+            color: '#000000',
           },
           backgroundOptions: {
-            color: '#f3f4f6',
+            color: '#ffffff',
           },
         })
         basicQR.append(basicQrRef.current)
@@ -166,8 +166,8 @@ export function QRComparison() {
                 Zwykły QR
               </h3>
 
-              {/* QR Code - dimmed */}
-              <div className="relative inline-block mb-6 opacity-60 grayscale-[30%]">
+              {/* QR Code */}
+              <div className="relative inline-block mb-6">
                 <div ref={basicQrRef} className="w-[180px] h-[180px] mx-auto flex items-center justify-center">
                   <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                 </div>
