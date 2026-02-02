@@ -136,29 +136,6 @@ export function Analytics() {
             ))}
           </dl>
         </div>
-
-        {/* Stats row */}
-        <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {[
-            { value: '99.9%', label: 'Uptime' },
-            { value: '<50ms', label: 'Czas odpowiedzi' },
-            { value: '10M+', label: 'Skanów/miesiąc' },
-            { value: '24/7', label: 'Monitoring' },
-          ].map((stat, index) => (
-            <div
-              key={stat.label}
-              className={`text-center p-6 rounded-xl bg-white border border-[var(--border)] shadow-sm transition-all duration-500 ${
-                visibleCards.includes(0)
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-4'
-              }`}
-              style={{ transitionDelay: `${(index + 6) * 100}ms` }}
-            >
-              <div className="text-2xl sm:text-3xl font-bold gradient-text font-display">{stat.value}</div>
-              <div className="mt-1 text-sm text-[var(--foreground-muted)]">{stat.label}</div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   )
