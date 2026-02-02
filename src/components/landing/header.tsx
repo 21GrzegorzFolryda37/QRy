@@ -10,7 +10,6 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -29,15 +28,6 @@ export function Header() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   return (
     <header
       className="fixed top-0 left-0 right-0 z-[1000] bg-white border-b border-[var(--border)] shadow-sm"
@@ -45,17 +35,14 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
         {/* Logo */}
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-3 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-              <Image
-                src="/logo.webp"
-                alt="QRapple logo"
-                width={44}
-                height={44}
-                className="relative w-11 h-11 rounded-xl"
-              />
-            </div>
+          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-3">
+            <Image
+              src="/logo.webp"
+              alt="QRapple logo"
+              width={44}
+              height={44}
+              className="w-11 h-11 rounded-xl"
+            />
             <span className="text-xl font-bold font-display gradient-text-static">QRapple</span>
           </Link>
         </div>
