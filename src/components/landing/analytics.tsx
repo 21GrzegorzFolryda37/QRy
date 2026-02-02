@@ -71,21 +71,15 @@ export function Analytics() {
 
   return (
     <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-white" />
-
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 animated-gradient-bg blur-3xl" />
-
-      {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-50" />
+      {/* Background - light gray */}
+      <div className="absolute inset-0 bg-[#f8fafc]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
             <span className="text-[var(--foreground)]">Poznaj swoich </span>
-            <span className="gradient-text">odbiorców</span>
+            <span className="text-[#6d28d9]">odbiorców</span>
           </h2>
 
           <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
@@ -100,14 +94,14 @@ export function Analytics() {
             {analyticsFeatures.map((feature, index) => (
               <div
                 key={feature.name}
-                className={`group relative flex flex-col p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg hover:shadow-xl hover:bg-white transition-all duration-500 hover:-translate-y-1 ${
+                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1 ${
                   visibleCards.includes(index)
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-8'
                 }`}
               >
                 <dt className="relative flex items-center gap-x-4 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] shadow-md">
+                  <div className="flex-shrink-0 p-3 rounded-xl bg-[#6d28d9] shadow-md shadow-[#6d28d9]/20">
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
