@@ -143,13 +143,43 @@ export function QRComparison() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center justify-items-center">
           {/* Phone with Boring QR */}
           <div
-            className={`transition-all duration-700 ${
+            className={`relative transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
             <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
               Zwykły QR
             </h3>
+
+            {/* Annotation lines - hidden on mobile */}
+            <div className="hidden lg:block absolute right-full top-1/2 -translate-y-1/2 mr-4">
+              {/* Line 1 - pointing to top-left corner */}
+              <div className="absolute -top-16 right-0 flex items-center">
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                  Zwykłe kwadraty
+                </div>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-2 h-2 rounded-full bg-white/50" />
+              </div>
+
+              {/* Line 2 - pointing to middle elements */}
+              <div className="absolute top-0 right-0 flex items-center">
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                  Brak wyróżnienia
+                </div>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-2 h-2 rounded-full bg-white/50" />
+              </div>
+
+              {/* Line 3 - pointing to center */}
+              <div className="absolute top-16 right-0 flex items-center">
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
+                  Puste miejsce
+                </div>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-white/50 to-white/20" />
+                <div className="w-2 h-2 rounded-full bg-white/50" />
+              </div>
+            </div>
 
             <PhoneMockup className="w-[260px]">
               <div className="w-full h-full bg-gray-50 flex flex-col">
