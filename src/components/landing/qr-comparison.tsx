@@ -132,10 +132,10 @@ export function QRComparison() {
 
   return (
     <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Indigo to Slate gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9] via-[#4c1d95] to-[#1e293b]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.3),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(30,41,59,0.5),transparent_50%)]" />
+      {/* Indigo to Slate gradient background - darker */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95] via-[#2e1065] to-[#0f172a]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(109,40,217,0.25),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(15,23,42,0.6),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
