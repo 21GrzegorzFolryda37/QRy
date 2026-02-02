@@ -1,4 +1,4 @@
-import { Hero, Features, Analytics, Pricing, FAQ, HowItWorks } from '@/components/landing'
+import { Hero, Features, Analytics, Pricing, FAQ, HowItWorks, QRComparison } from '@/components/landing'
 import { Header, Footer } from '@/components/landing'
 
 export default function Home() {
@@ -10,6 +10,7 @@ export default function Home() {
         <Hero />
         {/* Reszta strony */}
         <HowItWorks />
+        <QRComparison />
         <Features />
         <Pricing />
         <Analytics />
