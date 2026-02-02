@@ -626,8 +626,11 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 animated-gradient-bg" />
+      {/* Animated gradient background with blur */}
+      <div className="absolute inset-0 animated-gradient-bg blur-3xl" />
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-40" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
