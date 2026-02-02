@@ -72,16 +72,13 @@ export function Analytics() {
   return (
     <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[var(--background-surface)]" />
+      <div className="absolute inset-0 bg-white" />
 
-      {/* Subtle gradient */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.04]" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.04]" />
-      </div>
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 animated-gradient-bg blur-3xl" />
 
       {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
+      <div className="absolute inset-0 grid-pattern opacity-50" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -108,20 +105,14 @@ export function Analytics() {
             {analyticsFeatures.map((feature, index) => (
               <div
                 key={feature.name}
-                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-[var(--border)] shadow-sm transition-all duration-500 hover:border-[var(--${feature.color})]/50 hover:shadow-lg ${
+                className={`group relative flex flex-col p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg hover:shadow-xl hover:bg-white transition-all duration-500 hover:-translate-y-1 ${
                   visibleCards.includes(index)
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-8'
                 }`}
               >
-                {/* Hover glow effect */}
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--${feature.color})]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
-                {/* Gradient line on top */}
-                <div className={`absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-[var(--${feature.color})] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
                 <dt className="relative flex items-center gap-x-4 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className={`flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-[var(--${feature.color})] to-[var(--${feature.color})]/70 shadow-lg shadow-[var(--${feature.color})]/30 group-hover:shadow-[var(--${feature.color})]/50 transition-shadow`}>
+                  <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] shadow-md">
                     <feature.icon
                       className="h-5 w-5 text-white"
                       aria-hidden="true"
