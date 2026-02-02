@@ -495,6 +495,34 @@ body {
 }
 
 /* ========================================
+   ANIMATED GRADIENT BACKGROUND
+   ======================================== */
+
+@keyframes gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    rgba(124, 58, 237, 0.5),
+    rgba(8, 145, 178, 0.5),
+    rgba(219, 39, 119, 0.5),
+    rgba(124, 58, 237, 0.5)
+  );
+  background-size: 400% 400%;
+  animation: gradient-move 15s ease infinite;
+}
+
+/* ========================================
    RESPONSIVE ADJUSTMENTS
    ======================================== */
 
