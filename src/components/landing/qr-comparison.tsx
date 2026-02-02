@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { PhoneMockup } from '@/components/ui'
+import Link from 'next/link'
+import { PhoneMockup, Button } from '@/components/ui'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
 
@@ -343,6 +344,15 @@ export function QRComparison() {
               </div>
             </PhoneMockup>
           </div>
+        </div>
+
+        {/* CTA */}
+        <div className="mt-16 text-center">
+          <Link href="/register">
+            <Button className="bg-white text-[#6d28d9] hover:bg-gray-50 shadow-lg">
+              Stwórz swój pierwszy kod QR
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
