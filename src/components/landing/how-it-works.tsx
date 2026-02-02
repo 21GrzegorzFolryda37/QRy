@@ -8,21 +8,18 @@ const steps = [
     title: 'Wybierz typ kodu',
     description: 'Wybierz spośród wielu typów: link, wizytówka, WiFi, social media, menu i wiele innych.',
     icon: SelectIcon,
-    gradient: 'from-[#a855f7] to-[#c084fc]',
   },
   {
     number: '02',
     title: 'Dostosuj wygląd',
     description: 'Personalizuj kolory, kształty, dodaj logo i ramkę. Stwórz kod pasujący do Twojej marki.',
     icon: CustomizeIcon,
-    gradient: 'from-[#22d3ee] to-[#67e8f9]',
   },
   {
     number: '03',
     title: 'Pobierz i śledź',
     description: 'Pobierz kod QR w wysokiej jakości i zacznij śledzić skany w czasie rzeczywistym.',
     icon: DownloadIcon,
-    gradient: 'from-[#10b981] to-[#34d399]',
   },
 ]
 
@@ -55,21 +52,13 @@ export function HowItWorks() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[var(--background-surface)]" />
-
-      {/* Decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[var(--primary)] rounded-full filter blur-[200px] opacity-[0.03]" />
-      </div>
-
+    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden bg-white">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
             <span className="text-[var(--foreground)]">Jak to </span>
-            <span className="gradient-text">działa?</span>
+            <span className="text-[#6d28d9]">działa?</span>
           </h2>
 
           <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
@@ -81,9 +70,9 @@ export function HowItWorks() {
         <div className="relative">
           {/* Connection line - desktop */}
           <div className="hidden lg:block absolute top-[4.5rem] left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-[2px]">
-            <div className="h-full bg-gradient-to-r from-[#a855f7] via-[#22d3ee] to-[#10b981] rounded-full opacity-30" />
+            <div className="h-full bg-[#6d28d9] rounded-full opacity-20" />
             <div
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#a855f7] via-[#22d3ee] to-[#10b981] rounded-full transition-all duration-1000"
+              className="absolute top-0 left-0 h-full bg-[#6d28d9] rounded-full transition-all duration-1000"
               style={{
                 width: `${(visibleSteps.length / steps.length) * 100}%`,
               }}
@@ -104,21 +93,21 @@ export function HowItWorks() {
                 <div className="relative mb-8">
                   {/* Glow effect */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${step.gradient} rounded-2xl blur-xl opacity-40 transition-opacity duration-500 ${
-                      visibleSteps.includes(index) ? 'opacity-40' : 'opacity-0'
+                    className={`absolute inset-0 bg-[#6d28d9] rounded-2xl blur-xl transition-opacity duration-500 ${
+                      visibleSteps.includes(index) ? 'opacity-30' : 'opacity-0'
                     }`}
                   />
 
                   {/* Icon box */}
-                  <div className={`relative w-24 h-24 rounded-2xl bg-gradient-to-br ${step.gradient} p-[2px]`}>
+                  <div className="relative w-24 h-24 rounded-2xl bg-[#6d28d9] p-[2px]">
                     <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
-                      <step.icon className="w-10 h-10 text-[var(--foreground)]" />
+                      <step.icon className="w-10 h-10 text-[#6d28d9]" />
                     </div>
                   </div>
 
                   {/* Number badge */}
                   <div
-                    className={`absolute -top-3 -right-3 w-10 h-10 rounded-xl bg-gradient-to-br ${step.gradient} flex items-center justify-center text-white text-sm font-bold shadow-lg`}
+                    className="absolute -top-3 -right-3 w-10 h-10 rounded-xl bg-[#6d28d9] flex items-center justify-center text-white text-sm font-bold shadow-lg"
                   >
                     {index + 1}
                   </div>
@@ -135,8 +124,8 @@ export function HowItWorks() {
                 {/* Arrow for mobile */}
                 {index < steps.length - 1 && (
                   <div className="lg:hidden mt-8">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${steps[index + 1].gradient} p-[1px]`}>
-                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[var(--foreground-muted)]">
+                    <div className="w-10 h-10 rounded-full bg-[#6d28d9] p-[1px]">
+                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#6d28d9]">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                         </svg>
