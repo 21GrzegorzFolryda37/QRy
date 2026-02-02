@@ -147,7 +147,7 @@ export function QRComparison() {
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
-            <h3 className="text-lg font-medium text-gray-400 text-center mb-6">
+            <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
               Zwykły QR
             </h3>
 
@@ -158,7 +158,7 @@ export function QRComparison() {
 
                 {/* Scanner content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6">
-                  <p className="text-xs text-gray-400 mb-4 font-medium">Zeskanuj kod QR</p>
+                  <p className="text-xs text-[#6d28d9] mb-4 font-medium">Zeskanuj kod QR</p>
 
                   {/* QR container */}
                   <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
