@@ -155,66 +155,66 @@ export function QRComparison() {
               {/* Annotation system - hidden on mobile */}
               <div className="hidden lg:block">
                 {/* Label boxes - positioned to the left of phone */}
-                <div className="absolute right-[calc(100%+50px)] top-[160px] flex flex-col gap-8">
-                  {/* Box 1 */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
+                <div className="absolute right-[calc(100%+60px)] top-[130px] flex flex-col gap-6">
+                  {/* Box 1: Points to top-left finder pattern */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
                     Zawsze taki sam wzór
                   </div>
-                  {/* Box 2 */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
+                  {/* Box 2: Points to center (no logo space) */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
                     Brak miejsca na logo
                   </div>
-                  {/* Box 3 */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md border border-white/20 text-[13px] text-white whitespace-nowrap">
+                  {/* Box 3: Points to square modules */}
+                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
                     Kwadratowe, nudne moduły
                   </div>
                 </div>
 
-                {/* SVG overlay for lines and dots */}
+                {/* SVG overlay for connector lines and dots */}
                 <svg
                   className="absolute pointer-events-none"
                   style={{
                     top: 0,
-                    left: '-200px',
-                    width: 'calc(100% + 200px)',
+                    left: '-220px',
+                    width: 'calc(100% + 220px)',
                     height: '100%',
                     overflow: 'visible'
                   }}
                 >
                   {/* Line 1: Top-left finder pattern → Box 1 */}
-                  {/* Dot position: center of top-left finder pattern */}
-                  <circle cx="248" cy="198" r="4" fill="rgba(255,255,255,0.6)" />
-                  {/* L-shaped line: horizontal left, then vertical up to box */}
+                  {/* Dot on finder pattern (top-left corner of QR) */}
+                  <circle cx="268" cy="172" r="5" fill="rgba(255,255,255,0.7)" />
                   <path
-                    d="M 248 198 L 180 198 L 180 175"
+                    d="M 268 172 L 200 172 L 200 145"
                     fill="none"
-                    stroke="rgba(255,255,255,0.4)"
+                    stroke="rgba(255,255,255,0.5)"
                     strokeWidth="1.5"
                     strokeDasharray="4 3"
+                    strokeLinecap="round"
                   />
 
                   {/* Line 2: Center of QR → Box 2 */}
-                  {/* Dot position: exact center of QR code */}
-                  <circle cx="318" cy="268" r="4" fill="rgba(255,255,255,0.6)" />
-                  {/* L-shaped line: horizontal left to box */}
+                  {/* Dot at center of QR code */}
+                  <circle cx="330" cy="235" r="5" fill="rgba(255,255,255,0.7)" />
                   <path
-                    d="M 318 268 L 180 268 L 180 228"
+                    d="M 330 235 L 200 235 L 200 192"
                     fill="none"
-                    stroke="rgba(255,255,255,0.4)"
+                    stroke="rgba(255,255,255,0.5)"
                     strokeWidth="1.5"
                     strokeDasharray="4 3"
+                    strokeLinecap="round"
                   />
 
-                  {/* Line 3: Bottom-left module → Box 3 */}
-                  {/* Dot position: small module in bottom-left area */}
-                  <circle cx="265" cy="318" r="4" fill="rgba(255,255,255,0.6)" />
-                  {/* L-shaped line: horizontal left, then vertical down to box */}
+                  {/* Line 3: Bottom-left module area → Box 3 */}
+                  {/* Dot on modules in lower-left quadrant */}
+                  <circle cx="285" cy="285" r="5" fill="rgba(255,255,255,0.7)" />
                   <path
-                    d="M 265 318 L 180 318 L 180 282"
+                    d="M 285 285 L 200 285 L 200 240"
                     fill="none"
-                    stroke="rgba(255,255,255,0.4)"
+                    stroke="rgba(255,255,255,0.5)"
                     strokeWidth="1.5"
                     strokeDasharray="4 3"
+                    strokeLinecap="round"
                   />
                 </svg>
               </div>
