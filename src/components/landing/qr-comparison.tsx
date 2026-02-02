@@ -152,32 +152,65 @@ export function QRComparison() {
             </h3>
 
             <div className="relative">
-              {/* Annotation lines - hidden on mobile */}
+              {/* Annotation lines with elbow connectors - hidden on mobile */}
               <div className="hidden lg:block">
-                {/* Line 1 - dot on top-left corner square (position marker) */}
-                <div className="absolute top-[175px] left-[47px] z-10 flex items-center">
-                  <div className="w-3 h-3 rounded-full bg-black border-2 border-black shadow-lg" />
-                  <div className="w-16 h-[2px] bg-black/60" />
-                  <div className="absolute right-full mr-[72px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                    Zwykłe kwadraty
+                {/* Line 1 - top-left corner "eye" → "Zawsze taki sam wzór" */}
+                <div className="absolute top-[178px] left-[48px] z-10">
+                  {/* Dot on element */}
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
+                  {/* Elbow connector: horizontal then vertical */}
+                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="100" height="60" style={{ overflow: 'visible' }}>
+                    <path
+                      d="M 0 0 L -40 0 L -40 -35"
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 2"
+                    />
+                  </svg>
+                  {/* Label box */}
+                  <div className="absolute -top-[52px] -left-[155px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                    Zawsze taki sam wzór
                   </div>
                 </div>
 
-                {/* Line 2 - dot on smaller data modules (between corners) */}
-                <div className="absolute top-[220px] left-[70px] z-10 flex items-center">
-                  <div className="w-3 h-3 rounded-full bg-black border-2 border-black shadow-lg" />
-                  <div className="w-20 h-[2px] bg-black/60" />
-                  <div className="absolute right-full mr-[88px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                    Brak wyróżnienia
+                {/* Line 2 - center → "Brak miejsca na logo" */}
+                <div className="absolute top-[268px] left-[118px] z-10">
+                  {/* Dot on element */}
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
+                  {/* Elbow connector: horizontal then vertical */}
+                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="120" height="60" style={{ overflow: 'visible' }}>
+                    <path
+                      d="M 0 0 L -70 0 L -70 0"
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 2"
+                    />
+                  </svg>
+                  {/* Label box */}
+                  <div className="absolute top-1/2 -translate-y-1/2 -left-[180px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                    Brak miejsca na logo
                   </div>
                 </div>
 
-                {/* Line 3 - dot on center */}
-                <div className="absolute top-[270px] left-[118px] z-10 flex items-center">
-                  <div className="w-3 h-3 rounded-full bg-black border-2 border-black shadow-lg" />
-                  <div className="w-28 h-[2px] bg-black/60" />
-                  <div className="absolute right-full mr-[120px] px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-sm text-white whitespace-nowrap">
-                    Puste miejsce
+                {/* Line 3 - bottom module → "Kwadratowe, nudne moduły" */}
+                <div className="absolute top-[320px] left-[65px] z-10">
+                  {/* Dot on element */}
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] border border-[#64748b]" />
+                  {/* Elbow connector: horizontal then vertical */}
+                  <svg className="absolute top-1/2 right-full -translate-y-1/2" width="100" height="60" style={{ overflow: 'visible' }}>
+                    <path
+                      d="M 0 0 L -30 0 L -30 35"
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 2"
+                    />
+                  </svg>
+                  {/* Label box */}
+                  <div className="absolute top-[48px] -left-[175px] px-2.5 py-1.5 bg-white/10 backdrop-blur-sm rounded border border-white/20 text-xs text-white/90 whitespace-nowrap">
+                    Kwadratowe, nudne moduły
                   </div>
                 </div>
               </div>
