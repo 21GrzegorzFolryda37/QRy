@@ -54,86 +54,67 @@ export function FAQ() {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-          {/* Left side - Header & Image */}
-          <div className="lg:sticky lg:top-24">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--secondary-muted)] border border-[var(--secondary)]/30 mb-6">
-              <span className="w-2 h-2 rounded-full bg-[var(--secondary)] animate-pulse" />
-              <span className="text-sm font-medium text-[var(--secondary)]">FAQ</span>
-            </div>
-
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-6">
-              <span className="text-[var(--foreground)]">Często zadawane </span>
-              <span className="gradient-text">pytania</span>
-            </h2>
-
-            <p className="text-lg text-[var(--foreground-muted)] leading-relaxed mb-8">
-              Znajdź odpowiedzi na najczęściej zadawane pytania dotyczące naszego generatora kodów QR.
-            </p>
-
-            {/* Decorative gradient element */}
-            <div className="hidden lg:block relative">
-              <div className="relative h-80 rounded-2xl bg-gradient-to-br from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)] p-[2px] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)] animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
-                <div className="relative h-full w-full rounded-2xl bg-white/95 backdrop-blur flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg">
-                      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">Masz pytania?</h3>
-                    <p className="text-[var(--foreground-muted)]">Znajdziesz tu odpowiedzi na najczęstsze pytania</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--secondary-muted)] border border-[var(--secondary)]/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[var(--secondary)] animate-pulse" />
+            <span className="text-sm font-medium text-[var(--secondary)]">FAQ</span>
           </div>
 
-          {/* Right side - FAQ Items */}
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div
-                key={index}
-                className={`rounded-2xl overflow-hidden transition-all duration-300 ${
-                  openIndex === index
-                    ? 'bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/30 shadow-md'
-                    : 'bg-white border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border-hover)]'
-                }`}
-              >
-                <button
-                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="flex w-full items-center justify-between px-6 py-5 text-left"
-                >
-                  <span className={`text-base font-semibold transition-colors ${
-                    openIndex === index ? 'text-[var(--foreground)]' : 'text-[var(--foreground-muted)]'
-                  }`}>
-                    {faq.question}
-                  </span>
-                  <span className={`ml-6 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                    openIndex === index
-                      ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white rotate-180'
-                      : 'bg-[var(--background-elevated)] text-[var(--foreground-muted)]'
-                  }`}>
-                    <ChevronIcon className="h-4 w-4" />
-                  </span>
-                </button>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-6">
+            <span className="text-[var(--foreground)]">Często zadawane </span>
+            <span className="gradient-text">pytania</span>
+          </h2>
 
-                <div
-                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    openIndex === index
-                      ? 'max-h-96 opacity-100'
-                      : 'max-h-0 opacity-0'
-                  }`}
-                >
+          <p className="text-lg text-[var(--foreground-muted)] leading-relaxed">
+            Znajdź odpowiedzi na najczęściej zadawane pytania dotyczące naszego generatora kodów QR.
+          </p>
+        </div>
+
+        {/* FAQ Items */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className={`rounded-2xl transition-colors duration-300 ${
+                openIndex === index
+                  ? 'bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/30 shadow-md'
+                  : 'bg-white border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border-hover)]'
+              }`}
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="flex w-full items-center justify-between px-6 py-5 text-left"
+              >
+                <span className={`text-base font-semibold transition-colors ${
+                  openIndex === index ? 'text-[var(--foreground)]' : 'text-[var(--foreground-muted)]'
+                }`}>
+                  {faq.question}
+                </span>
+                <span className={`ml-6 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                  openIndex === index
+                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white rotate-180'
+                    : 'bg-[var(--background-elevated)] text-[var(--foreground-muted)]'
+                }`}>
+                  <ChevronIcon className="h-4 w-4" />
+                </span>
+              </button>
+
+              <div
+                className="grid transition-all duration-300 ease-in-out"
+                style={{
+                  gridTemplateRows: openIndex === index ? '1fr' : '0fr',
+                }}
+              >
+                <div className="overflow-hidden">
                   <p className="px-6 pb-5 text-[var(--foreground-muted)] leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
