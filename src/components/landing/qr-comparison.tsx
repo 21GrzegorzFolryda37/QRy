@@ -166,12 +166,6 @@ export function QRComparison() {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                     </div>
                   </div>
-
-                  {/* Reaction */}
-                  <div className="mt-5 flex items-center gap-2">
-                    <span className="text-xl">😐</span>
-                    <span className="text-xs text-gray-400">Kolejny nudny kod...</span>
-                  </div>
                 </div>
 
                 {/* Bottom padding for home indicator */}
@@ -226,12 +220,6 @@ export function QRComparison() {
                         <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
                       </div>
                     </div>
-                  </div>
-
-                  {/* Reaction */}
-                  <div className="mt-5 flex items-center gap-2">
-                    <span className="text-xl">🤩</span>
-                    <span className="text-xs text-[#6d28d9] font-medium">Wow, muszę to zeskanować!</span>
                   </div>
                 </div>
 
