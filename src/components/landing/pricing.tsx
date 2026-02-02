@@ -155,7 +155,7 @@ export function Pricing() {
           {tiers.map((tier, index) => (
             <div
               key={tier.id}
-              className={`relative p-8 rounded-2xl transition-all duration-500 ${
+              className={`relative p-8 rounded-2xl transition-all duration-500 flex flex-col ${
                 visibleCards.includes(index)
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-8'
@@ -191,7 +191,7 @@ export function Pricing() {
               </div>
 
               {/* Features */}
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 flex-1">
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
                     <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
@@ -206,7 +206,7 @@ export function Pricing() {
 
               {/* CTA */}
               <Button
-                className={`w-full ${tier.featured ? 'shadow-lg shadow-[#6d28d9]/30' : ''}`}
+                className={`w-full mt-8 ${tier.featured ? 'shadow-lg shadow-[#6d28d9]/30' : ''}`}
                 variant={tier.featured ? 'gradient' : 'outline'}
                 size="lg"
                 onClick={() => handlePlanClick(tier.id)}
