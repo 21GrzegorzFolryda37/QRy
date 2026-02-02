@@ -653,8 +653,8 @@ export function Hero() {
                 onClick={() => { setSelectedType(type.id); setFormData({}) }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedType === type.id
-                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-md'
-                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--primary)]/50 hover:text-[var(--foreground)] shadow-sm'
+                    ? 'bg-[#6d28d9] text-white shadow-md'
+                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 hover:text-[var(--foreground)] shadow-sm'
                 }`}
               >
                 <TypeIcon type={type.icon} className="w-4 h-4" />
@@ -673,7 +673,7 @@ export function Hero() {
                 {/* Section 1: Content */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white text-sm font-bold shadow-lg shadow-[var(--primary)]/25">1</span>
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
                     <div>
                       <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">
                         {typeContent[selectedType].title}
@@ -692,7 +692,7 @@ export function Hero() {
                 {/* Section 2: Customization */}
                 <div className="pt-6 border-t border-[var(--border)]">
                   <div className="flex items-center gap-3 mb-5">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--primary)] text-white text-sm font-bold shadow-lg shadow-[var(--secondary)]/25">2</span>
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
                     <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Zaprojektuj kod QR <span className="text-[var(--foreground-muted)] font-normal text-sm">(opcjonalnie)</span></h2>
                   </div>
 
@@ -704,7 +704,7 @@ export function Hero() {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex-1 px-3 py-2 text-xs font-medium transition-all rounded-lg whitespace-nowrap ${
                           activeTab === tab.id
-                            ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-md'
+                            ? 'bg-[#6d28d9] text-white shadow-md'
                             : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--background-surface)]'
                         }`}
                       >
