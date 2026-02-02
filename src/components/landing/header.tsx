@@ -42,7 +42,7 @@ export function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
         scrolled
-          ? 'bg-[var(--background)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-lg shadow-black/20'
+          ? 'bg-white/90 backdrop-blur-xl border-b border-[var(--border)] shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -137,13 +137,13 @@ export function Header() {
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/30 backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
 
         {/* Menu panel */}
         <div
-          className={`absolute inset-y-0 right-0 w-full max-w-sm bg-[var(--background-surface)] border-l border-[var(--border)] shadow-2xl transition-transform duration-300 ${
+          className={`absolute inset-y-0 right-0 w-full max-w-sm bg-white border-l border-[var(--border)] shadow-2xl transition-transform duration-300 ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -186,7 +186,7 @@ export function Header() {
             ))}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--border)] bg-[var(--background-surface)]">
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--border)] bg-white">
             {isLoggedIn ? (
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="gradient" className="w-full">

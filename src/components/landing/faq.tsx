@@ -44,16 +44,16 @@ export function FAQ() {
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[var(--background)]" />
+      <div className="absolute inset-0 bg-white" />
 
-      {/* Mesh gradient */}
-      <div className="absolute inset-0 opacity-50">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
+      {/* Subtle gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
       </div>
 
       {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -95,8 +95,8 @@ export function FAQ() {
                 key={index}
                 className={`rounded-2xl overflow-hidden transition-all duration-300 ${
                   openIndex === index
-                    ? 'bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/30 shadow-lg shadow-[var(--primary)]/10'
-                    : 'bg-[var(--background-surface)] border border-[var(--border)] hover:border-[var(--border-hover)]'
+                    ? 'bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/30 shadow-md'
+                    : 'bg-white border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border-hover)]'
                 }`}
               >
                 <button

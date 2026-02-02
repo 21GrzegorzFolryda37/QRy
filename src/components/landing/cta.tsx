@@ -7,19 +7,18 @@ export function CTA() {
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[var(--background)]" />
+      <div className="absolute inset-0 bg-[var(--background-surface)]" />
 
-      {/* Mesh gradient */}
+      {/* Subtle gradient */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--accent)] rounded-full mix-blend-screen filter blur-[200px] opacity-10" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.05]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.05]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative mx-auto max-w-3xl">
           {/* Glowing card */}
-          <div className="relative p-12 sm:p-16 rounded-3xl bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] border border-[var(--border)] overflow-hidden">
+          <div className="relative p-12 sm:p-16 rounded-3xl bg-white border border-[var(--border)] shadow-xl overflow-hidden">
             {/* Animated gradient border */}
             <div className="absolute inset-0 rounded-3xl p-[1px] overflow-hidden">
               <div className="absolute inset-[-100%] animate-spin-slow bg-[conic-gradient(from_0deg,transparent,var(--primary),transparent_30%)]" />

@@ -39,7 +39,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-[var(--background)] border-t border-[var(--border)]">
+    <footer className="relative bg-white border-t border-[var(--border)]">
       {/* Gradient accent line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-50" />
 

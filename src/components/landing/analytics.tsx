@@ -74,15 +74,14 @@ export function Analytics() {
       {/* Background */}
       <div className="absolute inset-0 bg-[var(--background-surface)]" />
 
-      {/* Mesh gradient */}
-      <div className="absolute inset-0 opacity-50">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-15" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[var(--accent)] rounded-full mix-blend-screen filter blur-[150px] opacity-10" />
+      {/* Subtle gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.04]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.04]" />
       </div>
 
       {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -109,7 +108,7 @@ export function Analytics() {
             {analyticsFeatures.map((feature, index) => (
               <div
                 key={feature.name}
-                className={`group relative flex flex-col p-6 rounded-2xl bg-[var(--background-surface)] border border-[var(--border)] transition-all duration-500 hover:border-[var(--${feature.color})]/50 hover:shadow-lg hover:shadow-[var(--${feature.color})]/10 ${
+                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-[var(--border)] shadow-sm transition-all duration-500 hover:border-[var(--${feature.color})]/50 hover:shadow-lg ${
                   visibleCards.includes(index)
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-8'
@@ -148,7 +147,7 @@ export function Analytics() {
           ].map((stat, index) => (
             <div
               key={stat.label}
-              className={`text-center p-6 rounded-xl bg-[var(--background-elevated)] border border-[var(--border)] transition-all duration-500 ${
+              className={`text-center p-6 rounded-xl bg-white border border-[var(--border)] shadow-sm transition-all duration-500 ${
                 visibleCards.includes(0)
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-4'

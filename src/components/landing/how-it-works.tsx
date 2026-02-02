@@ -60,8 +60,8 @@ export function HowItWorks() {
       <div className="absolute inset-0 bg-[var(--background-surface)]" />
 
       {/* Decorative elements */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[200px] opacity-10" />
+      <div className="absolute inset-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[var(--primary)] rounded-full filter blur-[200px] opacity-[0.03]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -116,7 +116,7 @@ export function HowItWorks() {
 
                   {/* Icon box */}
                   <div className={`relative w-24 h-24 rounded-2xl bg-gradient-to-br ${step.gradient} p-[2px]`}>
-                    <div className="w-full h-full rounded-2xl bg-[var(--background-surface)] flex items-center justify-center">
+                    <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
                       <step.icon className="w-10 h-10 text-[var(--foreground)]" />
                     </div>
                   </div>
@@ -141,7 +141,7 @@ export function HowItWorks() {
                 {index < steps.length - 1 && (
                   <div className="lg:hidden mt-8">
                     <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${steps[index + 1].gradient} p-[1px]`}>
-                      <div className="w-full h-full rounded-full bg-[var(--background-surface)] flex items-center justify-center text-[var(--foreground-muted)]">
+                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[var(--foreground-muted)]">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                         </svg>

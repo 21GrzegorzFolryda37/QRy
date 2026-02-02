@@ -71,16 +71,16 @@ export function Features() {
       className="relative py-24 sm:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-[var(--background)]" />
+      <div className="absolute inset-0 bg-white" />
 
-      {/* Mesh gradient overlay */}
-      <div className="absolute inset-0 opacity-50">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[var(--primary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full mix-blend-screen filter blur-[150px] opacity-20" />
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
       </div>
 
       {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
+      <div className="absolute inset-0 grid-pattern opacity-40" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -106,7 +106,7 @@ export function Features() {
           {features.map((feature, index) => (
             <div
               key={feature.name}
-              className={`group relative p-8 rounded-2xl bg-[var(--background-surface)] border border-[var(--border)] transition-all duration-500 ${
+              className={`group relative p-8 rounded-2xl bg-white border border-[var(--border)] shadow-sm hover:shadow-lg transition-all duration-500 ${
                 visibleCards.includes(index)
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-8'
@@ -115,11 +115,11 @@ export function Features() {
                 transitionDelay: `${index * 100}ms`,
               }}
             >
-              {/* Glow effect on hover */}
+              {/* Subtle shadow on hover */}
               <div
                 className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
                 style={{
-                  boxShadow: `0 0 60px ${feature.glow}`,
+                  boxShadow: `0 8px 30px ${feature.glow}`,
                 }}
               />
 

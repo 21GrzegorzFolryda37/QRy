@@ -506,7 +506,7 @@ export function Hero() {
   ]
 
   const renderForm = () => {
-    const inputClass = "w-full px-4 py-3 rounded-xl bg-[var(--background-elevated)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all"
+    const inputClass = "w-full px-4 py-3 rounded-xl bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
 
     switch (selectedType) {
       case 'website':
@@ -625,11 +625,11 @@ export function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-[var(--background)]">
-      {/* Mesh gradient background */}
-      <div className="absolute inset-0 gradient-mesh opacity-70" />
+    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 gradient-mesh" />
 
-      {/* Animated gradient orbs */}
+      {/* Subtle gradient orbs */}
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute rounded-full animate-blob"
@@ -640,7 +640,7 @@ export function Hero() {
             height: '700px',
             background: 'var(--primary)',
             filter: 'blur(150px)',
-            opacity: 0.15,
+            opacity: 0.06,
           }}
         />
         <div
@@ -652,7 +652,7 @@ export function Hero() {
             height: '600px',
             background: 'var(--secondary)',
             filter: 'blur(150px)',
-            opacity: 0.12,
+            opacity: 0.05,
           }}
         />
         <div
@@ -664,13 +664,13 @@ export function Hero() {
             height: '700px',
             background: 'var(--accent)',
             filter: 'blur(150px)',
-            opacity: 0.1,
+            opacity: 0.04,
           }}
         />
       </div>
 
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -700,8 +700,8 @@ export function Hero() {
                 onClick={() => { setSelectedType(type.id); setFormData({}) }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedType === type.id
-                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-lg shadow-[var(--primary)]/25'
-                    : 'bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--primary)]/50 hover:text-[var(--foreground)]'
+                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white shadow-md'
+                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--primary)]/50 hover:text-[var(--foreground)] shadow-sm'
                 }`}
               >
                 <TypeIcon type={type.icon} className="w-4 h-4" />
@@ -713,7 +713,7 @@ export function Hero() {
 
         {/* Generator Card */}
         <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
-          <div className="glass-card rounded-3xl overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Column */}
               <div className="lg:col-span-8 p-6 lg:p-8 space-y-6">
@@ -744,7 +744,7 @@ export function Hero() {
                   </div>
 
                   {/* Tabs */}
-                  <div className="flex gap-1 p-1 bg-[var(--background-elevated)] rounded-xl mb-5 overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-1 p-1 bg-[var(--background-surface)] rounded-xl mb-5 overflow-x-auto scrollbar-hide border border-[var(--border)]">
                     {tabs.map((tab) => (
                       <button
                         key={tab.id}
