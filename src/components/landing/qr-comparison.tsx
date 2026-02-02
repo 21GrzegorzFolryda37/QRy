@@ -210,27 +210,30 @@ export function QRComparison() {
             </PhoneMockup>
 
             {/* Annotation labels - outside phone, left side */}
-            <div className="hidden lg:flex flex-col gap-6 absolute right-[calc(100%+60px)] top-1/2 -translate-y-1/2">
-              <div className="flex items-center gap-4">
+            <div className="hidden lg:block absolute right-[calc(100%+80px)] top-0 bottom-0">
+              {/* Box 1 - top */}
+              <div className="absolute top-[60px] right-0 flex items-center gap-4">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Identyczny wzór</p>
                   <p className="text-[11px] text-gray-500 mt-1">Każdy kod wygląda tak samo</p>
                 </div>
-                <div className="w-6 h-[2px] bg-[#6d28d9]" />
+                <div className="w-8 h-[2px] bg-[#6d28d9]" />
               </div>
-              <div className="flex items-center gap-4">
+              {/* Box 2 - middle */}
+              <div className="absolute top-1/2 -translate-y-1/2 right-0 flex items-center gap-4">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Brak miejsca na logo</p>
                   <p className="text-[11px] text-gray-500 mt-1">Nie wyróżnisz swojej marki</p>
                 </div>
-                <div className="w-6 h-[2px] bg-[#6d28d9]" />
+                <div className="w-8 h-[2px] bg-[#6d28d9]" />
               </div>
-              <div className="flex items-center gap-4">
+              {/* Box 3 - bottom */}
+              <div className="absolute bottom-[60px] right-0 flex items-center gap-4">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Kwadratowe moduły</p>
                   <p className="text-[11px] text-gray-500 mt-1">Nudny, techniczny wygląd</p>
                 </div>
-                <div className="w-6 h-[2px] bg-[#6d28d9]" />
+                <div className="w-8 h-[2px] bg-[#6d28d9]" />
               </div>
             </div>
           </div>
