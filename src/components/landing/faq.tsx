@@ -65,25 +65,21 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`rounded-2xl transition-all duration-300 ${
-                openIndex === index
-                  ? 'bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg'
-                  : 'bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/15 hover:border-white/20'
-              }`}
+              className="rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="flex w-full items-center justify-between px-6 py-5 text-left"
               >
                 <span className={`text-base font-semibold transition-colors ${
-                  openIndex === index ? 'text-white' : 'text-violet-200'
+                  openIndex === index ? 'text-[#6d28d9]' : 'text-gray-700'
                 }`}>
                   {faq.question}
                 </span>
                 <span className={`ml-6 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                   openIndex === index
                     ? 'bg-[#6d28d9] text-white rotate-180'
-                    : 'bg-white/10 text-violet-300'
+                    : 'bg-gray-100 text-gray-500'
                 }`}>
                   <ChevronIcon className="h-4 w-4" />
                 </span>
@@ -96,7 +92,7 @@ export function FAQ() {
                 }}
               >
                 <div className="overflow-hidden">
-                  <p className="px-6 pb-5 text-violet-200/80 leading-relaxed">
+                  <p className="px-6 pb-5 text-gray-600 leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>
