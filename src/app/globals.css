@@ -513,10 +513,10 @@ body {
 .animated-gradient-bg {
   background: linear-gradient(
     -45deg,
-    rgba(124, 58, 237, 0.5),
-    rgba(8, 145, 178, 0.5),
-    rgba(219, 39, 119, 0.5),
-    rgba(124, 58, 237, 0.5)
+    rgba(124, 58, 237, 0.1),
+    rgba(8, 145, 178, 0.1),
+    rgba(219, 39, 119, 0.1),
+    rgba(124, 58, 237, 0.1)
   );
   background-size: 400% 400%;
   animation: gradient-move 15s ease infinite;
