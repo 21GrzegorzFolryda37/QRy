@@ -235,6 +235,7 @@ export function QRComparison() {
                 <div className="h-8" />
               </div>
             </PhoneMockup>
+              </div>
             </div>
           </div>
 
