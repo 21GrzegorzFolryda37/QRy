@@ -1,8 +1,19 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
+
+const comparisonFeatures = [
+  { feature: 'Pierwsze wrażenie', boring: 'Ignorowany', qrapple: 'Przyciąga wzrok' },
+  { feature: 'Skanowalność', boring: 'Standardowa', qrapple: 'Wysoka (korekcja błędów)' },
+  { feature: 'Branding', boring: 'Brak', qrapple: 'Logo + kolory marki' },
+  { feature: 'Konwersja', boring: 'Niska', qrapple: 'Nawet +80%' },
+  { feature: 'Profesjonalizm', boring: 'Amatorski', qrapple: 'Premium' },
+  { feature: 'Zapamiętywalność', boring: 'Żadna', qrapple: 'Buduje rozpoznawalność' },
+]
 
 export function QRComparison() {
   const [visible, setVisible] = useState(false)
@@ -20,7 +31,7 @@ export function QRComparison() {
           }
         })
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     )
 
     if (sectionRef.current) {
@@ -30,7 +41,6 @@ export function QRComparison() {
     return () => observer.disconnect()
   }, [])
 
-  // Generate QR codes using qr-code-styling
   useEffect(() => {
     if (!visible) return
 
@@ -41,23 +51,23 @@ export function QRComparison() {
       if (basicQrRef.current) {
         basicQrRef.current.innerHTML = ''
         const basicQR = new QRCodeStyling({
-          width: 200,
-          height: 200,
+          width: 180,
+          height: 180,
           data: QR_URL,
           dotsOptions: {
-            color: '#000000',
+            color: '#374151',
             type: 'square',
           },
           cornersSquareOptions: {
             type: 'square',
-            color: '#000000',
+            color: '#374151',
           },
           cornersDotOptions: {
             type: 'square',
-            color: '#000000',
+            color: '#374151',
           },
           backgroundOptions: {
-            color: '#ffffff',
+            color: '#f3f4f6',
           },
         })
         basicQR.append(basicQrRef.current)
@@ -67,9 +77,10 @@ export function QRComparison() {
       if (customQrRef.current) {
         customQrRef.current.innerHTML = ''
         const customQR = new QRCodeStyling({
-          width: 200,
-          height: 200,
+          width: 180,
+          height: 180,
           data: QR_URL,
+          image: '/logo.webp',
           dotsOptions: {
             type: 'rounded',
             gradient: {
@@ -106,6 +117,11 @@ export function QRComparison() {
           backgroundOptions: {
             color: '#ffffff',
           },
+          imageOptions: {
+            crossOrigin: 'anonymous',
+            margin: 4,
+            imageSize: 0.4,
+          },
         })
         customQR.append(customQrRef.current)
       }
@@ -115,75 +131,179 @@ export function QRComparison() {
   }, [visible])
 
   return (
-    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden bg-white">
-
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden bg-[var(--background-surface)]">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-6">
+        <div className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="text-sm font-medium text-[var(--primary)]">Porównanie</span>
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-4">
             <span className="text-[var(--foreground)]">Który kod QR </span>
-            <span className="gradient-text">wygląda lepiej?</span>
+            <span className="gradient-text">skanujesz?</span>
           </h2>
-          <p className="text-lg text-[var(--foreground-muted)] leading-relaxed max-w-2xl mx-auto">
-            Porównaj standardowy kod QR z naszym spersonalizowanym rozwiązaniem
+          <p className="text-lg text-[var(--foreground-muted)] max-w-2xl mx-auto">
+            Pierwsze wrażenie ma znaczenie. Zobacz różnicę między zwykłym kodem a profesjonalnym rozwiązaniem.
           </p>
         </div>
 
-        {/* Comparison */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-          {/* Basic QR */}
-          <a
-            href={QR_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`group relative p-8 rounded-3xl bg-white border-2 border-[var(--border)] shadow-lg transition-all duration-700 hover:shadow-xl hover:border-gray-300 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+        {/* Visual Comparison */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-4 items-center mb-16">
+          {/* Boring QR */}
+          <div
+            className={`relative p-8 rounded-3xl bg-white border border-[var(--border)] transition-all duration-700 ${
+              visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
-            <div className="text-center">
-              <div ref={basicQrRef} className="w-[200px] h-[200px] mx-auto mb-6 flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-              </div>
-              <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-2">
-                Standardowy kod QR
-              </h3>
-              <p className="text-[var(--foreground-muted)]">
-                Prosty, czarno-biały, bez charakteru
-              </p>
-            </div>
-          </a>
-
-          {/* Custom QR */}
-          <a
-            href={QR_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`group relative p-8 rounded-3xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border-2 border-[var(--primary)]/30 shadow-lg transition-all duration-700 hover:shadow-2xl hover:shadow-[var(--primary)]/20 hover:-translate-y-1 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-            style={{ transitionDelay: '150ms' }}
-          >
-            {/* Recommended badge */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white text-xs font-semibold shadow-lg">
-                Polecany
-              </span>
+            {/* NUDNY stamp */}
+            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider">
+              Nudny
             </div>
 
             <div className="text-center">
-              <div ref={customQrRef} className="w-[200px] h-[200px] mx-auto mb-6 flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
-              </div>
-              <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-2">
-                Spersonalizowany kod QR
+              <h3 className="text-xl font-semibold text-[var(--foreground-muted)] font-display mb-6">
+                Zwykły QR
               </h3>
-              <p className="text-[var(--foreground-muted)]">
-                Wyróżnia się, buduje markę, przyciąga uwagę
-              </p>
+
+              {/* QR Code - dimmed */}
+              <div className="relative inline-block mb-6 opacity-60 grayscale-[30%]">
+                <div ref={basicQrRef} className="w-[180px] h-[180px] mx-auto flex items-center justify-center">
+                  <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                </div>
+              </div>
+
+              {/* Cons list */}
+              <ul className="space-y-3 text-left max-w-[220px] mx-auto">
+                {['Ignorowany przez użytkowników', 'Brak rozpoznawalności marki', 'Wygląda amatorsko', 'Niska konwersja'].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-[var(--foreground-muted)]">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xs">✗</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </a>
+          </div>
+
+          {/* VS Element */}
+          <div
+            className={`flex items-center justify-center transition-all duration-700 delay-200 ${
+              visible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+            }`}
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-full blur-xl opacity-50 animate-pulse" />
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">VS</span>
+              </div>
+            </div>
+          </div>
+
+          {/* QRapple QR */}
+          <div
+            className={`relative p-8 rounded-3xl bg-gradient-to-br from-white to-[var(--primary-muted)]/30 border-2 border-[var(--primary)]/20 shadow-xl transition-all duration-700 delay-150 ${
+              visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
+            }`}
+          >
+            {/* QRAPPLE stamp */}
+            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white text-xs font-bold uppercase tracking-wider shadow-md">
+              QRapple
+            </div>
+
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-6">
+                Kod QRapple
+              </h3>
+
+              {/* QR Code - highlighted with effects */}
+              <div className="relative inline-block mb-6">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-2xl opacity-30 animate-pulse" />
+
+                {/* Scanline effect */}
+                <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
+                  <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[var(--primary)]/50 to-transparent animate-scanline" />
+                </div>
+
+                {/* QR with levitation */}
+                <div className="relative animate-float">
+                  <div ref={customQrRef} className="w-[180px] h-[180px] mx-auto flex items-center justify-center">
+                    <div className="w-10 h-10 border-4 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pros list */}
+              <ul className="space-y-3 text-left max-w-[220px] mx-auto">
+                {['Przyciąga uwagę klientów', 'Buduje rozpoznawalność marki', 'Profesjonalny wizerunek', 'Wyższa konwersja +80%'].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-[var(--foreground)]">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison Table */}
+        <div
+          className={`rounded-2xl overflow-hidden border border-[var(--border)] bg-white shadow-lg mb-12 transition-all duration-700 delay-300 ${
+            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <div className="grid grid-cols-3 text-center font-semibold">
+            <div className="p-4 bg-[var(--background-surface)] text-[var(--foreground-muted)]">Cecha</div>
+            <div className="p-4 bg-red-50 text-red-700">Zwykły QR</div>
+            <div className="p-4 bg-green-50 text-green-700">QRapple</div>
+          </div>
+          {comparisonFeatures.map((row, i) => (
+            <div key={i} className="grid grid-cols-3 text-center border-t border-[var(--border)]">
+              <div className="p-4 text-[var(--foreground)] font-medium bg-[var(--background-surface)]/50">{row.feature}</div>
+              <div className="p-4 text-red-600/80 bg-red-50/30">{row.boring}</div>
+              <div className="p-4 text-green-700 bg-green-50/30 font-medium">{row.qrapple}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Punchline + CTA */}
+        <div
+          className={`text-center transition-all duration-700 delay-500 ${
+            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--primary)]/20 mb-8">
+            <span className="text-3xl">📈</span>
+            <p className="text-lg font-medium text-[var(--foreground)]">
+              Brandowane kody QR są skanowane nawet <span className="text-[var(--primary)] font-bold">o 80% częściej</span>
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register">
+              <Button variant="gradient" size="lg" className="shadow-lg shadow-[var(--primary)]/25">
+                Stwórz swój kod QRapple
+              </Button>
+            </Link>
+            <Link href="/features">
+              <Button variant="outline" size="lg">
+                Zobacz wszystkie funkcje
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
+
+      {/* Scanline animation */}
+      <style jsx>{`
+        @keyframes scanline {
+          0% { top: -10%; }
+          100% { top: 110%; }
+        }
+        .animate-scanline {
+          animation: scanline 2s ease-in-out infinite;
+        }
+      `}</style>
     </section>
   )
 }
