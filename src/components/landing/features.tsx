@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { WaveDivider } from './wave-divider'
 
 const features = [
   {
@@ -73,14 +74,36 @@ export function Features() {
       {/* Background */}
       <div className="absolute inset-0 bg-white" />
 
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
+      {/* Mesh gradient */}
+      <div className="absolute inset-0 mesh-gradient-linear" />
+
+      {/* Diagonal lines pattern */}
+      <div className="absolute inset-0 pattern-lines-diagonal" />
+
+      {/* Static blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="blob blob-primary blob-static"
+          style={{
+            top: '10%',
+            left: '-5%',
+            width: '400px',
+            height: '400px',
+          }}
+        />
+        <div
+          className="blob blob-secondary blob-static"
+          style={{
+            bottom: '5%',
+            right: '-8%',
+            width: '350px',
+            height: '350px',
+          }}
+        />
       </div>
 
-      {/* Grid pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-40" />
+      {/* Wave divider bottom */}
+      <WaveDivider variant="wave1" position="bottom" fillColor="#f8fafc" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}

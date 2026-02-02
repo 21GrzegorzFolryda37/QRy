@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { WaveDivider } from './wave-divider'
 
 const steps = [
   {
@@ -59,10 +60,29 @@ export function HowItWorks() {
       {/* Background */}
       <div className="absolute inset-0 bg-[var(--background-surface)]" />
 
-      {/* Decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[var(--primary)] rounded-full filter blur-[200px] opacity-[0.03]" />
+      {/* Mesh gradient */}
+      <div className="absolute inset-0 mesh-gradient-secondary" />
+
+      {/* Hexagon pattern */}
+      <div className="absolute inset-0 pattern-hexagon" />
+
+      {/* Central blob */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="blob blob-secondary blob-static"
+          style={{
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '600px',
+            height: '600px',
+          }}
+        />
       </div>
+
+      {/* Wave dividers */}
+      <WaveDivider variant="wave2" position="top" fillColor="#ffffff" />
+      <WaveDivider variant="wave1" position="bottom" fillColor="#ffffff" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}

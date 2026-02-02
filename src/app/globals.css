@@ -504,3 +504,190 @@ body {
     animation: none;
   }
 }
+
+/* ========================================
+   MESH GRADIENTS (Linear/Stripe Style)
+   ======================================== */
+
+.mesh-gradient-primary {
+  background:
+    radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.20) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(8, 145, 178, 0.15) 0px, transparent 50%),
+    radial-gradient(at 40% 80%, rgba(219, 39, 119, 0.12) 0px, transparent 50%);
+}
+
+.mesh-gradient-secondary {
+  background:
+    radial-gradient(at 100% 0%, rgba(8, 145, 178, 0.22) 0px, transparent 50%),
+    radial-gradient(at 20% 40%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+    radial-gradient(at 60% 100%, rgba(219, 39, 119, 0.10) 0px, transparent 50%);
+}
+
+.mesh-gradient-accent {
+  background:
+    radial-gradient(at 50% 0%, rgba(219, 39, 119, 0.18) 0px, transparent 50%),
+    radial-gradient(at 0% 60%, rgba(124, 58, 237, 0.14) 0px, transparent 50%),
+    radial-gradient(at 100% 80%, rgba(8, 145, 178, 0.12) 0px, transparent 50%);
+}
+
+.mesh-gradient-linear {
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(8, 145, 178, 0.12) 0%, transparent 50%),
+    linear-gradient(315deg, rgba(219, 39, 119, 0.08) 0%, transparent 50%);
+}
+
+/* ========================================
+   GEOMETRIC PATTERNS
+   ======================================== */
+
+.pattern-dots {
+  background-image: radial-gradient(rgba(124, 58, 237, 0.20) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.pattern-dots-dual {
+  background-image:
+    radial-gradient(rgba(124, 58, 237, 0.18) 1.5px, transparent 1.5px),
+    radial-gradient(rgba(8, 145, 178, 0.18) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+.pattern-lines-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(124, 58, 237, 0.08) 10px,
+    rgba(124, 58, 237, 0.08) 11px
+  );
+}
+
+.pattern-crosshatch {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(124, 58, 237, 0.06) 10px,
+      rgba(124, 58, 237, 0.06) 11px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(8, 145, 178, 0.06) 10px,
+      rgba(8, 145, 178, 0.06) 11px
+    );
+}
+
+.pattern-hexagon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%237c3aed' fill-opacity='0.12'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.pattern-squares {
+  background-image:
+    linear-gradient(rgba(124, 58, 237, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ========================================
+   ANIMATED BLOBS
+   ======================================== */
+
+@keyframes blob-morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: rotate(0deg);
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  50% {
+    border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
+    transform: rotate(180deg);
+  }
+  75% {
+    border-radius: 60% 40% 60% 30% / 60% 30% 70% 40%;
+  }
+}
+
+@keyframes blob-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.05);
+  }
+  50% {
+    transform: translate(-5px, 10px) scale(0.95);
+  }
+  75% {
+    transform: translate(-15px, -5px) scale(1.02);
+  }
+}
+
+.blob {
+  position: absolute;
+  filter: blur(60px);
+  opacity: 0.20;
+  pointer-events: none;
+  animation: blob-morph 15s ease-in-out infinite, blob-float 20s ease-in-out infinite;
+  will-change: transform, border-radius;
+}
+
+.blob-primary {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(124, 58, 237, 0.4));
+}
+
+.blob-secondary {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.8), rgba(8, 145, 178, 0.4));
+}
+
+.blob-accent {
+  background: linear-gradient(135deg, rgba(219, 39, 119, 0.8), rgba(219, 39, 119, 0.4));
+}
+
+.blob-static {
+  animation: none;
+}
+
+.blob-delay-1 {
+  animation-delay: -5s;
+}
+
+.blob-delay-2 {
+  animation-delay: -10s;
+}
+
+.blob-delay-3 {
+  animation-delay: -15s;
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+  }
+
+  .animate-float,
+  .animate-pulse-soft,
+  .animate-bounce-soft,
+  .animate-spin-slow,
+  .animate-gradient-shift,
+  .animate-shimmer {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .blob {
+    animation: blob-morph 20s ease-in-out infinite;
+    filter: blur(40px);
+  }
+}
