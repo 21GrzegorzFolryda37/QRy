@@ -192,15 +192,6 @@ export function QRComparison() {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                     </div>
 
-                    {/* Annotation dots - positioned on QR elements */}
-                    <div className="hidden lg:block">
-                      {/* Dot 1: Top-left finder pattern */}
-                      <div className="absolute top-[24px] left-[24px] w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
-                      {/* Dot 2: Center of QR */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
-                      {/* Dot 3: Bottom-left module area */}
-                      <div className="absolute bottom-[35px] left-[35px] w-3 h-3 bg-[#6d28d9] rounded-full border-2 border-white shadow-lg z-10" />
-                    </div>
                   </div>
                 </div>
 
@@ -209,66 +200,6 @@ export function QRComparison() {
               </div>
             </PhoneMockup>
 
-            {/* SVG connector lines - from boxes to dots */}
-            <svg
-              className="hidden lg:block absolute pointer-events-none"
-              style={{
-                top: 0,
-                left: '-320px',
-                width: '340px',
-                height: '100%',
-              }}
-            >
-              {/* Line 1: Box 1 → Dot 1 (top-left finder) */}
-              <path
-                d="M 20 45 L 300 45 L 300 175 L 335 175"
-                fill="none"
-                stroke="#6d28d9"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              {/* Line 2: Box 2 → Dot 2 (center) */}
-              <path
-                d="M 20 240 L 335 240"
-                fill="none"
-                stroke="#6d28d9"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              {/* Line 3: Box 3 → Dot 3 (bottom-left modules) */}
-              <path
-                d="M 20 435 L 300 435 L 300 295 L 335 295"
-                fill="none"
-                stroke="#6d28d9"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-
-            {/* Annotation labels - outside phone, left side */}
-            <div className="hidden lg:block absolute right-[calc(100%+120px)] top-0 bottom-0">
-              {/* Box 1 - top */}
-              <div className="absolute top-[30px] right-0 flex items-center">
-                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
-                  <p className="text-[13px] font-semibold text-gray-900">Identyczny wzór</p>
-                  <p className="text-[11px] text-gray-500 mt-1">Każdy kod wygląda tak samo</p>
-                </div>
-              </div>
-              {/* Box 2 - middle */}
-              <div className="absolute top-1/2 -translate-y-1/2 right-0 flex items-center">
-                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
-                  <p className="text-[13px] font-semibold text-gray-900">Brak miejsca na logo</p>
-                  <p className="text-[11px] text-gray-500 mt-1">Nie wyróżnisz swojej marki</p>
-                </div>
-              </div>
-              {/* Box 3 - bottom */}
-              <div className="absolute bottom-[30px] right-0 flex items-center">
-                <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
-                  <p className="text-[13px] font-semibold text-gray-900">Kwadratowe moduły</p>
-                  <p className="text-[11px] text-gray-500 mt-1">Nudny, techniczny wygląd</p>
-                </div>
-              </div>
-            </div>
           </div>
           </div>
 
