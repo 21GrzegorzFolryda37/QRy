@@ -626,8 +626,8 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
-      {/* Circuit board pattern */}
-      <div className="absolute inset-0 circuit-board" />
+      {/* Noise texture with violet tint */}
+      <div className="absolute inset-0 noise-texture" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
