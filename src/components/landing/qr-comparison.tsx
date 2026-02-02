@@ -151,45 +151,8 @@ export function QRComparison() {
               Zwykły QR
             </h3>
 
-            <div className="relative flex items-start">
-              {/* Annotation boxes - left side, hidden on mobile */}
-              <div className="hidden lg:flex flex-col gap-4 mr-8 pt-[120px]">
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
-                  Zawsze taki sam wzór
-                </div>
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
-                  Brak miejsca na logo
-                </div>
-                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
-                  Kwadratowe, nudne moduły
-                </div>
-              </div>
-
-              <div className="relative">
-                {/* SVG connector lines - hidden on mobile */}
-                <svg
-                  className="hidden lg:block absolute pointer-events-none z-10"
-                  style={{
-                    top: 0,
-                    left: '-180px',
-                    width: '200px',
-                    height: '400px',
-                  }}
-                >
-                  {/* Line 1: to top-left finder */}
-                  <circle cx="178" cy="158" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path d="M 178 158 L 100 158 L 100 135" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
-
-                  {/* Line 2: to center */}
-                  <circle cx="178" cy="220" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path d="M 178 220 L 100 220 L 100 180" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
-
-                  {/* Line 3: to bottom modules */}
-                  <circle cx="178" cy="275" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path d="M 178 275 L 100 275 L 100 228" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
-                </svg>
-
-                <PhoneMockup className="w-[260px]">
+            <div className="relative">
+              <PhoneMockup className="w-[260px]">
               <div className="w-full h-full bg-gray-50 flex flex-col">
                 {/* Status bar - iPhone style */}
                 <div className="relative h-14 flex items-end justify-between px-6 pb-1">
@@ -223,10 +186,20 @@ export function QRComparison() {
                 <div className="flex-1 flex flex-col items-center justify-center px-6">
                   <p className="text-xs text-[#6d28d9] mb-4 font-medium">Zeskanuj kod QR</p>
 
-                  {/* QR container */}
-                  <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                  {/* QR container with annotation dots */}
+                  <div className="relative p-3 bg-white rounded-xl shadow-sm border border-gray-100">
                     <div ref={basicQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                    </div>
+
+                    {/* Annotation dots - positioned on QR elements */}
+                    <div className="hidden lg:block">
+                      {/* Dot 1: Top-left finder pattern */}
+                      <div className="absolute top-[24px] left-[24px] w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
+                      {/* Dot 2: Center of QR */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
+                      {/* Dot 3: Bottom-left module area */}
+                      <div className="absolute bottom-[35px] left-[35px] w-3 h-3 bg-white rounded-full border-2 border-white shadow-lg z-10" />
                     </div>
                   </div>
                 </div>
@@ -235,8 +208,29 @@ export function QRComparison() {
                 <div className="h-8" />
               </div>
             </PhoneMockup>
+
+            {/* Annotation labels - outside phone, left side */}
+            <div className="hidden lg:flex flex-col gap-3 absolute right-[calc(100%+20px)] top-1/2 -translate-y-1/2">
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
+                  Zawsze taki sam wzór
+                </div>
+                <div className="w-8 h-[1px] bg-white/40" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
+                  Brak miejsca na logo
+                </div>
+                <div className="w-8 h-[1px] bg-white/40" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[12px] text-white whitespace-nowrap">
+                  Kwadratowe, nudne moduły
+                </div>
+                <div className="w-8 h-[1px] bg-white/40" />
               </div>
             </div>
+          </div>
           </div>
 
           {/* VS Element */}
