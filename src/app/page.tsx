@@ -1,4 +1,4 @@
-import { Hero, Features, Analytics, Pricing, FAQ, HowItWorks, QRComparison } from '@/components/landing'
+import { Hero, Analytics, Pricing, FAQ, HowItWorks, QRComparison } from '@/components/landing'
 import { Header, Footer } from '@/components/landing'
 
 export default function Home() {
@@ -6,12 +6,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <main className="flex-1">
-        {/* Hero z generatorem kodów QR */}
         <Hero />
-        {/* Reszta strony */}
         <HowItWorks />
         <QRComparison />
-        <Features />
         <Pricing />
         <Analytics />
         <FAQ />
