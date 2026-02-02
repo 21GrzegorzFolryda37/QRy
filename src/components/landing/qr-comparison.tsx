@@ -210,7 +210,7 @@ export function QRComparison() {
             </PhoneMockup>
 
             {/* Annotation labels - outside phone, left side */}
-            <div className="hidden lg:flex flex-col gap-4 absolute right-[calc(100%+40px)] top-1/2 -translate-y-1/2">
+            <div className="hidden lg:flex flex-col gap-6 absolute right-[calc(100%+60px)] top-1/2 -translate-y-1/2">
               <div className="flex items-center gap-4">
                 <div className="px-4 py-3 bg-white rounded-xl shadow-lg max-w-[180px]">
                   <p className="text-[13px] font-semibold text-gray-900">Identyczny wzór</p>
