@@ -626,42 +626,51 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
-      {/* Mesh gradient background */}
-      <div className="absolute inset-0 mesh-gradient-primary" />
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 gradient-mesh" />
 
-      {/* Dots pattern overlay */}
-      <div className="absolute inset-0 pattern-dots" />
-
-      {/* Animated blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Subtle gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden">
         <div
-          className="blob blob-primary"
+          className="absolute rounded-full animate-blob"
           style={{
-            top: '-10%',
-            left: '-5%',
-            width: '500px',
-            height: '500px',
+            top: '-15%',
+            left: '-10%',
+            width: '700px',
+            height: '700px',
+            background: 'var(--primary)',
+            filter: 'blur(150px)',
+            opacity: 0.06,
           }}
         />
         <div
-          className="blob blob-secondary blob-delay-1"
+          className="absolute rounded-full animate-blob animation-delay-2000"
           style={{
-            top: '15%',
-            right: '-8%',
-            width: '450px',
-            height: '450px',
+            top: '10%',
+            right: '-10%',
+            width: '600px',
+            height: '600px',
+            background: 'var(--secondary)',
+            filter: 'blur(150px)',
+            opacity: 0.05,
           }}
         />
         <div
-          className="blob blob-accent blob-delay-2"
+          className="absolute rounded-full animate-blob animation-delay-3000"
           style={{
-            bottom: '-5%',
-            left: '25%',
-            width: '400px',
-            height: '400px',
+            bottom: '-10%',
+            left: '20%',
+            width: '700px',
+            height: '700px',
+            background: 'var(--accent)',
+            filter: 'blur(150px)',
+            opacity: 0.04,
           }}
         />
       </div>
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}

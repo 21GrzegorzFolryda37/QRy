@@ -81,41 +81,10 @@ export function Pricing() {
       {/* Background */}
       <div className="absolute inset-0 bg-white" />
 
-      {/* Mesh gradient */}
-      <div className="absolute inset-0 mesh-gradient-accent" />
-
-      {/* Dots dual pattern */}
-      <div className="absolute inset-0 pattern-dots-dual" />
-
-      {/* Static orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="blob blob-primary blob-static"
-          style={{
-            top: '5%',
-            left: '-5%',
-            width: '350px',
-            height: '350px',
-          }}
-        />
-        <div
-          className="blob blob-accent blob-static"
-          style={{
-            top: '40%',
-            right: '-8%',
-            width: '400px',
-            height: '400px',
-          }}
-        />
-        <div
-          className="blob blob-secondary blob-static"
-          style={{
-            bottom: '-5%',
-            left: '30%',
-            width: '300px',
-            height: '300px',
-          }}
-        />
+      {/* Subtle gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
+        <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

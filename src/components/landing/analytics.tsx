@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { WaveDivider } from './wave-divider'
 
 const analyticsFeatures = [
   {
@@ -75,36 +74,14 @@ export function Analytics() {
       {/* Background */}
       <div className="absolute inset-0 bg-[var(--background-surface)]" />
 
-      {/* Mesh gradient */}
-      <div className="absolute inset-0 mesh-gradient-secondary" />
-
-      {/* Squares pattern */}
-      <div className="absolute inset-0 pattern-squares" />
-
-      {/* Animated blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="blob blob-secondary"
-          style={{
-            top: '10%',
-            right: '-5%',
-            width: '450px',
-            height: '450px',
-          }}
-        />
-        <div
-          className="blob blob-primary blob-delay-2"
-          style={{
-            bottom: '5%',
-            left: '-8%',
-            width: '400px',
-            height: '400px',
-          }}
-        />
+      {/* Subtle gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.04]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.04]" />
       </div>
 
-      {/* Wave divider top */}
-      <WaveDivider variant="wave3" position="top" fillColor="#ffffff" />
+      {/* Grid pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}

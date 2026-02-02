@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { WaveDivider } from './wave-divider'
 
 const faqs = [
   {
@@ -47,36 +46,14 @@ export function FAQ() {
       {/* Background */}
       <div className="absolute inset-0 bg-white" />
 
-      {/* Mesh gradient */}
-      <div className="absolute inset-0 mesh-gradient-primary" />
-
-      {/* Crosshatch pattern */}
-      <div className="absolute inset-0 pattern-crosshatch" />
-
-      {/* Static blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="blob blob-primary blob-static"
-          style={{
-            top: '15%',
-            right: '-5%',
-            width: '350px',
-            height: '350px',
-          }}
-        />
-        <div
-          className="blob blob-secondary blob-static"
-          style={{
-            bottom: '10%',
-            left: '-8%',
-            width: '400px',
-            height: '400px',
-          }}
-        />
+      {/* Subtle gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[var(--secondary)] rounded-full filter blur-[150px] opacity-[0.03]" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[var(--primary)] rounded-full filter blur-[150px] opacity-[0.03]" />
       </div>
 
-      {/* Wave divider top */}
-      <WaveDivider variant="wave2" position="top" fillColor="#f8fafc" />
+      {/* Grid pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
