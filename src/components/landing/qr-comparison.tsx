@@ -151,75 +151,45 @@ export function QRComparison() {
               Zwykły QR
             </h3>
 
-            <div className="relative">
-              {/* Annotation system - hidden on mobile */}
-              <div className="hidden lg:block">
-                {/* Label boxes - positioned to the left of phone */}
-                <div className="absolute right-[calc(100%+60px)] top-[130px] flex flex-col gap-6">
-                  {/* Box 1: Points to top-left finder pattern */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
-                    Zawsze taki sam wzór
-                  </div>
-                  {/* Box 2: Points to center (no logo space) */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
-                    Brak miejsca na logo
-                  </div>
-                  {/* Box 3: Points to square modules */}
-                  <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap shadow-lg">
-                    Kwadratowe, nudne moduły
-                  </div>
+            <div className="relative flex items-start">
+              {/* Annotation boxes - left side, hidden on mobile */}
+              <div className="hidden lg:flex flex-col gap-4 mr-8 pt-[120px]">
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
+                  Zawsze taki sam wzór
                 </div>
-
-                {/* SVG overlay for connector lines and dots */}
-                <svg
-                  className="absolute pointer-events-none"
-                  style={{
-                    top: 0,
-                    left: '-220px',
-                    width: 'calc(100% + 220px)',
-                    height: '100%',
-                    overflow: 'visible'
-                  }}
-                >
-                  {/* Line 1: Top-left finder pattern → Box 1 */}
-                  {/* Dot on finder pattern (top-left corner of QR) */}
-                  <circle cx="268" cy="172" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path
-                    d="M 268 172 L 200 172 L 200 145"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.5)"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 3"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Line 2: Center of QR → Box 2 */}
-                  {/* Dot at center of QR code */}
-                  <circle cx="330" cy="235" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path
-                    d="M 330 235 L 200 235 L 200 192"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.5)"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 3"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Line 3: Bottom-left module area → Box 3 */}
-                  {/* Dot on modules in lower-left quadrant */}
-                  <circle cx="285" cy="285" r="5" fill="rgba(255,255,255,0.7)" />
-                  <path
-                    d="M 285 285 L 200 285 L 200 240"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.5)"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 3"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
+                  Brak miejsca na logo
+                </div>
+                <div className="px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[13px] text-white whitespace-nowrap">
+                  Kwadratowe, nudne moduły
+                </div>
               </div>
 
-              <PhoneMockup className="w-[260px]">
+              <div className="relative">
+                {/* SVG connector lines - hidden on mobile */}
+                <svg
+                  className="hidden lg:block absolute pointer-events-none z-10"
+                  style={{
+                    top: 0,
+                    left: '-180px',
+                    width: '200px',
+                    height: '400px',
+                  }}
+                >
+                  {/* Line 1: to top-left finder */}
+                  <circle cx="178" cy="158" r="5" fill="rgba(255,255,255,0.7)" />
+                  <path d="M 178 158 L 100 158 L 100 135" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
+
+                  {/* Line 2: to center */}
+                  <circle cx="178" cy="220" r="5" fill="rgba(255,255,255,0.7)" />
+                  <path d="M 178 220 L 100 220 L 100 180" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
+
+                  {/* Line 3: to bottom modules */}
+                  <circle cx="178" cy="275" r="5" fill="rgba(255,255,255,0.7)" />
+                  <path d="M 178 275 L 100 275 L 100 228" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
+                </svg>
+
+                <PhoneMockup className="w-[260px]">
               <div className="w-full h-full bg-gray-50 flex flex-col">
                 {/* Status bar - iPhone style */}
                 <div className="relative h-14 flex items-end justify-between px-6 pb-1">
