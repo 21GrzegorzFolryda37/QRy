@@ -92,7 +92,7 @@ export function Pricing() {
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
             <span className="text-[var(--foreground)]">Wybierz odpowiedni </span>
-            <span className="gradient-text">plan dla siebie</span>
+            <span className="text-[#6d28d9]">plan dla siebie</span>
           </h2>
 
           <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
