@@ -206,7 +206,7 @@ export function QRComparison() {
             }`}
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-20 animate-pulse" />
+              <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-20" />
               <div className="relative w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
                 <span className="text-white font-bold text-xl lg:text-2xl">VS</span>
               </div>
