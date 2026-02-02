@@ -193,17 +193,6 @@ export function QRComparison() {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                     </div>
 
-                    {/* Annotation dots on QR elements */}
-                    {/* QR container: 140px QR + 12px padding each side = 164px total */}
-                    {/* Finder pattern: ~7 modules, center at ~17px from QR edge */}
-                    <div className="hidden lg:block">
-                      {/* Dot 1: Center of top-left finder pattern (12px padding + 17px) */}
-                      <div className="absolute top-[29px] left-[29px] w-2.5 h-2.5 bg-slate-400 rounded-full shadow-sm" />
-                      {/* Dot 2: Exact center of QR code */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-400 rounded-full shadow-sm" />
-                      {/* Dot 3: Small module in bottom-left area (12px padding + ~95px down, +25px right) */}
-                      <div className="absolute top-[107px] left-[37px] w-2.5 h-2.5 bg-slate-400 rounded-full shadow-sm" />
-                    </div>
                   </div>
                 </div>
 
@@ -212,59 +201,6 @@ export function QRComparison() {
               </div>
             </PhoneMockup>
 
-            {/* SVG connector lines (elbow connectors) */}
-            {/* SVG coordinate system: phone left edge = 200, phone top = 0 */}
-            <svg
-              className="hidden lg:block absolute pointer-events-none"
-              style={{ top: 0, left: '-200px', width: '350px', height: '100%' }}
-            >
-              {/* Line 1: finder (x=277, y=209) → box top (y=50) */}
-              <path
-                d="M 277 209 L 220 209 L 220 50 L 30 50"
-                stroke="#94a3b8"
-                strokeWidth="1.5"
-                strokeDasharray="4 2"
-                fill="none"
-              />
-              {/* Line 2: center (x=330, y=262) → box middle (y=262) */}
-              <path
-                d="M 330 262 L 30 262"
-                stroke="#94a3b8"
-                strokeWidth="1.5"
-                strokeDasharray="4 2"
-                fill="none"
-              />
-              {/* Line 3: module (x=285, y=287) → box bottom (y=450) */}
-              <path
-                d="M 285 287 L 220 287 L 220 450 L 30 450"
-                stroke="#94a3b8"
-                strokeWidth="1.5"
-                strokeDasharray="4 2"
-                fill="none"
-              />
-            </svg>
-
-            {/* Annotation boxes - left side */}
-            <div className="hidden lg:block absolute right-[calc(100%+30px)] top-0 bottom-0">
-              {/* Box 1 - aligned with SVG y=50 */}
-              <div className="absolute top-[40px] right-0">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
-                  Zawsze taki sam wzór
-                </div>
-              </div>
-              {/* Box 2 - aligned with QR center y=262 */}
-              <div className="absolute top-[252px] right-0">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
-                  Brak miejsca na logo
-                </div>
-              </div>
-              {/* Box 3 - aligned with SVG y=450 */}
-              <div className="absolute top-[440px] right-0">
-                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
-                  Kwadratowe, nudne moduły
-                </div>
-              </div>
-            </div>
           </div>
           </div>
 
