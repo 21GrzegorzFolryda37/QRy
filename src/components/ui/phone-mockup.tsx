@@ -31,7 +31,7 @@ export function PhoneMockup({
       {/* Phone frame - white iPhone style */}
       <div
         className={cn(
-          'relative bg-[#f5f5f7] rounded-[50px] p-3 shadow-2xl border border-[#d2d2d7]',
+          'relative bg-[#f5f5f7] rounded-[44px] p-[6px] shadow-2xl border border-[#d2d2d7]',
           isHighlighted && 'ring-1 ring-violet-500/30'
         )}
         style={{
@@ -49,9 +49,9 @@ export function PhoneMockup({
         <div className="absolute -right-[2px] top-[140px] w-[2px] h-[70px] bg-[#d2d2d7] rounded-r-sm" />
 
         {/* Inner bezel */}
-        <div className="relative bg-black rounded-[42px] p-[2px]">
+        <div className="relative bg-black rounded-[38px] p-[2px]">
           {/* Screen */}
-          <div className="relative bg-white rounded-[40px] overflow-hidden" style={{ aspectRatio: '9/19.5' }}>
+          <div className="relative bg-white rounded-[36px] overflow-hidden" style={{ aspectRatio: '9/19.5' }}>
             {/* Dynamic Island */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
               <div className="w-[100px] h-[32px] bg-black rounded-full flex items-center justify-center">
@@ -72,7 +72,7 @@ export function PhoneMockup({
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[100px] h-[4px] bg-black/20 rounded-full z-20" />
 
             {/* Screen reflection overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.07] via-transparent to-transparent pointer-events-none z-10 rounded-[40px]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.07] via-transparent to-transparent pointer-events-none z-10 rounded-[36px]" />
           </div>
         </div>
       </div>
