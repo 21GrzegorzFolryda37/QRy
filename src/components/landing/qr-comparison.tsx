@@ -192,6 +192,15 @@ export function QRComparison() {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                     </div>
 
+                    {/* Annotation dots on QR elements */}
+                    <div className="hidden lg:block">
+                      {/* Dot 1: Top-left finder pattern */}
+                      <div className="absolute top-[18px] left-[18px] w-2 h-2 bg-slate-400 rounded-full" />
+                      {/* Dot 2: Center */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-slate-400 rounded-full" />
+                      {/* Dot 3: Bottom-left module */}
+                      <div className="absolute bottom-[30px] left-[30px] w-2 h-2 bg-slate-400 rounded-full" />
+                    </div>
                   </div>
                 </div>
 
@@ -200,6 +209,58 @@ export function QRComparison() {
               </div>
             </PhoneMockup>
 
+            {/* SVG connector lines (elbow connectors) */}
+            <svg
+              className="hidden lg:block absolute pointer-events-none"
+              style={{ top: 0, left: '-250px', width: '270px', height: '100%' }}
+            >
+              {/* Line 1: finder → box top */}
+              <path
+                d="M 265 170 L 200 170 L 200 50 L 20 50"
+                stroke="#94a3b8"
+                strokeWidth="1.5"
+                strokeDasharray="4 2"
+                fill="none"
+              />
+              {/* Line 2: center → box middle */}
+              <path
+                d="M 265 235 L 20 235"
+                stroke="#94a3b8"
+                strokeWidth="1.5"
+                strokeDasharray="4 2"
+                fill="none"
+              />
+              {/* Line 3: module → box bottom */}
+              <path
+                d="M 265 285 L 200 285 L 200 420 L 20 420"
+                stroke="#94a3b8"
+                strokeWidth="1.5"
+                strokeDasharray="4 2"
+                fill="none"
+              />
+            </svg>
+
+            {/* Annotation boxes - left side */}
+            <div className="hidden lg:block absolute right-[calc(100%+40px)] top-0 bottom-0">
+              {/* Box 1 - top */}
+              <div className="absolute top-[35px] right-0">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
+                  Zawsze taki sam wzór
+                </div>
+              </div>
+              {/* Box 2 - middle */}
+              <div className="absolute top-1/2 -translate-y-1/2 right-0">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
+                  Brak miejsca na logo
+                </div>
+              </div>
+              {/* Box 3 - bottom */}
+              <div className="absolute bottom-[35px] right-0">
+                <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-[11px] text-white/90 whitespace-nowrap">
+                  Kwadratowe, nudne moduły
+                </div>
+              </div>
+            </div>
           </div>
           </div>
 
