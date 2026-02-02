@@ -54,11 +54,11 @@ export function PhoneMockup({
           <div className="relative bg-white rounded-[36px] overflow-hidden" style={{ aspectRatio: '9/19.5' }}>
             {/* Dynamic Island */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
-              <div className="w-[100px] h-[32px] bg-black rounded-full flex items-center justify-center">
+              <div className="w-[90px] h-[26px] bg-black rounded-full flex items-center justify-end pr-[8px]">
                 {/* Camera lens */}
-                <div className="absolute right-4 w-[10px] h-[10px] rounded-full bg-[#1a1a2e] ring-1 ring-[#2a2a3e]">
-                  <div className="absolute inset-[2px] rounded-full bg-[#0a0a15]" />
-                  <div className="absolute top-[2px] left-[2px] w-[2px] h-[2px] rounded-full bg-[#3a3a5e]/50" />
+                <div className="relative w-[10px] h-[10px] rounded-full bg-[#1c1c1e]">
+                  <div className="absolute inset-[2px] rounded-full bg-[#0c0c0e]" />
+                  <div className="absolute top-[1px] left-[1px] w-[2px] h-[2px] rounded-full bg-[#3a3a5e]/30" />
                 </div>
               </div>
             </div>
