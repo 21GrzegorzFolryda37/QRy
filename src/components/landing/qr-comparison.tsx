@@ -156,11 +156,6 @@ export function QRComparison() {
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
-            {/* NUDNY stamp */}
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider">
-              Nudny
-            </div>
-
             <div className="text-center">
               <h3 className="text-xl font-semibold text-[var(--foreground-muted)] font-display mb-6">
                 Zwykły QR
@@ -205,11 +200,6 @@ export function QRComparison() {
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
           >
-            {/* QRAPPLE stamp */}
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white text-xs font-bold uppercase tracking-wider shadow-md">
-              QRapple
-            </div>
-
             <div className="text-center">
               <h3 className="text-xl font-semibold text-[var(--foreground)] font-display mb-6">
                 Kod QRapple
@@ -225,8 +215,8 @@ export function QRComparison() {
                   <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[var(--primary)]/50 to-transparent animate-scanline" />
                 </div>
 
-                {/* QR with levitation */}
-                <div className="relative animate-float">
+                {/* QR code */}
+                <div className="relative">
                   <div ref={customQrRef} className="w-[180px] h-[180px] mx-auto flex items-center justify-center">
                     <div className="w-10 h-10 border-4 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
                   </div>
