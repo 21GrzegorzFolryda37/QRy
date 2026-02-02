@@ -635,13 +635,6 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/30 mb-6 animate-fade-in-up">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary)] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--primary)]" />
-            </span>
-            <span className="text-sm font-medium text-[var(--primary)]">Darmowy generator online</span>
-          </div>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up animate-delay-100">
             <span className="text-[var(--foreground)]">Generator Kodów </span>
             <span className="gradient-text">QR</span>

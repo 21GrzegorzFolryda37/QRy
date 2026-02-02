@@ -135,10 +135,6 @@ export function QRComparison() {
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/30 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
-            <span className="text-sm font-medium text-[var(--primary)]">Porównanie</span>
-          </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-4">
             <span className="text-[var(--foreground)]">Który kod QR </span>
             <span className="gradient-text">skanujesz?</span>

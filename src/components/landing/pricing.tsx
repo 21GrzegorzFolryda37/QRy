@@ -90,11 +90,6 @@ export function Pricing() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent-muted)] border border-[var(--accent)]/30 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span className="text-sm font-medium text-[var(--accent)]">Przejrzyste ceny</span>
-          </div>
-
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
             <span className="text-[var(--foreground)]">Wybierz odpowiedni </span>
             <span className="gradient-text">plan dla siebie</span>

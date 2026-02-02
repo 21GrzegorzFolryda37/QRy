@@ -57,11 +57,6 @@ export function FAQ() {
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--secondary-muted)] border border-[var(--secondary)]/30 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[var(--secondary)] animate-pulse" />
-            <span className="text-sm font-medium text-[var(--secondary)]">FAQ</span>
-          </div>
-
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-6">
             <span className="text-[var(--foreground)]">Często zadawane </span>
             <span className="gradient-text">pytania</span>
