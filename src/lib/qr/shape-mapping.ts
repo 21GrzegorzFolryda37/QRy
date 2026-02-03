@@ -1,30 +1,35 @@
 /**
- * Shape mapping for preview vs final generation
+ * Shape mapping for qr-code-styling library
  *
- * Preview uses qr-code-styling (limited shapes)
- * Final generation uses @qr-platform/qr-code.js (full shapes)
+ * qr-code-styling supports only a subset of shapes (6 dots, 3 corner squares, 2 corner dots)
+ * Extended shapes are rendered using the custom canvas renderer (custom-renderer.ts)
+ *
+ * This file provides fallback mappings for qr-code-styling when it's used
+ * (e.g., for native shapes that don't need custom rendering)
  */
 
 import { DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 
-// Types available in qr-code-styling (preview)
+// Types available in qr-code-styling
 type PreviewDotsType = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type PreviewCornersSquareType = 'dot' | 'square' | 'extra-rounded'
 type PreviewCornersDotType = 'dot' | 'square'
 
 /**
- * Map extended DotsType to qr-code-styling compatible type for preview
+ * Map extended DotsType to qr-code-styling compatible type
+ * Used when rendering with qr-code-styling for native shapes
  */
 export function mapDotsTypeForPreview(type: DotsType): PreviewDotsType {
   const mapping: Record<DotsType, PreviewDotsType> = {
-    // Direct mappings (available in both)
+    // Direct mappings (available in qr-code-styling)
     'square': 'square',
     'dots': 'dots',
     'rounded': 'rounded',
     'extra-rounded': 'extra-rounded',
     'classy': 'classy',
     'classy-rounded': 'classy-rounded',
-    // Extended types -> closest preview equivalent
+    // Extended types -> fallback for qr-code-styling
+    // (custom renderer handles these natively)
     'diamond': 'square',
     'star': 'dots',
     'vertical-line': 'square',
@@ -37,15 +42,17 @@ export function mapDotsTypeForPreview(type: DotsType): PreviewDotsType {
 }
 
 /**
- * Map extended CornersSquareType to qr-code-styling compatible type for preview
+ * Map extended CornersSquareType to qr-code-styling compatible type
+ * Used when rendering with qr-code-styling for native shapes
  */
 export function mapCornersSquareTypeForPreview(type: CornersSquareType): PreviewCornersSquareType {
   const mapping: Record<CornersSquareType, PreviewCornersSquareType> = {
-    // Direct mappings
+    // Direct mappings (available in qr-code-styling)
     'square': 'square',
     'dot': 'dot',
     'extra-rounded': 'extra-rounded',
-    // Extended types -> closest preview equivalent
+    // Extended types -> fallback for qr-code-styling
+    // (custom renderer handles these natively)
     'classy': 'square',
     'classy-rounded': 'extra-rounded',
     'dotted': 'dot',
@@ -57,14 +64,16 @@ export function mapCornersSquareTypeForPreview(type: CornersSquareType): Preview
 }
 
 /**
- * Map extended CornersDotType to qr-code-styling compatible type for preview
+ * Map extended CornersDotType to qr-code-styling compatible type
+ * Used when rendering with qr-code-styling for native shapes
  */
 export function mapCornersDotTypeForPreview(type: CornersDotType): PreviewCornersDotType {
   const mapping: Record<CornersDotType, PreviewCornersDotType> = {
-    // Direct mappings
+    // Direct mappings (available in qr-code-styling)
     'square': 'square',
     'dot': 'dot',
-    // Extended types -> closest preview equivalent
+    // Extended types -> fallback for qr-code-styling
+    // (custom renderer handles these natively)
     'heart': 'dot',
     'star': 'dot',
     'diamond': 'square',
@@ -76,22 +85,46 @@ export function mapCornersDotTypeForPreview(type: CornersDotType): PreviewCorner
   return mapping[type] || 'square'
 }
 
+// Extended shapes that require custom canvas renderer
+const EXTENDED_DOT_TYPES: DotsType[] = [
+  'diamond', 'star', 'vertical-line', 'horizontal-line', 'random-dot', 'small-square', 'tiny-square'
+]
+
+const EXTENDED_CORNER_SQUARE_TYPES: CornersSquareType[] = [
+  'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint'
+]
+
+const EXTENDED_CORNER_DOT_TYPES: CornersDotType[] = [
+  'heart', 'star', 'diamond', 'rounded', 'classy', 'outpoint', 'inpoint'
+]
+
 /**
- * Check if a shape requires server-side rendering
- * (not available in qr-code-styling)
+ * Check if a style uses extended shapes that need the custom renderer
+ * @deprecated Use requiresCustomRenderer from custom-shapes.ts instead
  */
 export function requiresServerRendering(style: {
   dotsType?: DotsType
   cornersSquareType?: CornersSquareType
   cornersDotType?: CornersDotType
 }): boolean {
-  const extendedDotsTypes: DotsType[] = ['diamond', 'star', 'vertical-line', 'horizontal-line', 'random-dot', 'small-square', 'tiny-square']
-  const extendedCornersSquareTypes: CornersSquareType[] = ['outpoint', 'inpoint', 'rounded']
-  const extendedCornersDotTypes: CornersDotType[] = ['heart', 'star', 'diamond', 'rounded', 'classy', 'outpoint', 'inpoint']
-
-  if (style.dotsType && extendedDotsTypes.includes(style.dotsType)) return true
-  if (style.cornersSquareType && extendedCornersSquareTypes.includes(style.cornersSquareType)) return true
-  if (style.cornersDotType && extendedCornersDotTypes.includes(style.cornersDotType)) return true
+  if (style.dotsType && EXTENDED_DOT_TYPES.includes(style.dotsType)) return true
+  if (style.cornersSquareType && EXTENDED_CORNER_SQUARE_TYPES.includes(style.cornersSquareType)) return true
+  if (style.cornersDotType && EXTENDED_CORNER_DOT_TYPES.includes(style.cornersDotType)) return true
 
   return false
+}
+
+/**
+ * Check if a shape type is natively supported by qr-code-styling
+ */
+export function isNativeDotsType(type: DotsType): type is PreviewDotsType {
+  return !EXTENDED_DOT_TYPES.includes(type)
+}
+
+export function isNativeCornersSquareType(type: CornersSquareType): type is PreviewCornersSquareType {
+  return !EXTENDED_CORNER_SQUARE_TYPES.includes(type)
+}
+
+export function isNativeCornersDotType(type: CornersDotType): type is PreviewCornersDotType {
+  return !EXTENDED_CORNER_DOT_TYPES.includes(type)
 }

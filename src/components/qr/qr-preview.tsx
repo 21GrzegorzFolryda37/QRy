@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useId, useMemo } from 'react'
 import type QRCodeStylingType from 'qr-code-styling'
 import { QrStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
-import { createQrCodeStylingOptions } from '@/lib/qr/options'
+import { createQrCodeStylingOptions, needsCustomRenderer } from '@/lib/qr/options'
+import { renderCustomQRCodeToDataURL } from '@/lib/qr/custom-renderer'
 import { frameShapePaths } from './frame-shapes'
 import { FrameRenderer, getFrameDimensions } from './frame-renderer'
 
@@ -19,6 +20,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
+  const [customQrDataUrl, setCustomQrDataUrl] = useState<string | null>(null)
   const clipId = useId()
 
   // Create stable style string for comparison
@@ -27,6 +29,9 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const frameShape = finalStyle.frameShape || 'square'
   const frame = finalStyle.frame
   const qrSize = 260 // Smaller QR to leave room for frames
+
+  // Check if custom renderer is needed for extended shapes
+  const useCustomRenderer = useMemo(() => needsCustomRenderer(finalStyle), [finalStyle])
 
   // Calculate total dimensions including frame
   const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
@@ -59,9 +64,52 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
     })
   }, [])
 
-  // Generate/update QR code
+  // Generate QR code using custom renderer for extended shapes
   useEffect(() => {
-    if (!QRCodeStyling || !containerRef.current) return
+    if (!useCustomRenderer) {
+      setCustomQrDataUrl(null)
+      return
+    }
+
+    const generateCustomQR = async () => {
+      try {
+        const dataUrl = await renderCustomQRCodeToDataURL({
+          data: url || 'https://example.com',
+          width: qrSize,
+          height: qrSize,
+          margin: Math.round(finalStyle.margin * (qrSize / 40)),
+          errorCorrectionLevel: finalStyle.errorCorrectionLevel,
+          foregroundColor: finalStyle.foregroundColor,
+          backgroundColor: (frameShape !== 'square' || (frame && frame.style !== 'none'))
+            ? 'transparent'
+            : finalStyle.backgroundColor,
+          dotsType: finalStyle.dotsType,
+          cornersSquareType: finalStyle.cornersSquareType,
+          cornersDotType: finalStyle.cornersDotType,
+          cornersSquareColor: finalStyle.cornersSquareColor || undefined,
+          cornersDotColor: finalStyle.cornersDotColor || undefined,
+          dotsGradient: finalStyle.dotsGradient,
+          cornersSquareGradient: finalStyle.cornersSquareGradient,
+          cornersDotGradient: finalStyle.cornersDotGradient,
+          backgroundGradient: (frameShape !== 'square' || (frame && frame.style !== 'none'))
+            ? undefined
+            : finalStyle.backgroundGradient,
+          logoUrl,
+          logoSize,
+        })
+        setCustomQrDataUrl(dataUrl)
+      } catch (error) {
+        console.error('Error generating custom QR:', error)
+        setCustomQrDataUrl(null)
+      }
+    }
+
+    generateCustomQR()
+  }, [useCustomRenderer, url, finalStyle, logoUrl, logoSize, frameShape, frame, qrSize])
+
+  // Generate/update QR code using qr-code-styling for native shapes
+  useEffect(() => {
+    if (useCustomRenderer || !QRCodeStyling || !containerRef.current) return
 
     // Use SVG for smooth preview without grid artifacts
     const options = createQrCodeStylingOptions({
@@ -79,11 +127,37 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       containerRef.current.innerHTML = ''
       qrCodeRef.current.append(containerRef.current)
     }
-  }, [QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, qrSize])
+  }, [useCustomRenderer, QRCodeStyling, url, finalStyle, logoUrl, logoSize, frameShape, qrSize])
 
   // Always use a stable structure - containerRef must stay in same DOM position
   // Use FrameRenderer always (it handles 'none' case by just returning children)
   const hasCustomShape = frameShape !== 'square'
+
+  // Render QR code content - either custom renderer image or qr-code-styling container
+  const renderQrContent = () => {
+    if (useCustomRenderer && customQrDataUrl) {
+      return (
+        <img
+          src={customQrDataUrl}
+          alt="QR Code"
+          width={qrSize}
+          height={qrSize}
+          style={{ display: 'block' }}
+        />
+      )
+    }
+    // Container for qr-code-styling (also used as loading state for custom renderer)
+    return (
+      <div
+        ref={containerRef}
+        style={{
+          width: qrSize,
+          height: qrSize,
+          backgroundColor: (frame && frame.style !== 'none') ? 'transparent' : 'white'
+        }}
+      />
+    )
+  }
 
   return (
     <div className="flex justify-center">
@@ -115,27 +189,20 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
             </svg>
 
             <div
-              ref={containerRef}
               className="absolute inset-0"
               style={{
                 clipPath: `url(#${clipId})`,
                 WebkitClipPath: `url(#${clipId})`,
                 zIndex: 2,
               }}
-            />
+            >
+              {renderQrContent()}
+            </div>
           </div>
         ) : (
-          <div
-            ref={containerRef}
-            className="rounded-lg overflow-hidden"
-            style={{
-              width: qrSize,
-              height: qrSize,
-              // Only show white background if no decorative frame
-              // Frame's decoration provides the white background
-              backgroundColor: (frame && frame.style !== 'none') ? 'transparent' : 'white'
-            }}
-          />
+          <div className="rounded-lg overflow-hidden">
+            {renderQrContent()}
+          </div>
         )}
       </FrameRenderer>
     </div>

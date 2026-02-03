@@ -6,6 +6,8 @@ import {
   mapCornersSquareTypeForPreview,
   mapCornersDotTypeForPreview,
 } from './shape-mapping'
+import { requiresCustomRenderer } from './custom-shapes'
+import { renderCustomQRCodeToDataURL, type CustomQROptions } from './custom-renderer'
 
 /**
  * Convert gradient options for qr-code-styling
@@ -498,4 +500,124 @@ export async function generateQrDataUrl(
     console.error('Error generating QR code:', error)
     return null
   }
+}
+
+/**
+ * Convert QrStyle to CustomQROptions for the custom renderer
+ */
+function styleToCustomOptions(opts: QrCodeOptions): CustomQROptions {
+  const { url, style, size, logoUrl, logoSize } = opts
+  const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
+
+  return {
+    data: url || 'https://example.com',
+    width: size,
+    height: size,
+    margin: Math.round(finalStyle.margin * (size / 40)),
+    errorCorrectionLevel: finalStyle.errorCorrectionLevel,
+    foregroundColor: finalStyle.foregroundColor,
+    backgroundColor: finalStyle.backgroundColor,
+    dotsType: finalStyle.dotsType,
+    cornersSquareType: finalStyle.cornersSquareType,
+    cornersDotType: finalStyle.cornersDotType,
+    cornersSquareColor: finalStyle.cornersSquareColor || undefined,
+    cornersDotColor: finalStyle.cornersDotColor || undefined,
+    dotsGradient: finalStyle.dotsGradient,
+    cornersSquareGradient: finalStyle.cornersSquareGradient,
+    cornersDotGradient: finalStyle.cornersDotGradient,
+    backgroundGradient: finalStyle.backgroundGradient,
+    logoUrl,
+    logoSize,
+    logoMargin: 5,
+  }
+}
+
+/**
+ * Check if the style requires the custom renderer
+ */
+export function needsCustomRenderer(style: QrStyle): boolean {
+  const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
+  return requiresCustomRenderer({
+    dotsType: finalStyle.dotsType,
+    cornersSquareType: finalStyle.cornersSquareType,
+    cornersDotType: finalStyle.cornersDotType,
+  })
+}
+
+/**
+ * Generate QR code using the custom canvas renderer
+ * Use this for extended shapes not supported by qr-code-styling
+ */
+export async function generateQrWithCustomRenderer(
+  opts: QrCodeOptions
+): Promise<string | null> {
+  try {
+    const finalStyle = { ...DEFAULT_QR_STYLE, ...opts.style }
+    const frame = finalStyle.frame
+    const customOptions = styleToCustomOptions(opts)
+
+    // Generate QR code with custom renderer
+    const qrDataUrl = await renderCustomQRCodeToDataURL(customOptions)
+
+    // If no decorative frame, return QR code directly
+    if (!frame || frame.style === 'none') {
+      return qrDataUrl
+    }
+
+    // Create canvas with frame
+    const { width, height, padding, textHeight } = getFrameDimensions(opts.size, frame)
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) return null
+
+    // Draw white background for non-minimal frames
+    if (frame.style !== 'minimal') {
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, width, height)
+    }
+
+    // Draw frame
+    drawFrameOnCanvas(ctx, frame, width, height, padding, textHeight)
+
+    // Load and draw QR code image
+    const qrImage = new Image()
+
+    return new Promise((resolve) => {
+      qrImage.onload = () => {
+        const yOffset = frame.style === 'banner' ? 10 : 0
+        ctx.drawImage(qrImage, padding, padding + yOffset, opts.size, opts.size)
+        resolve(canvas.toDataURL('image/png'))
+      }
+      qrImage.onerror = () => resolve(null)
+      qrImage.src = qrDataUrl
+    })
+  } catch (error) {
+    console.error('Error generating QR code with custom renderer:', error)
+    return null
+  }
+}
+
+/**
+ * Generate QR code using the appropriate renderer based on style
+ * Automatically chooses between qr-code-styling and custom renderer
+ */
+export async function generateQrCodeImage(
+  QRCodeStyling: typeof QRCodeStylingType | null,
+  opts: QrCodeOptions
+): Promise<string | null> {
+  // Use custom renderer for extended shapes
+  if (needsCustomRenderer(opts.style)) {
+    return generateQrWithCustomRenderer(opts)
+  }
+
+  // Use qr-code-styling for native shapes
+  if (QRCodeStyling) {
+    return generateQrDataUrl(QRCodeStyling, opts)
+  }
+
+  // Fallback to custom renderer if qr-code-styling not available
+  return generateQrWithCustomRenderer(opts)
 }
