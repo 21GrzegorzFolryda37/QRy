@@ -3,14 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { PhoneMockup, Button } from '@/components/ui'
-import { ScanLineOverlay } from './qr-animations'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
 
 export function QRComparison() {
   const [visible, setVisible] = useState(false)
-  const [qrLoaded, setQrLoaded] = useState(false)
-  const [scanComplete, setScanComplete] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const basicQrRef = useRef<HTMLDivElement>(null)
   const customQrRef = useRef<HTMLDivElement>(null)
@@ -118,11 +115,6 @@ export function QRComparison() {
           },
         })
         customQR.append(customQrRef.current)
-
-        // Trigger scan animation after QR renders
-        setTimeout(() => {
-          setQrLoaded(true)
-        }, 300)
       }
     }
 
@@ -199,12 +191,11 @@ export function QRComparison() {
                 <div className="flex-1 flex flex-col items-center justify-center px-6">
                   <p className="text-xs text-[#6d28d9] mb-4 font-medium">Zeskanuj kod QR</p>
 
-                  {/* QR container with annotation dots */}
+                  {/* QR container */}
                   <div className="relative p-3 bg-white rounded-xl shadow-sm border border-gray-100">
                     <div ref={basicQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                     </div>
-
                   </div>
                 </div>
 
@@ -242,17 +233,6 @@ export function QRComparison() {
               Kod QRapple
             </h3>
 
-            {/* Subtle glow behind phone after scan completes */}
-            <div
-              className={`absolute inset-0 -z-10 rounded-[40px] blur-2xl transition-opacity duration-1000 ${
-                scanComplete ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{
-                background: 'radial-gradient(circle at center, rgba(124, 58, 237, 0.15) 0%, transparent 70%)',
-                transitionTimingFunction: 'var(--ease-smooth)',
-              }}
-            />
-
             <PhoneMockup className="w-[260px]" variant="highlighted">
               <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">
                 {/* Status bar - iPhone style */}
@@ -289,52 +269,15 @@ export function QRComparison() {
 
                   {/* QR container with accents */}
                   <div className="relative">
-                    {/* Animated corner accents */}
-                    <div
-                      className={`absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#6d28d9] rounded-tl-lg transition-all duration-500 ${
-                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
-                      }`}
-                      style={{ transitionDelay: '0ms', transitionTimingFunction: 'var(--ease-smooth)' }}
-                    />
-                    <div
-                      className={`absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#6d28d9] rounded-tr-lg transition-all duration-500 ${
-                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
-                      }`}
-                      style={{ transitionDelay: '50ms', transitionTimingFunction: 'var(--ease-smooth)' }}
-                    />
-                    <div
-                      className={`absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#6d28d9] rounded-bl-lg transition-all duration-500 ${
-                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
-                      }`}
-                      style={{ transitionDelay: '100ms', transitionTimingFunction: 'var(--ease-smooth)' }}
-                    />
-                    <div
-                      className={`absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg transition-all duration-500 ${
-                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
-                      }`}
-                      style={{ transitionDelay: '150ms', transitionTimingFunction: 'var(--ease-smooth)' }}
-                    />
+                    {/* Corner accents */}
+                    <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#6d28d9] rounded-tl-lg" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#6d28d9] rounded-tr-lg" />
+                    <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#6d28d9] rounded-bl-lg" />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg" />
 
-                    <div
-                      className={`p-3 bg-white rounded-xl shadow-lg border transition-all duration-700 ${
-                        scanComplete
-                          ? 'shadow-[#6d28d9]/20 border-[#6d28d9]/30'
-                          : 'shadow-[#6d28d9]/10 border-[#6d28d9]/20'
-                      }`}
-                      style={{
-                        transitionTimingFunction: 'var(--ease-smooth)',
-                      }}
-                    >
-                      <div ref={customQrRef} className="relative w-[140px] h-[140px] flex items-center justify-center">
+                    <div className="p-3 bg-white rounded-xl shadow-lg shadow-[#6d28d9]/10 border border-[#6d28d9]/20">
+                      <div ref={customQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
-
-                        {/* Scan line animation overlay */}
-                        <ScanLineOverlay
-                          isActive={qrLoaded && !scanComplete}
-                          size={140}
-                          delay={200}
-                          onComplete={() => setScanComplete(true)}
-                        />
                       </div>
                     </div>
                   </div>

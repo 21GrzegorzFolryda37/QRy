@@ -156,34 +156,6 @@ body {
   50% { transform: translateY(-5px); }
 }
 
-/* QR Code Scan Line Animation */
-@keyframes qr-scan-line {
-  0% {
-    top: 0%;
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
-}
-
-/* QR Code Glow Pulse */
-@keyframes qr-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
-  }
-  50% {
-    box-shadow: 0 0 20px 4px rgba(124, 58, 237, 0.3);
-  }
-}
-
 /* Subtle slide animations for variety */
 @keyframes slide-in-left {
   from {
@@ -235,15 +207,6 @@ body {
 .animate-delay-300 { animation-delay: 300ms; }
 .animate-delay-400 { animation-delay: 400ms; }
 .animate-delay-500 { animation-delay: 500ms; }
-
-/* QR Animation Classes */
-.animate-qr-scan {
-  animation: qr-scan-line 1.5s var(--ease-out-expo) forwards;
-}
-
-.animate-qr-glow {
-  animation: qr-glow-pulse 2s var(--ease-smooth) infinite;
-}
 
 .animate-slide-left {
   animation: slide-in-left 0.5s var(--ease-smooth) forwards;
