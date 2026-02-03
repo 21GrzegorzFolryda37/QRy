@@ -1,6 +1,11 @@
 import type QRCodeStylingType from 'qr-code-styling'
 import { QrStyle, GradientOptions, FrameOptions, FrameStyle } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
+import {
+  mapDotsTypeForPreview,
+  mapCornersSquareTypeForPreview,
+  mapCornersDotTypeForPreview,
+} from './shape-mapping'
 
 /**
  * Convert gradient options for qr-code-styling
@@ -14,47 +19,6 @@ function convertGradient(gradient: GradientOptions | null | undefined) {
   }
 }
 
-/**
- * Map cornersDotType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | undefined
- * Custom shapes (heart, star, diamond) are mapped to closest match
- */
-function mapCornersDotType(type: string): 'dot' | 'square' | undefined {
-  switch (type) {
-    case 'dot':
-    case 'heart':
-    case 'star':
-    case 'diamond':
-      return 'dot' // Custom shapes render as dots
-    case 'square':
-      return 'square'
-    default:
-      return 'dot'
-  }
-}
-
-/**
- * Map cornersSquareType to valid qr-code-styling values
- * qr-code-styling only accepts: 'dot' | 'square' | 'extra-rounded' | undefined
- * Custom shapes are mapped to closest match
- */
-function mapCornersSquareType(type: string): 'dot' | 'square' | 'extra-rounded' | undefined {
-  switch (type) {
-    case 'dot':
-    case 'dotted':
-      return 'dot'
-    case 'square':
-    case 'classy':
-      return 'square'
-    case 'extra-rounded':
-    case 'rounded':
-    case 'classy-rounded':
-      return 'extra-rounded'
-    default:
-      return 'square'
-  }
-}
-
 export interface QrCodeOptions {
   url: string
   style: QrStyle
@@ -64,8 +28,8 @@ export interface QrCodeOptions {
 }
 
 /**
- * Create base qr-code-styling options (without type)
- * This is shared between preview (SVG) and generation (canvas)
+ * Create base QR code options
+ * This is shared between preview and generation
  */
 function createBaseOptions(
   opts: QrCodeOptions
@@ -75,7 +39,6 @@ function createBaseOptions(
   const frameShape = finalStyle.frameShape || 'square'
 
   const options: ConstructorParameters<typeof QRCodeStylingType>[0] = {
-    type: 'canvas', // Default, will be overridden
     width: size,
     height: size,
     data: url || 'https://example.com',
@@ -86,19 +49,19 @@ function createBaseOptions(
     },
 
     dotsOptions: {
-      type: finalStyle.dotsType,
+      type: mapDotsTypeForPreview(finalStyle.dotsType),
       color: finalStyle.foregroundColor,
       gradient: convertGradient(finalStyle.dotsGradient),
     },
 
     cornersSquareOptions: {
-      type: mapCornersSquareType(finalStyle.cornersSquareType),
+      type: mapCornersSquareTypeForPreview(finalStyle.cornersSquareType),
       color: finalStyle.cornersSquareColor || finalStyle.foregroundColor,
       gradient: convertGradient(finalStyle.cornersSquareGradient),
     },
 
     cornersDotOptions: {
-      type: mapCornersDotType(finalStyle.cornersDotType),
+      type: mapCornersDotTypeForPreview(finalStyle.cornersDotType),
       color: finalStyle.cornersDotColor || finalStyle.foregroundColor,
       gradient: convertGradient(finalStyle.cornersDotGradient),
     },
@@ -121,7 +84,6 @@ function createBaseOptions(
     const effectiveLogoSize = logoSize || Math.round(size * 0.2)
     options.image = logoUrl
     options.imageOptions = {
-      hideBackgroundDots: true,
       imageSize: effectiveLogoSize / size,
       margin: 5,
       ...(isDataUrl ? {} : { crossOrigin: 'anonymous' }),
@@ -132,27 +94,21 @@ function createBaseOptions(
 }
 
 /**
- * Create qr-code-styling options for preview (SVG for smooth display)
+ * Create QR code options for preview (SVG for smooth display)
  */
 export function createQrCodeStylingOptions(
   opts: QrCodeOptions
 ): ConstructorParameters<typeof QRCodeStylingType>[0] {
-  return {
-    ...createBaseOptions(opts),
-    type: 'svg',
-  }
+  return createBaseOptions(opts)
 }
 
 /**
- * Create qr-code-styling options for export (canvas for proper PNG)
+ * Create QR code options for export
  */
 export function createQrCodeExportOptions(
   opts: QrCodeOptions
 ): ConstructorParameters<typeof QRCodeStylingType>[0] {
-  return {
-    ...createBaseOptions(opts),
-    type: 'canvas',
-  }
+  return createBaseOptions(opts)
 }
 
 // Frame dimensions
@@ -467,7 +423,7 @@ function adjustColor(color: string, amount: number): string {
 }
 
 /**
- * Generate QR code as data URL (uses canvas for proper PNG export)
+ * Generate QR code as data URL
  * Includes decorative frame if set in style
  */
 export async function generateQrDataUrl(
@@ -481,17 +437,30 @@ export async function generateQrDataUrl(
     // Generate QR code
     const options = createQrCodeExportOptions(opts)
     const qrCode = new QRCodeStyling(options)
-    const qrBlob = await qrCode.getRawData('png')
+    const rawData = await qrCode.getRawData('png')
 
-    if (!qrBlob) return null
+    if (!rawData) return null
+
+    // Convert Blob/Buffer to data URL
+    const qrDataUrl = await new Promise<string>((resolve, reject) => {
+      // Handle both Blob and Buffer types
+      let blob: Blob
+      if (rawData instanceof Blob) {
+        blob = rawData
+      } else {
+        // For Buffer/ArrayBuffer, create a new Uint8Array and then Blob
+        const uint8Array = new Uint8Array(rawData)
+        blob = new Blob([uint8Array], { type: 'image/png' })
+      }
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
 
     // If no decorative frame, return QR code directly
     if (!frame || frame.style === 'none') {
-      return new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.readAsDataURL(qrBlob as Blob)
-      })
+      return qrDataUrl
     }
 
     // Create canvas with frame
@@ -514,11 +483,6 @@ export async function generateQrDataUrl(
 
     // Load and draw QR code image
     const qrImage = new Image()
-    const qrDataUrl = await new Promise<string>((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result as string)
-      reader.readAsDataURL(qrBlob as Blob)
-    })
 
     return new Promise((resolve) => {
       qrImage.onload = () => {

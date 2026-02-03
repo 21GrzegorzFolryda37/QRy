@@ -1,15 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type QRCodeStylingType from 'qr-code-styling'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType, LinkPageData, SurveyData } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
 import { getRedirectUrl, getLinkPageUrl, getSurveyUrl } from '@/lib/utils'
-import { generateQrDataUrl } from '@/lib/qr/options'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
@@ -64,7 +62,6 @@ export function QrForm({ qrCode }: QrFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
 
   const [name, setName] = useState(qrCode?.name || '')
   const [destinationUrl, setDestinationUrl] = useState(qrCode?.destination_url || '')
@@ -101,20 +98,8 @@ export function QrForm({ qrCode }: QrFormProps) {
 
   const isEditing = !!qrCode
 
-  // Load qr-code-styling library
-  useEffect(() => {
-    import('qr-code-styling').then((module) => {
-      setQRCodeStyling(() => module.default)
-    })
-  }, [])
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
-    if (!QRCodeStyling) {
-      setError('Biblioteka QR nie zostala jeszcze zaladowana. Prosze czekac.')
-      return
-    }
 
     setIsLoading(true)
     setError(null)
@@ -146,15 +131,28 @@ export function QrForm({ qrCode }: QrFormProps) {
         redirectUrl = getRedirectUrl(shortCode)
       }
 
-      // Generate QR code image client-side with the REDIRECT URL
-      // This enables analytics tracking through our redirect endpoint
-      const qrImageDataUrl = await generateQrDataUrl(QRCodeStyling, {
-        url: redirectUrl,
-        style,
-        size: style.width,
-        logoUrl: logoUrl || undefined,
-        logoSize,
+      // Generate QR code via server-side API
+      // Uses @qr-platform/qr-code.js for extended shape support
+      const response = await fetch('/api/qr/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: redirectUrl,
+          style,
+          size: style.width,
+          logoUrl: logoUrl || undefined,
+          logoSize,
+        }),
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        setError(errorData.error || 'Nie udalo sie wygenerowac obrazu kodu QR')
+        setIsLoading(false)
+        return
+      }
+
+      const { dataUrl: qrImageDataUrl } = await response.json()
 
       if (!qrImageDataUrl) {
         setError('Nie udalo sie wygenerowac obrazu kodu QR')
@@ -547,7 +545,7 @@ export function QrForm({ qrCode }: QrFormProps) {
         )}
 
         <div className="flex gap-4">
-          <Button type="submit" isLoading={isLoading} disabled={!QRCodeStyling}>
+          <Button type="submit" isLoading={isLoading}>
             {isEditing ? 'Zaktualizuj kod QR' : 'Utworz kod QR'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>

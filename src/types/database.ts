@@ -110,12 +110,23 @@ export interface SurveyResponse {
 }
 
 // Typy kształtów modułów QR
-export type DotsType = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'
+// Rozszerzone o kształty z @qr-platform/qr-code.js (generowane server-side)
+export type DotsType =
+  | 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'  // qr-code-styling
+  | 'diamond' | 'star' | 'vertical-line' | 'horizontal-line' | 'random-dot' | 'small-square' | 'tiny-square'  // @qr-platform
 
 // Kształt całego kodu QR (maska/ramka)
 export type FrameShape = 'square' | 'circle' | 'rounded' | 'heart' | 'hexagon' | 'star' | 'diamond'
-export type CornersSquareType = 'square' | 'dot' | 'extra-rounded' | 'classy' | 'classy-rounded' | 'dotted'
-export type CornersDotType = 'square' | 'dot' | 'heart' | 'star' | 'diamond'
+
+// Narożniki zewnętrzne - rozszerzone o @qr-platform
+export type CornersSquareType =
+  | 'square' | 'dot' | 'extra-rounded'  // qr-code-styling
+  | 'classy' | 'classy-rounded' | 'dotted' | 'rounded' | 'outpoint' | 'inpoint'  // @qr-platform
+
+// Narożniki wewnętrzne - rozszerzone o @qr-platform
+export type CornersDotType =
+  | 'square' | 'dot'  // qr-code-styling
+  | 'heart' | 'star' | 'diamond' | 'rounded' | 'classy' | 'outpoint' | 'inpoint'  // @qr-platform
 export type GradientType = 'linear' | 'radial'
 
 // Ramki dekoracyjne wokół kodu QR

@@ -6,6 +6,8 @@ import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
+
+// Typy kształtów z qr-code-styling
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
 type CornerDotShape = 'square' | 'dot'
