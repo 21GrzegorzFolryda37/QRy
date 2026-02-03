@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
-type QRType = 'website' | 'email' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
+type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
@@ -12,25 +12,35 @@ type CornerDotShape = 'square' | 'dot'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
-  { id: 'pdf', label: 'PDF', icon: 'file' },
+  { id: 'text', label: 'Tekst', icon: 'text' },
   { id: 'email', label: 'E-mail', icon: 'mail' },
-  { id: 'social', label: 'Social media', icon: 'share' },
+  { id: 'phone', label: 'Telefon', icon: 'phone' },
+  { id: 'sms', label: 'SMS', icon: 'sms' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
   { id: 'vcard', label: 'Wizytówka', icon: 'user' },
   { id: 'wifi', label: 'WiFi', icon: 'wifi' },
-  { id: 'appstore', label: 'Sklepy z aplikacjami', icon: 'download' },
+  { id: 'event', label: 'Wydarzenie', icon: 'calendar' },
+  { id: 'social', label: 'Social media', icon: 'share' },
+  { id: 'pdf', label: 'PDF', icon: 'file' },
   { id: 'video', label: 'Wideo', icon: 'play' },
   { id: 'facebook', label: 'Facebook', icon: 'facebook' },
   { id: 'instagram', label: 'Instagram', icon: 'instagram' },
   { id: 'twitter', label: 'Twitter/X', icon: 'twitter' },
   { id: 'bitcoin', label: 'Bitcoin', icon: 'bitcoin' },
   { id: 'mp3', label: 'MP3', icon: 'music' },
+  { id: 'appstore', label: 'Aplikacje', icon: 'download' },
 ]
 
 const typeContent: Record<QRType, { title: string; subtitle: string }> = {
   website: { title: 'Przekształć link do strony w kod QR', subtitle: 'Udostępniaj swoją stronę internetową w prosty sposób' },
+  text: { title: 'Przekształć tekst w kod QR', subtitle: 'Udostępniaj dowolny tekst po zeskanowaniu' },
   email: { title: 'Przekształć adres e-mail w kod QR', subtitle: 'Pozwól klientom szybko się z Tobą skontaktować' },
+  phone: { title: 'Numer telefonu w kodzie QR', subtitle: 'Jeden skan i połączenie gotowe' },
+  sms: { title: 'Wiadomość SMS w kodzie QR', subtitle: 'Wypełniona wiadomość SMS po zeskanowaniu' },
+  whatsapp: { title: 'WhatsApp w kodzie QR', subtitle: 'Rozpocznij rozmowę na WhatsApp jednym skanem' },
   vcard: { title: 'Przekształć dane kontaktowe w kod QR vCard', subtitle: 'Rozwój Twojej sieci nigdy nie był łatwiejszy' },
   wifi: { title: 'Udostępnij hasło WiFi przez kod QR', subtitle: 'Goście połączą się jednym skanem' },
+  event: { title: 'Wydarzenie w kodzie QR', subtitle: 'Dodaj wydarzenie do kalendarza jednym skanem' },
   social: { title: 'Wszystkie social media w jednym kodzie QR', subtitle: 'Linki do wszystkich profili w jednym miejscu' },
   pdf: { title: 'Udostępnij plik PDF przez kod QR', subtitle: 'Dokumenty dostępne po zeskanowaniu' },
   video: { title: 'Udostępnij wideo przez kod QR', subtitle: 'Link do YouTube, Vimeo lub własnego wideo' },
@@ -217,17 +227,33 @@ export function Hero() {
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [isUpdatingQR, setIsUpdatingQR] = useState(false)
 
   const getQRData = () => {
     switch (selectedType) {
       case 'website':
         return formData.url || 'https://example.com'
+      case 'text':
+        return formData.text || 'Przykładowy tekst'
       case 'email':
         return `mailto:${formData.email || 'example@email.com'}?subject=${encodeURIComponent(formData.subject || '')}&body=${encodeURIComponent(formData.body || '')}`
+      case 'phone':
+        return `tel:${formData.phone || '+48123456789'}`
+      case 'sms':
+        return `sms:${formData.phone || ''}${formData.message ? `?body=${encodeURIComponent(formData.message)}` : ''}`
+      case 'whatsapp':
+        return `https://wa.me/${(formData.phone || '').replace(/[^0-9]/g, '')}${formData.message ? `?text=${encodeURIComponent(formData.message)}` : ''}`
       case 'vcard':
         return `BEGIN:VCARD\nVERSION:3.0\nFN:${formData.name || 'Jan Kowalski'}\nTEL:${formData.phone || ''}\nEMAIL:${formData.email || ''}\nORG:${formData.company || ''}\nEND:VCARD`
       case 'wifi':
         return `WIFI:T:${formData.encryption || 'WPA'};S:${formData.ssid || 'NetworkName'};P:${formData.password || ''};H:${formData.hidden === 'true' ? 'true' : 'false'};;`
+      case 'event': {
+        const startDate = formData.eventDate ? formData.eventDate.replace(/-/g, '') : '20240101'
+        const startTime = formData.eventTime ? formData.eventTime.replace(/:/g, '') + '00' : '120000'
+        const endTime = formData.eventEndTime ? formData.eventEndTime.replace(/:/g, '') + '00' : '130000'
+        return `BEGIN:VEVENT\nSUMMARY:${formData.eventTitle || 'Wydarzenie'}\nDTSTART:${startDate}T${startTime}\nDTEND:${startDate}T${endTime}\nLOCATION:${formData.eventLocation || ''}\nDESCRIPTION:${formData.eventDescription || ''}\nEND:VEVENT`
+      }
       case 'facebook':
         return `https://facebook.com/${formData.username || ''}`
       case 'instagram':
@@ -245,12 +271,22 @@ export function Hero() {
     switch (selectedType) {
       case 'website':
         return !!formData.url
+      case 'text':
+        return !!formData.text
       case 'email':
         return !!formData.email
+      case 'phone':
+        return !!formData.phone
+      case 'sms':
+        return !!formData.phone
+      case 'whatsapp':
+        return !!formData.phone
       case 'vcard':
         return !!formData.name
       case 'wifi':
         return !!formData.ssid
+      case 'event':
+        return !!formData.eventTitle
       case 'facebook':
       case 'instagram':
       case 'twitter':
@@ -382,17 +418,37 @@ export function Hero() {
     qrCodeRef.current.append(qrRef.current)
   }, [QRCodeStyling])
 
-  // Update QR code
+  // Update QR code with debounce (1.5s delay like qr.io)
   useEffect(() => {
-    if (qrCodeRef.current) {
-      qrCodeRef.current.update({
-        data: getQRData(),
-        dotsOptions: getDotsOptions(),
-        cornersSquareOptions: getCornerSquareOptions(),
-        cornersDotOptions: getCornerDotOptions(),
-        backgroundOptions: { color: backgroundColor },
-        image: logo || undefined,
-      })
+    if (!qrCodeRef.current) return
+
+    // Show loading state
+    setIsUpdatingQR(true)
+
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    // Set new debounce timer
+    debounceTimerRef.current = setTimeout(() => {
+      if (qrCodeRef.current) {
+        qrCodeRef.current.update({
+          data: getQRData(),
+          dotsOptions: getDotsOptions(),
+          cornersSquareOptions: getCornerSquareOptions(),
+          cornersDotOptions: getCornerDotOptions(),
+          backgroundOptions: { color: backgroundColor },
+          image: logo || undefined,
+        })
+      }
+      setIsUpdatingQR(false)
+    }, 800) // 800ms debounce for smooth UX
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
     }
   }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo])
 
@@ -515,6 +571,106 @@ export function Hero() {
             <div>
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres URL strony</label>
               <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} placeholder="https://twoja-strona.pl" className={inputClass} />
+            </div>
+          </div>
+        )
+      case 'text':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Treść tekstu *</label>
+              <textarea
+                value={formData.text || ''}
+                onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+                placeholder="Wpisz dowolny tekst..."
+                rows={3}
+                className={inputClass}
+              />
+            </div>
+          </div>
+        )
+      case 'phone':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Numer telefonu *</label>
+              <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+48 123 456 789" className={inputClass} />
+            </div>
+          </div>
+        )
+      case 'sms':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Numer telefonu *</label>
+              <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+48 123 456 789" className={inputClass} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Treść wiadomości (opcjonalnie)</label>
+              <textarea
+                value={formData.message || ''}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="Treść SMS..."
+                rows={2}
+                className={inputClass}
+              />
+            </div>
+          </div>
+        )
+      case 'whatsapp':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Numer telefonu (z kodem kraju) *</label>
+              <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="48123456789" className={inputClass} />
+              <p className="text-xs text-[var(--foreground-subtle)] mt-1">Bez + i spacji, np. 48123456789</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Wiadomość (opcjonalnie)</label>
+              <textarea
+                value={formData.message || ''}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="Cześć! Chciałbym..."
+                rows={2}
+                className={inputClass}
+              />
+            </div>
+          </div>
+        )
+      case 'event':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Nazwa wydarzenia *</label>
+              <input type="text" value={formData.eventTitle || ''} onChange={(e) => setFormData({ ...formData, eventTitle: e.target.value })} placeholder="Spotkanie biznesowe" className={inputClass} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Data</label>
+                <input type="date" value={formData.eventDate || ''} onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Godzina start</label>
+                <input type="time" value={formData.eventTime || ''} onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Godzina koniec</label>
+                <input type="time" value={formData.eventEndTime || ''} onChange={(e) => setFormData({ ...formData, eventEndTime: e.target.value })} className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Lokalizacja</label>
+              <input type="text" value={formData.eventLocation || ''} onChange={(e) => setFormData({ ...formData, eventLocation: e.target.value })} placeholder="ul. Przykładowa 1, Warszawa" className={inputClass} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Opis</label>
+              <textarea
+                value={formData.eventDescription || ''}
+                onChange={(e) => setFormData({ ...formData, eventDescription: e.target.value })}
+                placeholder="Szczegóły wydarzenia..."
+                rows={2}
+                className={inputClass}
+              />
             </div>
           </div>
         )
@@ -663,10 +819,10 @@ export function Hero() {
 
         {/* Generator Card */}
         <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
-          <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-12">
+          <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-start">
               {/* Left Column */}
-              <div className="lg:col-span-8 p-6 lg:p-8 space-y-6">
+              <div className="lg:col-span-8 p-6 lg:p-8 space-y-6 lg:rounded-l-3xl">
                 {/* Section 1: Content */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
@@ -1273,8 +1429,8 @@ export function Hero() {
                 </div>
               </div>
 
-              {/* Right Column - Preview */}
-              <div className="lg:col-span-4 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:sticky lg:top-4">
+              {/* Right Column - Preview (Sticky on desktop) */}
+              <div className="lg:col-span-4 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:rounded-r-3xl lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
                   <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Pobierz swój kod QR</h2>
@@ -1287,8 +1443,14 @@ export function Hero() {
 
                   <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
                     <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
-                      <div ref={qrRef} className="w-[180px] h-[180px] flex items-center justify-center" />
+                      <div ref={qrRef} className={`w-[180px] h-[180px] flex items-center justify-center transition-opacity duration-300 ${isUpdatingQR ? 'opacity-50' : 'opacity-100'}`} />
                     </QRFrameWrapper>
+                    {/* Loading indicator */}
+                    {isUpdatingQR && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1464,8 +1626,13 @@ function CornerDotShapePreview({ shapeId }: { shapeId: CornerDotShape }) {
 function TypeIcon({ type, className }: { type: string; className?: string }) {
   const icons: Record<string, React.ReactNode> = {
     globe: <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.916 17.916 0 0 1-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />,
+    text: <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />,
     file: <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />,
     mail: <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />,
+    phone: <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />,
+    sms: <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />,
+    whatsapp: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.556 0 8.25-3.694 8.25-8.25S16.556 3.75 12 3.75 3.75 7.444 3.75 12c0 1.592.467 3.075 1.27 4.32L3.75 20.25l4.02-1.23A8.212 8.212 0 0 0 12 20.25Z" />,
+    calendar: <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />,
     share: <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />,
     user: <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />,
     wifi: <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />,
