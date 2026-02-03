@@ -2,14 +2,15 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui'
+import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
 
-// Typy kształtów - rozszerzone o @qr-platform/qr-code.js
-type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded' | 'diamond' | 'star' | 'vertical-line' | 'horizontal-line' | 'random-dot' | 'small-square' | 'tiny-square'
-type CornerSquareShape = 'square' | 'dot' | 'extra-rounded' | 'rounded' | 'classy' | 'classy-rounded' | 'dotted' | 'outpoint' | 'inpoint'
-type CornerDotShape = 'square' | 'dot' | 'heart' | 'star' | 'diamond' | 'rounded' | 'classy' | 'outpoint' | 'inpoint'
+// Typy kształtów - qr-code-styling obsługuje 6 dot shapes, 3 corner squares, 2 corner dots
+type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
+type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
+type CornerDotShape = 'square' | 'dot'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -90,7 +91,7 @@ const colorPaletteBottom = [
   '#22c55e', // Zielony
 ]
 
-// Kształty kropek QR - rozszerzone
+// Kształty kropek QR - qr-code-styling obsługuje 6 typów
 const dotShapes: { id: DotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dots', label: 'Kropki' },
@@ -98,40 +99,19 @@ const dotShapes: { id: DotShape; label: string }[] = [
   { id: 'extra-rounded', label: 'Bardzo zaokrąglone' },
   { id: 'classy', label: 'Eleganckie' },
   { id: 'classy-rounded', label: 'Eleganckie zaokrąglone' },
-  // Rozszerzone kształty (@qr-platform)
-  { id: 'diamond', label: 'Diament' },
-  { id: 'star', label: 'Gwiazda' },
-  { id: 'vertical-line', label: 'Linie pionowe' },
-  { id: 'horizontal-line', label: 'Linie poziome' },
-  { id: 'random-dot', label: 'Losowe' },
-  { id: 'small-square', label: 'Male kwadraty' },
-  { id: 'tiny-square', label: 'Mini kwadraty' },
 ]
 
-// Kształty ramki narożnika (zewnętrzny element) - rozszerzone
+// Kształty ramki narożnika (zewnętrzny element) - qr-code-styling obsługuje 3 typy
 const cornerSquareShapes: { id: CornerSquareShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
-  { id: 'dot', label: 'Okragly' },
-  { id: 'extra-rounded', label: 'Extra Round' },
-  { id: 'rounded', label: 'Zaokraglony' },
-  { id: 'classy', label: 'Classy' },
-  { id: 'classy-rounded', label: 'Classy Round' },
-  { id: 'dotted', label: 'Kropkowany' },
-  { id: 'outpoint', label: 'Zewnetrzny' },
-  { id: 'inpoint', label: 'Wewnetrzny' },
+  { id: 'dot', label: 'Okrągły' },
+  { id: 'extra-rounded', label: 'Zaokrąglony' },
 ]
 
-// Kształty środka narożnika (wewnętrzny element) - rozszerzone
+// Kształty środka narożnika (wewnętrzny element) - qr-code-styling obsługuje 2 typy
 const cornerDotShapes: { id: CornerDotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dot', label: 'Kropka' },
-  { id: 'heart', label: 'Serce' },
-  { id: 'star', label: 'Gwiazda' },
-  { id: 'diamond', label: 'Diament' },
-  { id: 'rounded', label: 'Zaokraglony' },
-  { id: 'classy', label: 'Classy' },
-  { id: 'outpoint', label: 'Zewnetrzny' },
-  { id: 'inpoint', label: 'Wewnetrzny' },
 ]
 
 // Predefiniowane loga marek
@@ -245,10 +225,12 @@ export function Hero() {
   const [isSending, setIsSending] = useState(false)
   const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
-  // QR Preview state (API-based)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
-  const previewDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  // QR Preview state (client-side qr-code-styling)
+  const qrRef = useRef<HTMLDivElement>(null)
+  const qrCodeRef = useRef<QRCodeStylingType | null>(null)
+  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
+  const [isUpdatingQR, setIsUpdatingQR] = useState(false)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const getQRData = () => {
@@ -319,8 +301,18 @@ export function Hero() {
     }
   }
 
-  // Build style object for API request
-  const buildStyleObject = useCallback(() => {
+  // Helper to convert gradient config for qr-code-styling
+  const convertGradient = useCallback((gradient: { type: string; rotation: number; colorStops: Array<{ offset: number; color: string }> } | null) => {
+    if (!gradient) return undefined
+    return {
+      type: gradient.type as 'linear' | 'radial',
+      rotation: gradient.rotation / 180 * Math.PI,
+      colorStops: gradient.colorStops,
+    }
+  }, [])
+
+  // Build QR options for qr-code-styling
+  const buildQROptions = useCallback(() => {
     // Dots gradient
     const dotsGradientObj = dotGradient ? {
       type: dotGradientType,
@@ -331,100 +323,127 @@ export function Hero() {
       }))
     } : null
 
-    // Corner square color/gradient (inherit or custom)
-    let cornersSquareColorValue = null
-    let cornersSquareGradientObj = null
+    // Corner square options
+    let cornersSquareColorValue = dotColor
+    let cornersSquareGradientObj = dotsGradientObj
     if (cornerSquareColorMode === 'custom') {
       if (cornerSquareGradient) {
         cornersSquareGradientObj = {
-          type: 'linear',
+          type: 'linear' as const,
           rotation: cornerSquareGradientRotation,
           colorStops: cornerSquareGradientColors.map((color, index) => ({
             offset: cornerSquareGradientColors.length === 1 ? 0 : index / (cornerSquareGradientColors.length - 1),
             color
           }))
         }
+        cornersSquareColorValue = cornerSquareColor
       } else {
         cornersSquareColorValue = cornerSquareColor
+        cornersSquareGradientObj = null
       }
     }
 
-    // Corner dot color/gradient (inherit or custom)
-    let cornersDotColorValue = null
-    let cornersDotGradientObj = null
+    // Corner dot options
+    let cornersDotColorValue = dotColor
+    let cornersDotGradientObj = dotsGradientObj
     if (cornerDotColorMode === 'custom') {
       if (cornerDotGradient) {
         cornersDotGradientObj = {
-          type: 'linear',
+          type: 'linear' as const,
           rotation: cornerDotGradientRotation,
           colorStops: cornerDotGradientColors.map((color, index) => ({
             offset: cornerDotGradientColors.length === 1 ? 0 : index / (cornerDotGradientColors.length - 1),
             color
           }))
         }
+        cornersDotColorValue = cornerDotColor
       } else {
         cornersDotColorValue = cornerDotColor
+        cornersDotGradientObj = null
       }
     }
 
     return {
-      dotsType: dotShape,
-      foregroundColor: dotColor,
-      dotsGradient: dotsGradientObj,
-      cornersSquareType: cornerSquareShape,
-      cornersSquareColor: cornersSquareColorValue,
-      cornersSquareGradient: cornersSquareGradientObj,
-      cornersDotType: cornerDotShape,
-      cornersDotColor: cornersDotColorValue,
-      cornersDotGradient: cornersDotGradientObj,
-      backgroundColor,
+      width: 180,
+      height: 180,
+      data: getQRData(),
+      margin: 5,
+      dotsOptions: {
+        type: dotShape as DotShape,
+        color: dotColor,
+        gradient: convertGradient(dotsGradientObj),
+      },
+      cornersSquareOptions: {
+        type: cornerSquareShape as CornerSquareShape,
+        color: cornersSquareColorValue,
+        gradient: convertGradient(cornersSquareGradientObj),
+      },
+      cornersDotOptions: {
+        type: cornerDotShape as CornerDotShape,
+        color: cornersDotColorValue,
+        gradient: convertGradient(cornersDotGradientObj),
+      },
+      backgroundOptions: {
+        color: backgroundColor,
+      },
+      image: logo || undefined,
+      imageOptions: logo ? {
+        imageSize: 0.35,
+        margin: 5,
+      } : undefined,
     }
   }, [
     dotShape, dotColor, dotGradient, dotGradientType, dotGradientRotation, dotGradientColors,
     cornerSquareShape, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation,
     cornerDotShape, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation,
-    backgroundColor
+    backgroundColor, logo, convertGradient, formData, selectedType
   ])
 
-  // Fetch QR preview from API with debounce
+  // Load qr-code-styling library via dynamic import
   useEffect(() => {
-    if (previewDebounceRef.current) {
-      clearTimeout(previewDebounceRef.current)
+    let mounted = true
+    import('qr-code-styling').then((module) => {
+      if (mounted) {
+        setQRCodeStyling(() => module.default)
+      }
+    })
+    return () => { mounted = false }
+  }, [])
+
+  // Initialize and update QR code with debounce
+  useEffect(() => {
+    if (!QRCodeStyling || !qrRef.current) return
+
+    setIsUpdatingQR(true)
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
     }
 
-    setIsPreviewLoading(true)
+    debounceTimerRef.current = setTimeout(() => {
+      if (!qrRef.current) return
 
-    previewDebounceRef.current = setTimeout(async () => {
-      try {
-        const response = await fetch('/api/qr/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: getQRData(),
-            style: buildStyleObject(),
-            size: 200,
-            logoUrl: logo || undefined,
-          })
-        })
+      const options = buildQROptions()
 
-        if (response.ok) {
-          const { dataUrl } = await response.json()
-          setPreviewUrl(dataUrl)
-        } else {
-          console.error('Failed to generate preview')
-        }
-      } catch (err) {
-        console.error('Preview error:', err)
+      if (qrCodeRef.current) {
+        // Update existing QR code
+        qrCodeRef.current.update(options)
+      } else {
+        // Create new QR code
+        qrCodeRef.current = new QRCodeStyling(options)
+        qrRef.current.innerHTML = ''
+        qrCodeRef.current.append(qrRef.current)
       }
-      setIsPreviewLoading(false)
-    }, 400)
+
+      setIsUpdatingQR(false)
+    }, 300)
 
     return () => {
-      if (previewDebounceRef.current) {
-        clearTimeout(previewDebounceRef.current)
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [formData, selectedType, buildStyleObject, logo])
+  }, [QRCodeStyling, buildQROptions])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -445,22 +464,26 @@ export function Hero() {
 
   const handleSendToEmail = async () => {
     if (!userEmail.trim() || !userEmail.includes('@')) return
+    if (!QRCodeStyling) return
+
     setIsSending(true)
     setSendStatus('idle')
     try {
-      // Generate high-quality QR via API for email
-      const qrResponse = await fetch('/api/qr/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: getQRData(),
-          style: buildStyleObject(),
-          size: 400,
-          logoUrl: logo || undefined,
-        })
-      })
-      if (!qrResponse.ok) throw new Error('Failed to generate QR')
-      const { dataUrl } = await qrResponse.json()
+      // Generate high-quality QR client-side for email
+      const options = buildQROptions()
+      const highResQR = new QRCodeStyling({ ...options, width: 400, height: 400 })
+      const blob = await highResQR.getRawData('svg')
+      if (!blob) throw new Error('Failed to generate QR')
+
+      // Handle both Blob (browser) and Buffer (Node.js) types
+      let svgText: string
+      if (blob instanceof Blob) {
+        svgText = await blob.text()
+      } else {
+        svgText = blob.toString('utf-8')
+      }
+      const base64 = btoa(unescape(encodeURIComponent(svgText)))
+      const dataUrl = `data:image/svg+xml;base64,${base64}`
 
       const response = await fetch('/api/send-qr', {
         method: 'POST',
@@ -1367,20 +1390,17 @@ export function Hero() {
 
                   <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
                     <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
-                      <div className="w-[180px] h-[180px] flex items-center justify-center relative">
-                        {previewUrl ? (
-                          <img
-                            src={previewUrl}
-                            alt="QR Preview"
-                            className={`w-full h-full object-contain transition-opacity duration-300 ${isPreviewLoading ? 'opacity-50' : 'opacity-100'}`}
-                          />
-                        ) : (
+                      <div
+                        ref={qrRef}
+                        className={`w-[180px] h-[180px] flex items-center justify-center transition-opacity duration-300 ${isUpdatingQR ? 'opacity-50' : 'opacity-100'}`}
+                      >
+                        {!QRCodeStyling && (
                           <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
                         )}
                       </div>
                     </QRFrameWrapper>
                     {/* Loading indicator */}
-                    {isPreviewLoading && previewUrl && (
+                    {isUpdatingQR && QRCodeStyling && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
                       </div>
@@ -1516,77 +1536,6 @@ function DotShapePreview({ shapeId }: { shapeId: DotShape }) {
         <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
       </svg>
     ),
-    // Rozszerzone kształty
-    diamond: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M9 4 L14 9 L9 14 L4 9 Z" fill="currentColor" />
-        <path d="M23 4 L28 9 L23 14 L18 9 Z" fill="currentColor" />
-        <path d="M9 18 L14 23 L9 28 L4 23 Z" fill="currentColor" />
-        <path d="M31 18 L36 23 L31 28 L26 23 Z" fill="currentColor" />
-        <path d="M16 26 L21 31 L16 36 L11 31 Z" fill="currentColor" />
-        <path d="M31 26 L36 31 L31 36 L26 31 Z" fill="currentColor" />
-      </svg>
-    ),
-    star: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M9 2 L10.5 6 L15 6 L11.5 8.5 L13 13 L9 10 L5 13 L6.5 8.5 L3 6 L7.5 6 Z" fill="currentColor" />
-        <path d="M23 2 L24.5 6 L29 6 L25.5 8.5 L27 13 L23 10 L19 13 L20.5 8.5 L17 6 L21.5 6 Z" fill="currentColor" />
-        <path d="M9 16 L10.5 20 L15 20 L11.5 22.5 L13 27 L9 24 L5 27 L6.5 22.5 L3 20 L7.5 20 Z" fill="currentColor" />
-        <path d="M31 16 L32.5 20 L37 20 L33.5 22.5 L35 27 L31 24 L27 27 L28.5 22.5 L25 20 L29.5 20 Z" fill="currentColor" />
-      </svg>
-    ),
-    'vertical-line': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="6" y="4" width="4" height="10" fill="currentColor" />
-        <rect x="14" y="4" width="4" height="10" fill="currentColor" />
-        <rect x="22" y="4" width="4" height="10" fill="currentColor" />
-        <rect x="6" y="18" width="4" height="10" fill="currentColor" />
-        <rect x="30" y="18" width="4" height="10" fill="currentColor" />
-        <rect x="14" y="26" width="4" height="10" fill="currentColor" />
-        <rect x="30" y="26" width="4" height="10" fill="currentColor" />
-      </svg>
-    ),
-    'horizontal-line': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="4" y="6" width="10" height="4" fill="currentColor" />
-        <rect x="18" y="6" width="10" height="4" fill="currentColor" />
-        <rect x="4" y="14" width="10" height="4" fill="currentColor" />
-        <rect x="4" y="22" width="10" height="4" fill="currentColor" />
-        <rect x="26" y="22" width="10" height="4" fill="currentColor" />
-        <rect x="11" y="30" width="10" height="4" fill="currentColor" />
-        <rect x="26" y="30" width="10" height="4" fill="currentColor" />
-      </svg>
-    ),
-    'random-dot': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <circle cx="8" cy="8" r="4" fill="currentColor" />
-        <circle cx="22" cy="10" r="5" fill="currentColor" />
-        <circle cx="10" cy="22" r="3" fill="currentColor" />
-        <circle cx="32" cy="24" r="4" fill="currentColor" />
-        <circle cx="18" cy="32" r="5" fill="currentColor" />
-        <circle cx="32" cy="32" r="3" fill="currentColor" />
-      </svg>
-    ),
-    'small-square': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="5" y="5" width="8" height="8" fill="currentColor" />
-        <rect x="19" y="5" width="8" height="8" fill="currentColor" />
-        <rect x="5" y="19" width="8" height="8" fill="currentColor" />
-        <rect x="27" y="19" width="8" height="8" fill="currentColor" />
-        <rect x="12" y="27" width="8" height="8" fill="currentColor" />
-        <rect x="27" y="27" width="8" height="8" fill="currentColor" />
-      </svg>
-    ),
-    'tiny-square': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="6" y="6" width="6" height="6" fill="currentColor" />
-        <rect x="20" y="6" width="6" height="6" fill="currentColor" />
-        <rect x="6" y="20" width="6" height="6" fill="currentColor" />
-        <rect x="28" y="20" width="6" height="6" fill="currentColor" />
-        <rect x="13" y="28" width="6" height="6" fill="currentColor" />
-        <rect x="28" y="28" width="6" height="6" fill="currentColor" />
-      </svg>
-    ),
   }
   return shapes[shapeId] || shapes.square
 }
@@ -1608,45 +1557,6 @@ function CornerSquareShapePreview({ shapeId }: { shapeId: CornerSquareShape }) {
         <rect x="4" y="4" width="32" height="32" rx="10" fill="none" stroke="currentColor" strokeWidth="6" />
       </svg>
     ),
-    rounded: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="4" y="4" width="32" height="32" rx="6" fill="none" stroke="currentColor" strokeWidth="6" />
-      </svg>
-    ),
-    classy: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M4 4 L36 4 L36 36 L30 36 L30 10 L4 10 Z" fill="none" stroke="currentColor" strokeWidth="4" />
-      </svg>
-    ),
-    'classy-rounded': (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M4 8 Q4 4 8 4 L36 4 L36 36 L30 36 Q26 36 26 30 L26 14 Q26 10 22 10 L8 10 Q4 10 4 14 Z" fill="none" stroke="currentColor" strokeWidth="3" />
-      </svg>
-    ),
-    dotted: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <circle cx="8" cy="8" r="3" fill="currentColor" />
-        <circle cx="20" cy="8" r="3" fill="currentColor" />
-        <circle cx="32" cy="8" r="3" fill="currentColor" />
-        <circle cx="8" cy="20" r="3" fill="currentColor" />
-        <circle cx="8" cy="32" r="3" fill="currentColor" />
-        <circle cx="32" cy="20" r="3" fill="currentColor" />
-        <circle cx="20" cy="32" r="3" fill="currentColor" />
-        <circle cx="32" cy="32" r="3" fill="currentColor" />
-      </svg>
-    ),
-    outpoint: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M4 4 L36 4 L36 36 L4 36 L4 4 M10 10 L10 30 L30 30 L30 10 Z" fillRule="evenodd" fill="currentColor" />
-        <path d="M12 20 L28 12 L28 28 Z" fill="currentColor" />
-      </svg>
-    ),
-    inpoint: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M4 4 L36 4 L36 36 L4 36 L4 4 M10 10 L10 30 L30 30 L30 10 Z" fillRule="evenodd" fill="currentColor" />
-        <path d="M28 20 L12 12 L12 28 Z" fill="currentColor" />
-      </svg>
-    ),
   }
   return shapes[shapeId] || shapes.square
 }
@@ -1661,41 +1571,6 @@ function CornerDotShapePreview({ shapeId }: { shapeId: CornerDotShape }) {
     dot: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <circle cx="20" cy="20" r="10" fill="currentColor" />
-      </svg>
-    ),
-    heart: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M20 32 C10 24 6 18 6 13 C6 8 10 5 14 5 C17 5 19 7 20 9 C21 7 23 5 26 5 C30 5 34 8 34 13 C34 18 30 24 20 32 Z" fill="currentColor" />
-      </svg>
-    ),
-    star: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M20 4 L23 15 L35 15 L25 22 L29 34 L20 26 L11 34 L15 22 L5 15 L17 15 Z" fill="currentColor" />
-      </svg>
-    ),
-    diamond: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M20 6 L34 20 L20 34 L6 20 Z" fill="currentColor" />
-      </svg>
-    ),
-    rounded: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <rect x="10" y="10" width="20" height="20" rx="5" fill="currentColor" />
-      </svg>
-    ),
-    classy: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M10 10 L30 10 L30 30 L20 30 L20 20 L10 20 Z" fill="currentColor" />
-      </svg>
-    ),
-    outpoint: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M10 20 L30 10 L30 30 Z" fill="currentColor" />
-      </svg>
-    ),
-    inpoint: (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
-        <path d="M30 20 L10 10 L10 30 Z" fill="currentColor" />
       </svg>
     ),
   }
