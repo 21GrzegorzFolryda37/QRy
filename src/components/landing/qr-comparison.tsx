@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { PhoneMockup, Button } from '@/components/ui'
+import { ScanLineOverlay } from './qr-animations'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
 
 export function QRComparison() {
   const [visible, setVisible] = useState(false)
+  const [qrLoaded, setQrLoaded] = useState(false)
+  const [scanComplete, setScanComplete] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const basicQrRef = useRef<HTMLDivElement>(null)
   const customQrRef = useRef<HTMLDivElement>(null)
@@ -115,6 +118,11 @@ export function QRComparison() {
           },
         })
         customQR.append(customQrRef.current)
+
+        // Trigger scan animation after QR renders
+        setTimeout(() => {
+          setQrLoaded(true)
+        }, 300)
       }
     }
 
@@ -130,7 +138,10 @@ export function QRComparison() {
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div
+          className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
+        >
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display mb-4">
             <span className="text-white">Który kod QR </span>
             <span className="text-violet-300">skanujesz?</span>
@@ -147,6 +158,7 @@ export function QRComparison() {
             className={`relative transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
+            style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
             <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
               Zwykły QR
@@ -207,8 +219,9 @@ export function QRComparison() {
           {/* VS Element */}
           <div
             className={`flex items-center justify-center transition-all duration-700 delay-200 ${
-              visible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+              visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
             }`}
+            style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
             <div className="relative">
               <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-20" />
@@ -220,13 +233,25 @@ export function QRComparison() {
 
           {/* Phone with QRapple QR */}
           <div
-            className={`transition-all duration-700 delay-150 ${
+            className={`relative transition-all duration-700 delay-150 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
+            style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
             <h3 className="text-lg font-medium text-violet-300 text-center mb-6">
               Kod QRapple
             </h3>
+
+            {/* Subtle glow behind phone after scan completes */}
+            <div
+              className={`absolute inset-0 -z-10 rounded-[40px] blur-2xl transition-opacity duration-1000 ${
+                scanComplete ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{
+                background: 'radial-gradient(circle at center, rgba(124, 58, 237, 0.15) 0%, transparent 70%)',
+                transitionTimingFunction: 'var(--ease-smooth)',
+              }}
+            />
 
             <PhoneMockup className="w-[260px]" variant="highlighted">
               <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">
@@ -264,15 +289,52 @@ export function QRComparison() {
 
                   {/* QR container with accents */}
                   <div className="relative">
-                    {/* Corner accents */}
-                    <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#6d28d9] rounded-tl-lg" />
-                    <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#6d28d9] rounded-tr-lg" />
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#6d28d9] rounded-bl-lg" />
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg" />
+                    {/* Animated corner accents */}
+                    <div
+                      className={`absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#6d28d9] rounded-tl-lg transition-all duration-500 ${
+                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
+                      }`}
+                      style={{ transitionDelay: '0ms', transitionTimingFunction: 'var(--ease-smooth)' }}
+                    />
+                    <div
+                      className={`absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#6d28d9] rounded-tr-lg transition-all duration-500 ${
+                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
+                      }`}
+                      style={{ transitionDelay: '50ms', transitionTimingFunction: 'var(--ease-smooth)' }}
+                    />
+                    <div
+                      className={`absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#6d28d9] rounded-bl-lg transition-all duration-500 ${
+                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
+                      }`}
+                      style={{ transitionDelay: '100ms', transitionTimingFunction: 'var(--ease-smooth)' }}
+                    />
+                    <div
+                      className={`absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg transition-all duration-500 ${
+                        scanComplete ? 'opacity-100 scale-100' : 'opacity-60 scale-90'
+                      }`}
+                      style={{ transitionDelay: '150ms', transitionTimingFunction: 'var(--ease-smooth)' }}
+                    />
 
-                    <div className="p-3 bg-white rounded-xl shadow-lg shadow-[#6d28d9]/10 border border-[#6d28d9]/20">
-                      <div ref={customQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
+                    <div
+                      className={`p-3 bg-white rounded-xl shadow-lg border transition-all duration-700 ${
+                        scanComplete
+                          ? 'shadow-[#6d28d9]/20 border-[#6d28d9]/30'
+                          : 'shadow-[#6d28d9]/10 border-[#6d28d9]/20'
+                      }`}
+                      style={{
+                        transitionTimingFunction: 'var(--ease-smooth)',
+                      }}
+                    >
+                      <div ref={customQrRef} className="relative w-[140px] h-[140px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
+
+                        {/* Scan line animation overlay */}
+                        <ScanLineOverlay
+                          isActive={qrLoaded && !scanComplete}
+                          size={140}
+                          delay={200}
+                          onComplete={() => setScanComplete(true)}
+                        />
                       </div>
                     </div>
                   </div>
