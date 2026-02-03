@@ -6,8 +6,6 @@ import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
-
-// Typy kształtów - qr-code-styling obsługuje 6 dot shapes, 3 corner squares, 2 corner dots
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
 type CornerDotShape = 'square' | 'dot'
@@ -91,7 +89,7 @@ const colorPaletteBottom = [
   '#22c55e', // Zielony
 ]
 
-// Kształty kropek QR - qr-code-styling obsługuje 6 typów
+// Kształty kropek QR
 const dotShapes: { id: DotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dots', label: 'Kropki' },
@@ -101,14 +99,14 @@ const dotShapes: { id: DotShape; label: string }[] = [
   { id: 'classy-rounded', label: 'Eleganckie zaokrąglone' },
 ]
 
-// Kształty ramki narożnika (zewnętrzny element) - qr-code-styling obsługuje 3 typy
+// Kształty ramki narożnika (zewnętrzny element)
 const cornerSquareShapes: { id: CornerSquareShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
-  { id: 'dot', label: 'Okrągły' },
-  { id: 'extra-rounded', label: 'Zaokrąglony' },
+  { id: 'dot', label: 'Kropka' },
+  { id: 'extra-rounded', label: 'Zaokrąglone' },
 ]
 
-// Kształty środka narożnika (wewnętrzny element) - qr-code-styling obsługuje 2 typy
+// Kształty środka narożnika (wewnętrzny element)
 const cornerDotShapes: { id: CornerDotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dot', label: 'Kropka' },
@@ -225,13 +223,12 @@ export function Hero() {
   const [isSending, setIsSending] = useState(false)
   const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
-  // QR Preview state (client-side qr-code-styling)
   const qrRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
-  const [isUpdatingQR, setIsUpdatingQR] = useState(false)
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [isUpdatingQR, setIsUpdatingQR] = useState(false)
 
   const getQRData = () => {
     switch (selectedType) {
@@ -301,149 +298,216 @@ export function Hero() {
     }
   }
 
-  // Helper to convert gradient config for qr-code-styling
-  const convertGradient = useCallback((gradient: { type: string; rotation: number; colorStops: Array<{ offset: number; color: string }> } | null) => {
-    if (!gradient) return undefined
-    return {
-      type: gradient.type as 'linear' | 'radial',
-      rotation: gradient.rotation / 180 * Math.PI,
-      colorStops: gradient.colorStops,
-    }
+  
+  // Load QR code styling library (client-side only)
+  useEffect(() => {
+    import('qr-code-styling').then((module) => {
+      setQRCodeStyling(() => module.default)
+    })
   }, [])
 
-  // Build QR options for qr-code-styling
-  const buildQROptions = useCallback(() => {
-    // Dots gradient
-    const dotsGradientObj = dotGradient ? {
-      type: dotGradientType,
-      rotation: dotGradientRotation,
-      colorStops: dotGradientColors.map((color, index) => ({
+  // Helper function to create gradient or color options
+  const getDotsOptions = () => {
+    if (dotGradient) {
+      const colorStops = dotGradientColors.map((color, index) => ({
         offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
         color
       }))
-    } : null
+      return {
+        type: dotShape,
+        gradient: {
+          type: dotGradientType as 'linear' | 'radial',
+          rotation: dotGradientRotation,
+          colorStops
+        }
+      }
+    }
+    return { color: dotColor, type: dotShape }
+  }
 
-    // Corner square options
-    let cornersSquareColorValue = dotColor
-    let cornersSquareGradientObj = dotsGradientObj
-    if (cornerSquareColorMode === 'custom') {
-      if (cornerSquareGradient) {
-        cornersSquareGradientObj = {
+  const getCornerSquareOptions = () => {
+    // Jeśli tryb 'inherit', użyj ustawień z kropek
+    if (cornerSquareColorMode === 'inherit') {
+      if (dotGradient) {
+        const colorStops = dotGradientColors.map((color, index) => ({
+          offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
+          color
+        }))
+        return {
+          type: cornerSquareShape,
+          gradient: {
+            type: dotGradientType as 'linear' | 'radial',
+            rotation: dotGradientRotation,
+            colorStops
+          }
+        }
+      }
+      return { color: dotColor, type: cornerSquareShape }
+    }
+    // Tryb 'custom' - własne ustawienia
+    if (cornerSquareGradient) {
+      const colorStops = cornerSquareGradientColors.map((color, index) => ({
+        offset: cornerSquareGradientColors.length === 1 ? 0 : index / (cornerSquareGradientColors.length - 1),
+        color
+      }))
+      return {
+        type: cornerSquareShape,
+        gradient: {
           type: 'linear' as const,
           rotation: cornerSquareGradientRotation,
-          colorStops: cornerSquareGradientColors.map((color, index) => ({
-            offset: cornerSquareGradientColors.length === 1 ? 0 : index / (cornerSquareGradientColors.length - 1),
-            color
-          }))
+          colorStops
         }
-        cornersSquareColorValue = cornerSquareColor
-      } else {
-        cornersSquareColorValue = cornerSquareColor
-        cornersSquareGradientObj = null
       }
     }
+    return { color: cornerSquareColor, type: cornerSquareShape }
+  }
 
-    // Corner dot options
-    let cornersDotColorValue = dotColor
-    let cornersDotGradientObj = dotsGradientObj
-    if (cornerDotColorMode === 'custom') {
-      if (cornerDotGradient) {
-        cornersDotGradientObj = {
+  const getCornerDotOptions = () => {
+    // Jeśli tryb 'inherit', użyj ustawień z kropek
+    if (cornerDotColorMode === 'inherit') {
+      if (dotGradient) {
+        const colorStops = dotGradientColors.map((color, index) => ({
+          offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
+          color
+        }))
+        return {
+          type: cornerDotShape,
+          gradient: {
+            type: dotGradientType as 'linear' | 'radial',
+            rotation: dotGradientRotation,
+            colorStops
+          }
+        }
+      }
+      return { color: dotColor, type: cornerDotShape }
+    }
+    // Tryb 'custom' - własne ustawienia
+    if (cornerDotGradient) {
+      const colorStops = cornerDotGradientColors.map((color, index) => ({
+        offset: cornerDotGradientColors.length === 1 ? 0 : index / (cornerDotGradientColors.length - 1),
+        color
+      }))
+      return {
+        type: cornerDotShape,
+        gradient: {
           type: 'linear' as const,
           rotation: cornerDotGradientRotation,
-          colorStops: cornerDotGradientColors.map((color, index) => ({
-            offset: cornerDotGradientColors.length === 1 ? 0 : index / (cornerDotGradientColors.length - 1),
-            color
-          }))
+          colorStops
         }
-        cornersDotColorValue = cornerDotColor
-      } else {
-        cornersDotColorValue = cornerDotColor
-        cornersDotGradientObj = null
       }
     }
+    return { color: cornerDotColor, type: cornerDotShape }
+  }
 
-    return {
-      width: 180,
-      height: 180,
-      data: getQRData(),
-      margin: 5,
-      dotsOptions: {
-        type: dotShape as DotShape,
-        color: dotColor,
-        gradient: convertGradient(dotsGradientObj),
-      },
-      cornersSquareOptions: {
-        type: cornerSquareShape as CornerSquareShape,
-        color: cornersSquareColorValue,
-        gradient: convertGradient(cornersSquareGradientObj),
-      },
-      cornersDotOptions: {
-        type: cornerDotShape as CornerDotShape,
-        color: cornersDotColorValue,
-        gradient: convertGradient(cornersDotGradientObj),
-      },
-      backgroundOptions: {
-        color: backgroundColor,
-      },
-      image: logo || undefined,
-      imageOptions: logo ? {
-        imageSize: 0.35,
-        margin: 5,
-      } : undefined,
-    }
-  }, [
-    dotShape, dotColor, dotGradient, dotGradientType, dotGradientRotation, dotGradientColors,
-    cornerSquareShape, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation,
-    cornerDotShape, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation,
-    backgroundColor, logo, convertGradient, formData, selectedType
-  ])
-
-  // Load qr-code-styling library via dynamic import
-  useEffect(() => {
-    let mounted = true
-    import('qr-code-styling').then((module) => {
-      if (mounted) {
-        setQRCodeStyling(() => module.default)
-      }
-    })
-    return () => { mounted = false }
-  }, [])
-
-  // Initialize and update QR code with debounce
+  // Initialize QR code
   useEffect(() => {
     if (!QRCodeStyling || !qrRef.current) return
 
+    qrCodeRef.current = new QRCodeStyling({
+      width: 200,
+      height: 200,
+      type: 'svg',
+      data: getQRData(),
+      dotsOptions: getDotsOptions(),
+      cornersSquareOptions: getCornerSquareOptions(),
+      cornersDotOptions: getCornerDotOptions(),
+      backgroundOptions: { color: backgroundColor },
+      imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
+    })
+    qrRef.current.innerHTML = ''
+    qrCodeRef.current.append(qrRef.current)
+  }, [QRCodeStyling])
+
+  // Update QR code with debounce (1.5s delay like qr.io)
+  useEffect(() => {
+    if (!qrCodeRef.current) return
+
+    // Show loading state
     setIsUpdatingQR(true)
 
+    // Clear previous timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current)
     }
 
+    // Set new debounce timer
     debounceTimerRef.current = setTimeout(() => {
-      if (!qrRef.current) return
-
-      const options = buildQROptions()
-
       if (qrCodeRef.current) {
-        // Update existing QR code
-        qrCodeRef.current.update(options)
-      } else {
-        // Create new QR code
-        qrCodeRef.current = new QRCodeStyling(options)
-        qrRef.current.innerHTML = ''
-        qrCodeRef.current.append(qrRef.current)
+        qrCodeRef.current.update({
+          data: getQRData(),
+          dotsOptions: getDotsOptions(),
+          cornersSquareOptions: getCornerSquareOptions(),
+          cornersDotOptions: getCornerDotOptions(),
+          backgroundOptions: { color: backgroundColor },
+          image: logo || undefined,
+        })
       }
-
       setIsUpdatingQR(false)
-    }, 300)
+    }, 800) // 800ms debounce for smooth UX
 
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [QRCodeStyling, buildQROptions])
+  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo])
+
+  // Apply global gradient to SVG (post-processing)
+  useEffect(() => {
+    if (!useGlobalGradient || !qrRef.current) return
+
+    const timer = setTimeout(() => {
+      const svg = qrRef.current?.querySelector('svg')
+      if (!svg) return
+
+      // Create gradient definition
+      const angle = globalGradientRotation
+      const angleRad = (angle * Math.PI) / 180
+      const x1 = 50 - Math.cos(angleRad) * 50
+      const y1 = 50 + Math.sin(angleRad) * 50
+      const x2 = 50 + Math.cos(angleRad) * 50
+      const y2 = 50 - Math.sin(angleRad) * 50
+
+      // Check if defs exists, create if not
+      let defs = svg.querySelector('defs')
+      if (!defs) {
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+        svg.insertBefore(defs, svg.firstChild)
+      }
+
+      // Remove old global gradient if exists
+      const oldGradient = defs.querySelector('#globalQrGradient')
+      if (oldGradient) oldGradient.remove()
+
+      // Create new gradient
+      const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
+      gradient.setAttribute('id', 'globalQrGradient')
+      gradient.setAttribute('x1', `${x1}%`)
+      gradient.setAttribute('y1', `${y1}%`)
+      gradient.setAttribute('x2', `${x2}%`)
+      gradient.setAttribute('y2', `${y2}%`)
+
+      globalGradientColors.forEach((color, index) => {
+        const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
+        stop.setAttribute('offset', `${(index / (globalGradientColors.length - 1)) * 100}%`)
+        stop.setAttribute('stop-color', color)
+        gradient.appendChild(stop)
+      })
+
+      defs.appendChild(gradient)
+
+      // Apply gradient to all paths, rects, circles (except background)
+      const elements = svg.querySelectorAll('path, rect, circle')
+      elements.forEach((el) => {
+        const fill = el.getAttribute('fill')
+        // Skip background (usually white) and images
+        if (fill === backgroundColor || fill === '#ffffff' || fill === '#FFFFFF' || fill === 'none') return
+        el.setAttribute('fill', 'url(#globalQrGradient)')
+      })
+    }, 50)
+
+    return () => clearTimeout(timer)
+  }, [useGlobalGradient, globalGradientColors, globalGradientRotation, backgroundColor, formData, selectedType, dotColor, dotGradient, dotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -464,31 +528,20 @@ export function Hero() {
 
   const handleSendToEmail = async () => {
     if (!userEmail.trim() || !userEmail.includes('@')) return
-    if (!QRCodeStyling) return
-
     setIsSending(true)
     setSendStatus('idle')
     try {
-      // Generate high-quality QR client-side for email
-      const options = buildQROptions()
-      const highResQR = new QRCodeStyling({ ...options, width: 400, height: 400 })
-      const blob = await highResQR.getRawData('svg')
-      if (!blob) throw new Error('Failed to generate QR')
-
-      // Handle both Blob (browser) and Buffer (Node.js) types
-      let svgText: string
-      if (blob instanceof Blob) {
-        svgText = await blob.text()
-      } else {
-        svgText = blob.toString('utf-8')
-      }
-      const base64 = btoa(unescape(encodeURIComponent(svgText)))
-      const dataUrl = `data:image/svg+xml;base64,${base64}`
-
+      const qrBlob = await qrCodeRef.current?.getRawData('png')
+      if (!qrBlob) throw new Error('Failed to generate QR')
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(qrBlob as Blob)
+      })
       const response = await fetch('/api/send-qr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, qrCodeBase64: dataUrl, url: getQRData() }),
+        body: JSON.stringify({ email: userEmail, qrCodeBase64: base64, url: getQRData() }),
       })
       setSendStatus(response.ok ? 'success' : 'error')
     } catch {
@@ -1390,17 +1443,10 @@ export function Hero() {
 
                   <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
                     <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
-                      <div
-                        ref={qrRef}
-                        className={`w-[180px] h-[180px] flex items-center justify-center transition-opacity duration-300 ${isUpdatingQR ? 'opacity-50' : 'opacity-100'}`}
-                      >
-                        {!QRCodeStyling && (
-                          <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
-                        )}
-                      </div>
+                      <div ref={qrRef} className={`w-[180px] h-[180px] flex items-center justify-center transition-opacity duration-300 ${isUpdatingQR ? 'opacity-50' : 'opacity-100'}`} />
                     </QRFrameWrapper>
                     {/* Loading indicator */}
-                    {isUpdatingQR && QRCodeStyling && (
+                    {isUpdatingQR && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
                       </div>
