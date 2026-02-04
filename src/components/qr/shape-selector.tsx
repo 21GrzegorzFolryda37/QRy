@@ -188,124 +188,145 @@ export const dotsTypeOptions: ShapeOption<DotsType>[] = [
   { id: 'tiny-square', label: 'Mini kwadr.', icon: <DotsTinySquareIcon /> },
 ]
 
-// Ikony dla narożników zewnętrznych (corners square) - styl qr.io
+// ============================================
+// Ikony dla narożników zewnętrznych (corners square)
+// Wzorowane na qr.io - pokazują pełny finder pattern (ramka + wypełnienie)
+// ============================================
+
+// 1. Kwadrat ostry + kwadrat ostry
 const CornerSquareIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="3" y="3" width="18" height="18" rx="0" stroke="currentColor" strokeWidth="3" fill="none" />
-    <rect x="8" y="8" width="8" height="8" rx="0" fill="currentColor" />
+    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="8" y="8" width="8" height="8" fill="currentColor" />
   </svg>
 )
 
+// 2. Kwadrat zaokrąglony + koło wewnątrz
+const CornerRoundedCircleIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="4" fill="currentColor" />
+  </svg>
+)
+
+// 3. Koło + koło
 const CornerDotIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
     <circle cx="12" cy="12" r="4" fill="currentColor" />
   </svg>
 )
 
-const CornerExtraRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="3" y="3" width="18" height="18" rx="9" stroke="currentColor" strokeWidth="3" fill="none" />
-    <circle cx="12" cy="12" r="4" fill="currentColor" />
-  </svg>
-)
-
+// 4. Kształt "D" (lewa ostra, prawa zaokrąglona) + "D" wewnątrz
 const CornerClassyIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M3 3 L21 3 L21 12 Q21 21 12 21 L3 21 Z" stroke="currentColor" strokeWidth="3" fill="none" />
-    <path d="M8 8 L16 8 L16 12 Q16 16 12 16 L8 16 Z" fill="currentColor" />
+    <path
+      d="M4 2 L14 2 Q22 2 22 12 Q22 22 14 22 L4 22 L4 2 Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      fill="none"
+    />
+    <path
+      d="M8 8 L13 8 Q16 8 16 12 Q16 16 13 16 L8 16 L8 8 Z"
+      fill="currentColor"
+    />
   </svg>
 )
 
-const CornerClassyRoundedIcon = () => (
+// 5. Kwadrat zaokrąglony + kwadrat zaokrąglony
+const CornerExtraRoundedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="2" y="2" width="20" height="20" rx="4" stroke="currentColor" strokeWidth="3" fill="none" />
     <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
   </svg>
 )
 
-const CornerRoundedIcon = () => (
+// 6. Kwadrat ostry + koło (jak zaznaczony na qr.io)
+const CornerSquareCircleIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="3" y="3" width="18" height="18" rx="0" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="3" fill="none" />
     <circle cx="12" cy="12" r="4" fill="currentColor" />
   </svg>
 )
 
-const CornerInpointIcon = () => (
+// 7. Koło + kwadrat zaokrąglony wewnątrz
+const CornerCircleRoundedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
     <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
   </svg>
 )
 
-// Opcje dla narożników zewnętrznych (rozszerzone)
+// Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
-  { id: 'dot', label: 'Okragly', icon: <CornerDotIcon /> },
-  { id: 'extra-rounded', label: 'Extra Round', icon: <CornerExtraRoundedIcon /> },
+  { id: 'extra-rounded', label: 'Zaokr + Kolo', icon: <CornerRoundedCircleIcon /> },
+  { id: 'dot', label: 'Kolo', icon: <CornerDotIcon /> },
   { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
-  { id: 'classy-rounded', label: 'Classy Round', icon: <CornerClassyRoundedIcon /> },
-  // Rozszerzone (@qr-platform)
-  { id: 'rounded', label: 'Zaokraglony', icon: <CornerRoundedIcon /> },
-  { id: 'inpoint', label: 'Wewnetrzny', icon: <CornerInpointIcon /> },
+  { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
+  { id: 'rounded', label: 'Kwadr + Kolo', icon: <CornerSquareCircleIcon /> },
+  { id: 'inpoint', label: 'Kolo + Kwadr', icon: <CornerCircleRoundedIcon /> },
 ]
 
-// Ikony dla wewnętrznych kropek narożników - styl qr.io
+// ============================================
+// Ikony dla wewnętrznych kropek narożników (corners dot)
+// ============================================
+
 const InnerSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="4" y="4" width="16" height="16" rx="0" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" />
   </svg>
 )
 
 const InnerDotIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="8" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <circle cx="12" cy="12" r="6" />
   </svg>
 )
 
 const InnerStarIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>
 )
 
 const InnerDiamondIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M12 2 L22 12 L12 22 L2 12 Z" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M12 2 L22 12 L12 22 L2 12 Z" />
   </svg>
 )
 
 const InnerRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="4" y="4" width="16" height="16" rx="4" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" rx="3" />
   </svg>
 )
 
+// Kształt "D" - lewa ostra, prawa zaokrąglona
 const InnerClassyIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M4 4 L20 4 L20 12 Q20 20 12 20 L4 20 Z" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M6 6 L14 6 Q18 6 18 12 Q18 18 14 18 L6 18 L6 6 Z" />
   </svg>
 )
 
 const InnerOutpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M4 4 L20 12 L4 20 Z" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M6 6 L18 12 L6 18 Z" />
   </svg>
 )
 
 const InnerInpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <path d="M20 4 L4 12 L20 20 Z" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M18 6 L6 12 L18 18 Z" />
   </svg>
 )
 
-// Opcje dla wewnętrznych kropek narożników (rozszerzone)
+// Opcje dla wewnętrznych kropek narożników
 export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <InnerSquareIcon /> },
   { id: 'dot', label: 'Kropka', icon: <InnerDotIcon /> },
   { id: 'star', label: 'Gwiazda', icon: <InnerStarIcon /> },
   { id: 'diamond', label: 'Diament', icon: <InnerDiamondIcon /> },
-  // Rozszerzone (@qr-platform)
   { id: 'rounded', label: 'Zaokraglony', icon: <InnerRoundedIcon /> },
   { id: 'classy', label: 'Classy', icon: <InnerClassyIcon /> },
   { id: 'outpoint', label: 'Zewnetrzny', icon: <InnerOutpointIcon /> },
