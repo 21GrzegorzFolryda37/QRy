@@ -512,21 +512,6 @@ export function QrForm({ qrCode }: QrFormProps) {
             onChange={setLogoUrl}
             onClear={() => setLogoUrl('')}
           />
-          {logoUrl && (
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
-                Rozmiar logo: {logoSize}px
-              </label>
-              <input
-                type="range"
-                min="20"
-                max="100"
-                value={logoSize}
-                onChange={(e) => setLogoSize(Number(e.target.value))}
-                className="w-full accent-[var(--primary)]"
-              />
-            </div>
-          )}
         </CollapsibleSection>
 
         {error && (
