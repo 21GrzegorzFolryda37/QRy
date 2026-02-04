@@ -188,75 +188,53 @@ export const dotsTypeOptions: ShapeOption<DotsType>[] = [
   { id: 'tiny-square', label: 'Mini kwadr.', icon: <DotsTinySquareIcon /> },
 ]
 
-// Ikony dla narożników zewnętrznych (corners square)
+// Ikony dla narożników zewnętrznych (corners square) - styl qr.io
 const CornerSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="2" y="2" width="20" height="20" strokeWidth="4" stroke="currentColor" fill="none" />
-    <rect x="7" y="7" width="10" height="10" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="3" y="3" width="18" height="18" rx="0" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="8" y="8" width="8" height="8" rx="0" fill="currentColor" />
   </svg>
 )
 
 const CornerDotIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <circle cx="12" cy="12" r="10" strokeWidth="3" stroke="currentColor" fill="none" />
-    <circle cx="12" cy="12" r="4" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="4" fill="currentColor" />
   </svg>
 )
 
 const CornerExtraRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="2" y="2" width="20" height="20" rx="6" strokeWidth="4" stroke="currentColor" fill="none" />
-    <rect x="7" y="7" width="10" height="10" rx="3" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="3" y="3" width="18" height="18" rx="9" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="4" fill="currentColor" />
   </svg>
 )
 
 const CornerClassyIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M2 2 L22 2 L22 22 L18 22 L18 6 L2 6 Z" strokeWidth="0" />
-    <rect x="7" y="7" width="10" height="10" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M3 3 L21 3 L21 12 Q21 21 12 21 L3 21 Z" stroke="currentColor" strokeWidth="3" fill="none" />
+    <path d="M8 8 L16 8 L16 12 Q16 16 12 16 L8 16 Z" fill="currentColor" />
   </svg>
 )
 
 const CornerClassyRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M2 6 Q2 2 6 2 L22 2 L22 22 L18 22 Q18 10 10 6 L2 6 Z" strokeWidth="0" />
-    <rect x="7" y="7" width="10" height="10" rx="2" />
-  </svg>
-)
-
-const CornerDottedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <circle cx="4" cy="4" r="2" />
-    <circle cx="12" cy="4" r="2" />
-    <circle cx="20" cy="4" r="2" />
-    <circle cx="4" cy="12" r="2" />
-    <circle cx="4" cy="20" r="2" />
-    <circle cx="20" cy="12" r="2" />
-    <circle cx="12" cy="20" r="2" />
-    <circle cx="20" cy="20" r="2" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-)
-
-// Ikony dla rozszerzonych narożników zewnętrznych
-const CornerOutpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M2 2 L22 2 L22 22 L2 22 L2 2 M6 6 L6 18 L18 18 L18 6 Z" fillRule="evenodd" />
-    <path d="M8 8 L16 12 L8 16 Z" />
-  </svg>
-)
-
-const CornerInpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M2 2 L22 2 L22 22 L2 22 L2 2 M6 6 L6 18 L18 18 L18 6 Z" fillRule="evenodd" />
-    <path d="M16 8 L8 12 L16 16 Z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
   </svg>
 )
 
 const CornerRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="2" y="2" width="20" height="20" rx="4" strokeWidth="4" stroke="currentColor" fill="none" />
-    <rect x="7" y="7" width="10" height="10" rx="2" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="3" y="3" width="18" height="18" rx="0" stroke="currentColor" strokeWidth="3" fill="none" />
+    <circle cx="12" cy="12" r="4" fill="currentColor" />
+  </svg>
+)
+
+const CornerInpointIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" fill="none" />
+    <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
   </svg>
 )
 
@@ -272,59 +250,52 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'inpoint', label: 'Wewnetrzny', icon: <CornerInpointIcon /> },
 ]
 
-// Ikony dla wewnętrznych kropek narożników
+// Ikony dla wewnętrznych kropek narożników - styl qr.io
 const InnerSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="6" y="6" width="12" height="12" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="4" y="4" width="16" height="16" rx="0" fill="currentColor" />
   </svg>
 )
 
 const InnerDotIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <circle cx="12" cy="12" r="6" />
-  </svg>
-)
-
-const InnerHeartIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <circle cx="12" cy="12" r="8" fill="currentColor" />
   </svg>
 )
 
 const InnerStarIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" fill="currentColor" />
   </svg>
 )
 
 const InnerDiamondIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M12 2 L22 12 L12 22 L2 12 Z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M12 2 L22 12 L12 22 L2 12 Z" fill="currentColor" />
   </svg>
 )
 
-// Ikony dla rozszerzonych wewnętrznych kropek narożników
 const InnerRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <rect x="6" y="6" width="12" height="12" rx="3" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <rect x="4" y="4" width="16" height="16" rx="4" fill="currentColor" />
   </svg>
 )
 
 const InnerClassyIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M6 6 L18 6 L18 18 L12 18 L12 12 L6 12 Z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M4 4 L20 4 L20 12 Q20 20 12 20 L4 20 Z" fill="currentColor" />
   </svg>
 )
 
 const InnerOutpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M6 12 L18 6 L18 18 Z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M4 4 L20 12 L4 20 Z" fill="currentColor" />
   </svg>
 )
 
 const InnerInpointIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path d="M18 12 L6 6 L6 18 Z" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6">
+    <path d="M20 4 L4 12 L20 20 Z" fill="currentColor" />
   </svg>
 )
 
