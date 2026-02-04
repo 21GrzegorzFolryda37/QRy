@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
-import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType, LinkPageData, SurveyData } from '@/types/database'
+import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType, LinkPageData, SurveyData, GradientOptions } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { createQrCode, updateQrCode, reserveShortCode } from '@/actions/qr'
 import { migrateQrStyle } from '@/lib/utils/style-migration'
@@ -11,7 +11,7 @@ import { getRedirectUrl, getLinkPageUrl, getSurveyUrl } from '@/lib/utils'
 import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
-import { LogoUploader } from './logo-uploader'
+import { LogoUploader, brandLogos } from './logo-uploader'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
 import { LinkPageEditor, defaultLinkPageData } from './linkpage-editor'
 import { SurveyEditor, defaultSurveyData } from './survey-editor'
@@ -19,6 +19,138 @@ import { SurveyEditor, defaultSurveyData } from './survey-editor'
 interface QrFormProps {
   qrCode?: QrCode
 }
+
+// Gotowe szablony marek
+interface BrandTemplate {
+  id: string
+  name: string
+  logoId: string
+  color: string // kolor marki do obramowania kafelka
+  style: Partial<QrStyle>
+}
+
+const brandTemplates: BrandTemplate[] = [
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    logoId: 'instagram',
+    color: '#E1306C',
+    style: {
+      foregroundColor: '#E1306C',
+      dotsType: 'rounded',
+      dotsGradient: { type: 'radial', rotation: 0, colorStops: [{ offset: 0, color: '#fdf497' }, { offset: 0.35, color: '#fd5949' }, { offset: 0.65, color: '#d6249f' }, { offset: 1, color: '#285AEB' }] },
+      cornersSquareType: 'extra-rounded',
+      cornersSquareColor: '#d6249f',
+      cornersDotType: 'dot',
+      cornersDotColor: '#fd5949',
+    },
+  },
+  {
+    id: 'spotify',
+    name: 'Spotify',
+    logoId: 'spotify',
+    color: '#1DB954',
+    style: {
+      foregroundColor: '#1DB954',
+      dotsType: 'dots',
+      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#1DB954' }, { offset: 1, color: '#191414' }] },
+      cornersSquareType: 'dot',
+      cornersSquareColor: '#1DB954',
+      cornersDotType: 'dot',
+      cornersDotColor: '#191414',
+    },
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook',
+    logoId: 'facebook',
+    color: '#1877F2',
+    style: {
+      foregroundColor: '#1877F2',
+      dotsType: 'rounded',
+      dotsGradient: null,
+      cornersSquareType: 'extra-rounded',
+      cornersSquareColor: '#1877F2',
+      cornersDotType: 'dot',
+      cornersDotColor: '#1877F2',
+    },
+  },
+  {
+    id: 'youtube',
+    name: 'YouTube',
+    logoId: 'youtube',
+    color: '#FF0000',
+    style: {
+      foregroundColor: '#FF0000',
+      dotsType: 'classy-rounded',
+      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#FF0000' }, { offset: 1, color: '#282828' }] },
+      cornersSquareType: 'extra-rounded',
+      cornersSquareColor: '#FF0000',
+      cornersDotType: 'dot',
+      cornersDotColor: '#FF0000',
+    },
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok',
+    logoId: 'tiktok',
+    color: '#00f2ea',
+    style: {
+      foregroundColor: '#000000',
+      dotsType: 'rounded',
+      dotsGradient: { type: 'linear', rotation: 135, colorStops: [{ offset: 0, color: '#00f2ea' }, { offset: 0.5, color: '#000000' }, { offset: 1, color: '#ff0050' }] },
+      cornersSquareType: 'classy-rounded',
+      cornersSquareColor: '#00f2ea',
+      cornersDotType: 'dot',
+      cornersDotColor: '#ff0050',
+    },
+  },
+  {
+    id: 'whatsapp',
+    name: 'WhatsApp',
+    logoId: 'whatsapp',
+    color: '#25D366',
+    style: {
+      foregroundColor: '#25D366',
+      dotsType: 'rounded',
+      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#25D366' }, { offset: 1, color: '#128C7E' }] },
+      cornersSquareType: 'extra-rounded',
+      cornersSquareColor: '#25D366',
+      cornersDotType: 'dot',
+      cornersDotColor: '#128C7E',
+    },
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    logoId: 'linkedin',
+    color: '#0A66C2',
+    style: {
+      foregroundColor: '#0A66C2',
+      dotsType: 'square',
+      dotsGradient: null,
+      cornersSquareType: 'square',
+      cornersSquareColor: '#0A66C2',
+      cornersDotType: 'square',
+      cornersDotColor: '#0A66C2',
+    },
+  },
+  {
+    id: 'x',
+    name: 'X',
+    logoId: 'x',
+    color: '#000000',
+    style: {
+      foregroundColor: '#000000',
+      dotsType: 'square',
+      dotsGradient: null,
+      cornersSquareType: 'square',
+      cornersSquareColor: '#000000',
+      cornersDotType: 'square',
+      cornersDotColor: '#000000',
+    },
+  },
+]
 
 // Sekcja rozwijana
 function CollapsibleSection({
@@ -278,6 +410,42 @@ export function QrForm({ qrCode }: QrFormProps) {
           </Card>
         )}
 
+        {/* Gotowe szablony */}
+        <CollapsibleSection title="Gotowe szablony" defaultOpen={true}>
+          <div className="grid grid-cols-4 gap-2">
+            {brandTemplates.map((template) => {
+              const brandLogo = brandLogos.find(b => b.id === template.logoId)
+              return (
+                <button
+                  key={template.id}
+                  type="button"
+                  onClick={() => {
+                    setStyle({ ...DEFAULT_QR_STYLE, ...template.style })
+                    setLogoUrl(brandLogo?.svg || '')
+                  }}
+                  className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all hover:scale-105 ${
+                    logoUrl === brandLogo?.svg
+                      ? 'border-[var(--primary)] bg-[var(--primary)]/5 ring-2 ring-[var(--primary)]/20'
+                      : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                  }`}
+                >
+                  {brandLogo && (
+                    <img
+                      src={brandLogo.svg}
+                      alt={template.name}
+                      className="w-8 h-8"
+                    />
+                  )}
+                  <span className="text-xs font-medium text-[var(--foreground)]">{template.name}</span>
+                </button>
+              )
+            })}
+          </div>
+          <p className="text-xs text-[var(--foreground-muted)]">
+            Kliknij szablon, aby zastosowac kolory, gradienty i logo marki.
+          </p>
+        </CollapsibleSection>
+
         {/* Styl modułów */}
         <CollapsibleSection title="Styl modulow" defaultOpen={false}>
           <ShapeSelector<DotsType>
@@ -448,6 +616,15 @@ export function QrForm({ qrCode }: QrFormProps) {
           />
         </CollapsibleSection>
 
+        {/* Logo */}
+        <CollapsibleSection title="Logo (opcjonalnie)">
+          <LogoUploader
+            value={logoUrl}
+            onChange={setLogoUrl}
+            onClear={() => setLogoUrl('')}
+          />
+        </CollapsibleSection>
+
         {/* Ustawienia zaawansowane */}
         <CollapsibleSection title="Ustawienia zaawansowane">
           <div>
@@ -510,15 +687,6 @@ export function QrForm({ qrCode }: QrFormProps) {
               />
             </div>
           </div>
-        </CollapsibleSection>
-
-        {/* Logo */}
-        <CollapsibleSection title="Logo (opcjonalnie)">
-          <LogoUploader
-            value={logoUrl}
-            onChange={setLogoUrl}
-            onClear={() => setLogoUrl('')}
-          />
         </CollapsibleSection>
 
         {error && (

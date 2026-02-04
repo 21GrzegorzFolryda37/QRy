@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 
 // Predefiniowane loga marek (identyczne jak w Hero)
-const brandLogos: { id: string; name: string; svg: string }[] = [
+export const brandLogos: { id: string; name: string; svg: string }[] = [
   {
     id: 'x',
     name: 'X (Twitter)',
