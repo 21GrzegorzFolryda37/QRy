@@ -195,69 +195,71 @@ export const dotsTypeOptions: ShapeOption<DotsType>[] = [
 
 // 1. Kwadrat ostry + kwadrat ostry
 const CornerSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="3" fill="none" />
-    <rect x="8" y="8" width="8" height="8" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path d="M2 2 H22 V22 H2 Z M5 5 H19 V19 H5 Z" fillRule="evenodd" />
+    <rect x="9" y="9" width="6" height="6" />
   </svg>
 )
 
 // 2. Kwadrat zaokrąglony + koło wewnątrz
 const CornerRoundedCircleIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="3" fill="none" />
-    <circle cx="12" cy="12" r="4" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M7 2 H17 Q22 2 22 7 V17 Q22 22 17 22 H7 Q2 22 2 17 V7 Q2 2 7 2 Z
+         M8 5 Q5 5 5 8 V16 Q5 19 8 19 H16 Q19 19 19 16 V8 Q19 5 16 5 Z"
+      fillRule="evenodd"
+    />
+    <circle cx="12" cy="12" r="3" />
   </svg>
 )
 
 // 3. Koło + koło
 const CornerDotIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-    <circle cx="12" cy="12" r="4" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
+      fillRule="evenodd"
+    />
+    <circle cx="12" cy="12" r="3" />
   </svg>
 )
 
 // 4. Kształt "D" (lewa ostra, prawa zaokrąglona) + "D" wewnątrz
 const CornerClassyIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
-      d="M4 2 L14 2 Q22 2 22 12 Q22 22 14 22 L4 22 L4 2 Z"
-      stroke="currentColor"
-      strokeWidth="3"
-      fill="none"
+      d="M2 2 L14 2 Q22 2 22 12 Q22 22 14 22 L2 22 Z
+         M5 5 L5 19 L13 19 Q19 19 19 12 Q19 5 13 5 Z"
+      fillRule="evenodd"
     />
-    <path
-      d="M8 8 L13 8 Q16 8 16 12 Q16 16 13 16 L8 16 L8 8 Z"
-      fill="currentColor"
-    />
+    <path d="M8 9 L13 9 Q15 9 15 12 Q15 15 13 15 L8 15 Z" />
   </svg>
 )
 
 // 5. Kwadrat zaokrąglony + kwadrat zaokrąglony
 const CornerExtraRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="2" y="2" width="20" height="20" rx="4" stroke="currentColor" strokeWidth="3" fill="none" />
-    <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M6 2 H18 Q22 2 22 6 V18 Q22 22 18 22 H6 Q2 22 2 18 V6 Q2 2 6 2 Z
+         M7 5 Q5 5 5 7 V17 Q5 19 7 19 H17 Q19 19 19 17 V7 Q19 5 17 5 Z"
+      fillRule="evenodd"
+    />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
   </svg>
 )
 
-// 6. Kwadrat ostry + koło (jak zaznaczony na qr.io)
-const CornerSquareCircleIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="3" fill="none" />
-    <circle cx="12" cy="12" r="4" fill="currentColor" />
-  </svg>
-)
-
-// 7. Koło + kwadrat zaokrąglony wewnątrz
+// 6. Koło + kwadrat zaokrąglony wewnątrz
 const CornerCircleRoundedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-    <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
+      fillRule="evenodd"
+    />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
   </svg>
 )
 
-// 8. Koło + kwadrat ostry wewnątrz
+// 7. Koło + kwadrat ostry wewnątrz
 const CornerCircleSquareIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
@@ -268,7 +270,7 @@ const CornerCircleSquareIcon = () => (
   </svg>
 )
 
-// 9. Kształt "D" odwrócony (prawa ostra, lewa zaokrąglona) + kwadrat zaokrąglony wewnątrz
+// 8. Kształt "D" odwrócony (prawa ostra, lewa zaokrąglona) + kwadrat zaokrąglony wewnątrz
 const CornerClassyReversedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
