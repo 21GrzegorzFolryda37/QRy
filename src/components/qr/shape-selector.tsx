@@ -259,29 +259,6 @@ const CornerCircleRoundedIcon = () => (
   </svg>
 )
 
-// 7. Koło + kwadrat ostry wewnątrz
-const CornerCircleSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path
-      d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
-      fillRule="evenodd"
-    />
-    <rect x="9" y="9" width="6" height="6" />
-  </svg>
-)
-
-// 8. Kształt "D" odwrócony (prawa ostra, lewa zaokrąglona) + kwadrat zaokrąglony wewnątrz
-const CornerClassyReversedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-    <path
-      d="M21 2 L21 22 L10 22 C4 22 2 18 2 12 C2 6 4 2 10 2 L21 2 Z
-         M18 5 L11 5 C7 5 5 7.5 5 12 C5 16.5 7 19 11 19 L18 19 L18 5 Z"
-      fillRule="evenodd"
-    />
-    <rect x="9" y="9" width="6" height="6" rx="1" />
-  </svg>
-)
-
 // Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
@@ -290,8 +267,6 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
   { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerCircleRoundedIcon /> },
-  { id: 'outpoint', label: 'Kolo + Kwadr', icon: <CornerCircleSquareIcon /> },
-  { id: 'rounded', label: 'Classy Odwr', icon: <CornerClassyReversedIcon /> },
 ]
 
 // ============================================
