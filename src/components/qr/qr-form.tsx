@@ -69,7 +69,7 @@ export function QrForm({ qrCode }: QrFormProps) {
     qrCode?.content_data || null
   )
   const [logoUrl, setLogoUrl] = useState(qrCode?.logo_url || '')
-  const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 96)
+  const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 80)
 
   // Obsługa zmiany typu - inicjalizacja danych dla linkpage/survey
   const handleContentTypeChange = (newType: QrCodeContentType) => {
