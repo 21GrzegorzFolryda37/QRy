@@ -6,6 +6,9 @@
 
 import type { DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 
+// Position of corner in QR code (for rotation)
+export type CornerPosition = 'top-left' | 'top-right' | 'bottom-left'
+
 // Shape renderer function type
 type ShapeRenderer = (
   ctx: CanvasRenderingContext2D,
@@ -13,6 +16,16 @@ type ShapeRenderer = (
   y: number,
   size: number,
   color: string
+) => void
+
+// Shape renderer with position support (for rotatable shapes)
+type PositionedShapeRenderer = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+  position: CornerPosition
 ) => void
 
 // ============================================================================
@@ -208,7 +221,7 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.stroke()
   },
 
-  // Classy frame - square with one rounded corner
+  // Classy frame - square with one rounded corner (positioned version handles rotation)
   classy: (ctx, x, y, size, color) => {
     const lineWidth = size / 7
     const radius = size / 3
@@ -225,7 +238,7 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.stroke()
   },
 
-  // Classy rounded frame
+  // Classy rounded frame (positioned version handles rotation)
   'classy-rounded': (ctx, x, y, size, color) => {
     const lineWidth = size / 7
     const radius = size / 3
@@ -237,7 +250,7 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
       y + lineWidth / 2,
       size - lineWidth,
       size - lineWidth,
-      [radius, radius, radius, 0]
+      [0, radius, radius, radius]
     )
     ctx.stroke()
   },
@@ -500,10 +513,84 @@ export function renderCornerSquare(
   x: number,
   y: number,
   size: number,
-  color: string
+  color: string,
+  position: CornerPosition = 'top-left'
 ): void {
+  // Handle positioned shapes that need rotation based on corner position
+  if (type === 'classy' || type === 'classy-rounded') {
+    renderPositionedClassySquare(ctx, type, x, y, size, color, position)
+    return
+  }
+
   const renderer = cornerSquareShapes[type] || cornerSquareShapes.square
   renderer(ctx, x, y, size, color)
+}
+
+/**
+ * Render classy/classy-rounded shapes with correct corner orientation
+ * The sharp corner should point to the outer corner of the QR code
+ */
+function renderPositionedClassySquare(
+  ctx: CanvasRenderingContext2D,
+  type: 'classy' | 'classy-rounded',
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+  position: CornerPosition
+): void {
+  const lineWidth = size / 7
+  const radius = size / 3
+
+  ctx.strokeStyle = color
+  ctx.lineWidth = lineWidth
+  ctx.beginPath()
+
+  // roundRect radii order: [top-left, top-right, bottom-right, bottom-left]
+  let radii: [number, number, number, number]
+
+  if (type === 'classy') {
+    // One rounded corner - the one pointing toward center of QR code
+    switch (position) {
+      case 'top-left':
+        // Sharp: top-left, top-right, bottom-left. Rounded: bottom-right
+        radii = [0, 0, radius, 0]
+        break
+      case 'top-right':
+        // Sharp: top-left, top-right, bottom-right. Rounded: bottom-left
+        radii = [0, 0, 0, radius]
+        break
+      case 'bottom-left':
+        // Sharp: top-left, bottom-right, bottom-left. Rounded: top-right
+        radii = [0, radius, 0, 0]
+        break
+    }
+  } else {
+    // classy-rounded: Three rounded corners, one sharp (the outer corner)
+    switch (position) {
+      case 'top-left':
+        // Sharp: top-left. Rounded: top-right, bottom-right, bottom-left
+        radii = [0, radius, radius, radius]
+        break
+      case 'top-right':
+        // Sharp: top-right. Rounded: top-left, bottom-right, bottom-left
+        radii = [radius, 0, radius, radius]
+        break
+      case 'bottom-left':
+        // Sharp: bottom-left. Rounded: top-left, top-right, bottom-right
+        radii = [radius, radius, radius, 0]
+        break
+    }
+  }
+
+  ctx.roundRect(
+    x + lineWidth / 2,
+    y + lineWidth / 2,
+    size - lineWidth,
+    size - lineWidth,
+    radii
+  )
+  ctx.stroke()
 }
 
 export function renderCornerDot(

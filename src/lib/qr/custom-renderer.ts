@@ -6,7 +6,7 @@
 
 import QRCode from 'qrcode'
 import type { DotsType, CornersSquareType, CornersDotType, GradientOptions } from '@/types/database'
-import { renderDot, renderCornerSquare, renderCornerDot } from './custom-shapes'
+import { renderDot, renderCornerSquare, renderCornerDot, type CornerPosition } from './custom-shapes'
 
 export interface CustomQROptions {
   data: string
@@ -198,11 +198,11 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
     }
   }
 
-  // Draw finder patterns
-  const finderPositions = [
-    { row: 0, col: 0 }, // Top-left
-    { row: 0, col: moduleCount - 7 }, // Top-right
-    { row: moduleCount - 7, col: 0 }, // Bottom-left
+  // Draw finder patterns with position info for rotatable shapes
+  const finderPositions: Array<{ row: number; col: number; position: CornerPosition }> = [
+    { row: 0, col: 0, position: 'top-left' },
+    { row: 0, col: moduleCount - 7, position: 'top-right' },
+    { row: moduleCount - 7, col: 0, position: 'bottom-left' },
   ]
 
   const cornerSquareColor = cornersSquareColor || foregroundColor
@@ -225,12 +225,12 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
     )
 
     if (typeof squareColorOrGradient === 'string') {
-      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, squareColorOrGradient)
+      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, squareColorOrGradient, pos.position)
     } else {
       ctx.save()
       ctx.fillStyle = squareColorOrGradient
       ctx.strokeStyle = squareColorOrGradient
-      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, cornerSquareColor)
+      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, cornerSquareColor, pos.position)
       ctx.restore()
     }
 
