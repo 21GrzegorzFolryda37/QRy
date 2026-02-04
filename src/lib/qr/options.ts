@@ -82,8 +82,11 @@ function createBaseOptions(
 
   // Add logo if provided
   if (logoUrl) {
+    // Auto-force error correction to H when logo is present
+    options.qrOptions = { ...options.qrOptions, errorCorrectionLevel: 'H' }
+
     const isDataUrl = logoUrl.startsWith('data:')
-    const effectiveLogoSize = logoSize || Math.round(size * 0.4)
+    const effectiveLogoSize = logoSize || Math.round(size * 0.25)
     options.image = logoUrl
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,

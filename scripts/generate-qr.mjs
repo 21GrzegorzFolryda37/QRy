@@ -71,7 +71,7 @@ function mapCornersDotType(type) {
 const DEFAULT_QR_STYLE = {
   foregroundColor: '#000000',
   backgroundColor: '#ffffff',
-  errorCorrectionLevel: 'M',
+  errorCorrectionLevel: 'H',
   margin: 2,
   width: 300,
   frameShape: 'square',
@@ -95,6 +95,7 @@ async function generateQR(input) {
   }
 
   const finalStyle = { ...DEFAULT_QR_STYLE, ...style }
+  if (logoUrl) finalStyle.errorCorrectionLevel = 'H'
   const frameShape = finalStyle.frameShape || 'square'
 
   const options = {
@@ -138,7 +139,7 @@ async function generateQR(input) {
   // Add logo if provided
   if (logoUrl) {
     const isDataUrl = logoUrl.startsWith('data:')
-    const effectiveLogoSize = logoSize || Math.round(size * 0.2)
+    const effectiveLogoSize = logoSize || Math.round(size * 0.25)
     options.image = logoUrl
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,

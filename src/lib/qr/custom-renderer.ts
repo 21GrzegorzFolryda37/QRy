@@ -174,8 +174,11 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
     logoMargin = 5,
   } = options
 
+  // Auto-force error correction to H when logo is present
+  const effectiveErrorCorrectionLevel = logoUrl ? 'H' : errorCorrectionLevel
+
   // Generate QR matrix
-  const qr = QRCode.create(data, { errorCorrectionLevel }) as QRMatrix
+  const qr = QRCode.create(data, { errorCorrectionLevel: effectiveErrorCorrectionLevel }) as QRMatrix
   const modules = qr.modules
   const moduleCount = modules.size
   const moduleData = modules.data
@@ -202,7 +205,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
   // Calculate logo area BEFORE rendering modules (so we can exclude modules in logo area)
   let logoArea: LogoArea | null = null
   if (logoUrl) {
-    const logoSizeValue = logoSize || Math.min(width, height) * 0.4
+    const logoSizeValue = logoSize || Math.min(width, height) * 0.25
     const logoX = (width - logoSizeValue) / 2 - logoMargin
     const logoY = (height - logoSizeValue) / 2 - logoMargin
     logoArea = {
@@ -313,7 +316,7 @@ async function drawLogo(
     img.crossOrigin = 'anonymous'
 
     img.onload = () => {
-      const size = logoSize || Math.min(canvasWidth, canvasHeight) * 0.2
+      const size = logoSize || Math.min(canvasWidth, canvasHeight) * 0.25
       const x = (canvasWidth - size) / 2
       const y = (canvasHeight - size) / 2
 

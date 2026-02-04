@@ -69,7 +69,7 @@ export function QrForm({ qrCode }: QrFormProps) {
     qrCode?.content_data || null
   )
   const [logoUrl, setLogoUrl] = useState(qrCode?.logo_url || '')
-  const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 128)
+  const [logoSize, setLogoSize] = useState(qrCode?.logo_size || 100)
 
   // Obsługa zmiany typu - inicjalizacja danych dla linkpage/survey
   const handleContentTypeChange = (newType: QrCodeContentType) => {
@@ -455,23 +455,30 @@ export function QrForm({ qrCode }: QrFormProps) {
               Poziom korekcji bledow
             </label>
             <select
-              value={style.errorCorrectionLevel}
+              value={logoUrl ? 'H' : style.errorCorrectionLevel}
               onChange={(e) =>
                 setStyle({
                   ...style,
                   errorCorrectionLevel: e.target.value as 'L' | 'M' | 'Q' | 'H',
                 })
               }
-              className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--background-surface)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              disabled={!!logoUrl}
+              className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--background-surface)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="L">Niski (7%)</option>
               <option value="M">Sredni (15%)</option>
               <option value="Q">Wysoki (25%)</option>
               <option value="H">Maksymalny (30%)</option>
             </select>
-            <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-              Wyzszy poziom pozwala na wieksze uszkodzenia, ale kod jest gestszy. Uzyj H jesli dodajesz logo.
-            </p>
+            {logoUrl ? (
+              <p className="mt-1 text-xs text-amber-600">
+                Korekcja bledow ustawiona automatycznie na Maksymalny (H) - wymagane przy logo.
+              </p>
+            ) : (
+              <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+                Wyzszy poziom pozwala na wieksze uszkodzenia, ale kod jest gestszy.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -61,7 +61,7 @@ function mapCornersDotType(type) {
 const DEFAULT_QR_STYLE = {
   foregroundColor: '#000000',
   backgroundColor: '#ffffff',
-  errorCorrectionLevel: 'M',
+  errorCorrectionLevel: 'H',
   margin: 2,
   dotsType: 'square',
   cornersSquareType: 'square',
@@ -73,6 +73,7 @@ async function generateQR(input) {
   if (!url) throw new Error('URL is required');
 
   const finalStyle = { ...DEFAULT_QR_STYLE, ...style };
+  if (logoUrl) finalStyle.errorCorrectionLevel = 'H';
   const options = {
     width: size || 300,
     height: size || 300,
@@ -98,7 +99,7 @@ async function generateQR(input) {
   };
 
   if (logoUrl) {
-    const effectiveLogoSize = logoSize || Math.round(size * 0.4);
+    const effectiveLogoSize = logoSize || Math.round(size * 0.25);
     options.image = logoUrl;
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,

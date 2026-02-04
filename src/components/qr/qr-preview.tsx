@@ -84,7 +84,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
           width: qrSize,
           height: qrSize,
           margin: Math.round(finalStyle.margin * (qrSize / 40)),
-          errorCorrectionLevel: finalStyle.errorCorrectionLevel,
+          errorCorrectionLevel: logoUrl ? 'H' : finalStyle.errorCorrectionLevel,
           foregroundColor: finalStyle.foregroundColor,
           backgroundColor: (frameShape !== 'square' || (frame && frame.style !== 'none'))
             ? 'transparent'
