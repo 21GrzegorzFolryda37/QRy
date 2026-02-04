@@ -28,7 +28,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const finalStyle: QrStyle = useMemo(() => ({ ...DEFAULT_QR_STYLE, ...style }), [styleString, style])
   const frameShape = finalStyle.frameShape || 'square'
   const frame = finalStyle.frame
-  const qrSize = 260 // Smaller QR to leave room for frames
+  const qrSize = 320 // QR preview size
 
   // Check if custom renderer is needed for extended shapes
   const useCustomRenderer = useMemo(() => needsCustomRenderer(finalStyle), [finalStyle])
