@@ -267,10 +267,8 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'extra-rounded', label: 'Extra Round', icon: <CornerExtraRoundedIcon /> },
   { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <CornerClassyRoundedIcon /> },
-  { id: 'dotted', label: 'Kropkowany', icon: <CornerDottedIcon /> },
   // Rozszerzone (@qr-platform)
   { id: 'rounded', label: 'Zaokraglony', icon: <CornerRoundedIcon /> },
-  { id: 'outpoint', label: 'Zewnetrzny', icon: <CornerOutpointIcon /> },
   { id: 'inpoint', label: 'Wewnetrzny', icon: <CornerInpointIcon /> },
 ]
 
@@ -334,7 +332,6 @@ const InnerInpointIcon = () => (
 export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <InnerSquareIcon /> },
   { id: 'dot', label: 'Kropka', icon: <InnerDotIcon /> },
-  { id: 'heart', label: 'Serce', icon: <InnerHeartIcon /> },
   { id: 'star', label: 'Gwiazda', icon: <InnerStarIcon /> },
   { id: 'diamond', label: 'Diament', icon: <InnerDiamondIcon /> },
   // Rozszerzone (@qr-platform)
