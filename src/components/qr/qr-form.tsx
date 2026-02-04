@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { QrCode, QrStyle, DotsType, CornersSquareType, CornersDotType, QrCodeContentType, LinkPageData, SurveyData, GradientOptions } from '@/types/database'
@@ -15,6 +15,8 @@ import { LogoUploader, brandLogos } from './logo-uploader'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
 import { LinkPageEditor, defaultLinkPageData } from './linkpage-editor'
 import { SurveyEditor, defaultSurveyData } from './survey-editor'
+import { generateQrCodeImage } from '@/lib/qr/options'
+import type QRCodeStylingType from 'qr-code-styling'
 
 interface QrFormProps {
   qrCode?: QrCode
@@ -227,6 +229,15 @@ export function QrForm({ qrCode }: QrFormProps) {
   // Get current content type info for placeholder
   const contentTypeInfo = getContentTypeOption(contentType)
 
+  // Dynamic import of qr-code-styling for client-side QR generation
+  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
+
+  useEffect(() => {
+    import('qr-code-styling').then((module) => {
+      setQRCodeStyling(() => module.default)
+    })
+  }, [])
+
   const isEditing = !!qrCode
 
   async function handleSubmit(e: React.FormEvent) {
@@ -262,28 +273,14 @@ export function QrForm({ qrCode }: QrFormProps) {
         redirectUrl = getRedirectUrl(shortCode)
       }
 
-      // Generate QR code via server-side API
-      // Uses @qr-platform/qr-code.js for extended shape support
-      const response = await fetch('/api/qr/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: redirectUrl,
-          style,
-          size: style.width,
-          logoUrl: logoUrl || undefined,
-          logoSize,
-        }),
+      // Generate QR code client-side
+      const qrImageDataUrl = await generateQrCodeImage(QRCodeStyling, {
+        url: redirectUrl,
+        style,
+        size: style.width,
+        logoUrl: logoUrl || undefined,
+        logoSize,
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        setError(errorData.error || 'Nie udalo sie wygenerowac obrazu kodu QR')
-        setIsLoading(false)
-        return
-      }
-
-      const { dataUrl: qrImageDataUrl } = await response.json()
 
       if (!qrImageDataUrl) {
         setError('Nie udalo sie wygenerowac obrazu kodu QR')
