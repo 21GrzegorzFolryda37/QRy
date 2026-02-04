@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { spawn } from 'child_process'
 
 /**
  * Server-side QR code generation using @qr-platform/qr-code.js
- * Uses a separate script via child_process to avoid Turbopack bundling issues
+ * Uses dynamic import to avoid Turbopack bundling issues
  */
 
 interface GenerateRequest {
@@ -14,49 +13,51 @@ interface GenerateRequest {
   logoSize?: number
 }
 
-// Inline script content as fallback for serverless environments
-const INLINE_SCRIPT = `
-const { QRCodeJs } = require('@qr-platform/qr-code.js');
+interface GradientInput {
+  type: string
+  rotation: number
+  colorStops: Array<{ offset: number; color: string }>
+}
 
-function convertGradient(gradient) {
-  if (!gradient) return undefined;
+function convertGradient(gradient: GradientInput | null | undefined) {
+  if (!gradient) return undefined
   return {
     type: gradient.type,
     rotation: (gradient.rotation * Math.PI) / 180,
     colorStops: gradient.colorStops,
-  };
+  }
 }
 
-function mapDotsType(type) {
-  const mapping = {
+function mapDotsType(type: string): string {
+  const mapping: Record<string, string> = {
     'square': 'square', 'dots': 'dot', 'rounded': 'rounded',
     'extra-rounded': 'extra-rounded', 'classy': 'classy', 'classy-rounded': 'classy-rounded',
     'diamond': 'diamond', 'star': 'star', 'vertical-line': 'vertical-line',
     'horizontal-line': 'horizontal-line', 'random-dot': 'random-dot',
     'small-square': 'small-square', 'tiny-square': 'tiny-square',
-  };
-  return mapping[type] || 'square';
+  }
+  return mapping[type] || 'square'
 }
 
-function mapCornersSquareType(type) {
-  const mapping = {
+function mapCornersSquareType(type: string): string {
+  const mapping: Record<string, string> = {
     'square': 'square', 'dot': 'dot', 'extra-rounded': 'rounded',
     'rounded': 'rounded', 'classy': 'classy', 'classy-rounded': 'rounded',
     'dotted': 'dot', 'outpoint': 'outpoint', 'inpoint': 'inpoint',
-  };
-  return mapping[type] || 'square';
+  }
+  return mapping[type] || 'square'
 }
 
-function mapCornersDotType(type) {
-  const mapping = {
+function mapCornersDotType(type: string): string {
+  const mapping: Record<string, string> = {
     'square': 'square', 'dot': 'dot', 'heart': 'heart',
     'star': 'dot', 'diamond': 'square', 'rounded': 'rounded',
     'classy': 'classy', 'outpoint': 'outpoint', 'inpoint': 'inpoint',
-  };
-  return mapping[type] || 'square';
+  }
+  return mapping[type] || 'square'
 }
 
-const DEFAULT_QR_STYLE = {
+const DEFAULT_QR_STYLE: Record<string, unknown> = {
   foregroundColor: '#000000',
   backgroundColor: '#ffffff',
   errorCorrectionLevel: 'H',
@@ -64,142 +65,86 @@ const DEFAULT_QR_STYLE = {
   dotsType: 'square',
   cornersSquareType: 'square',
   cornersDotType: 'square',
-};
+}
 
-async function generateQR(input) {
-  const { url, style, size, logoUrl, logoSize } = input;
-  if (!url) throw new Error('URL is required');
+async function generateQR(input: GenerateRequest): Promise<{ dataUrl: string; svg: string }> {
+  const { url, style, size, logoUrl, logoSize } = input
 
-  const finalStyle = { ...DEFAULT_QR_STYLE, ...style };
-  if (logoUrl) finalStyle.errorCorrectionLevel = 'H';
-  const options = {
+  if (!url) throw new Error('URL is required')
+
+  const finalStyle: Record<string, unknown> = { ...DEFAULT_QR_STYLE, ...style }
+
+  // Auto-force error correction to H when logo is present
+  if (logoUrl) finalStyle.errorCorrectionLevel = 'H'
+
+  const options: Record<string, unknown> = {
     width: size || 300,
     height: size || 300,
     data: url,
-    margin: Math.round(finalStyle.margin * (size / 40)),
+    margin: Math.round((finalStyle.margin as number) * (size / 40)),
     qrOptions: { errorCorrectionLevel: finalStyle.errorCorrectionLevel },
     dotsOptions: {
-      type: mapDotsType(finalStyle.dotsType),
-      color: finalStyle.foregroundColor,
-      gradient: convertGradient(finalStyle.dotsGradient),
+      type: mapDotsType(finalStyle.dotsType as string),
+      color: finalStyle.foregroundColor as string,
+      gradient: convertGradient(finalStyle.dotsGradient as GradientInput | null),
     },
     cornersSquareOptions: {
-      type: mapCornersSquareType(finalStyle.cornersSquareType),
-      color: finalStyle.cornersSquareColor || finalStyle.foregroundColor,
-      gradient: convertGradient(finalStyle.cornersSquareGradient),
+      type: mapCornersSquareType(finalStyle.cornersSquareType as string),
+      color: (finalStyle.cornersSquareColor as string) || (finalStyle.foregroundColor as string),
+      gradient: convertGradient(finalStyle.cornersSquareGradient as GradientInput | null),
     },
     cornersDotOptions: {
-      type: mapCornersDotType(finalStyle.cornersDotType),
-      color: finalStyle.cornersDotColor || finalStyle.foregroundColor,
-      gradient: convertGradient(finalStyle.cornersDotGradient),
+      type: mapCornersDotType(finalStyle.cornersDotType as string),
+      color: (finalStyle.cornersDotColor as string) || (finalStyle.foregroundColor as string),
+      gradient: convertGradient(finalStyle.cornersDotGradient as GradientInput | null),
     },
-    backgroundOptions: { color: finalStyle.backgroundColor },
-  };
+    backgroundOptions: { color: finalStyle.backgroundColor as string },
+  }
 
   if (logoUrl) {
-    const effectiveLogoSize = logoSize || Math.round(size * 0.2);
-    options.image = logoUrl;
+    const effectiveLogoSize = logoSize || Math.round(size * 0.2)
+    options.image = logoUrl
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,
       margin: 5,
       ...(logoUrl.startsWith('data:') ? {} : { crossOrigin: 'anonymous' }),
-    };
+    }
   }
 
-  const qrCode = new QRCodeJs(options);
-  const svgString = await qrCode.serialize();
-  if (!svgString) throw new Error('Failed to generate QR code');
+  // Dynamic import with variable path to prevent Turbopack from bundling
+  const pkgName = '@qr-platform/qr-code.js'
+  const { QRCodeJs } = await import(/* webpackIgnore: true */ pkgName)
+  const qrCode = new QRCodeJs(options)
+  const svgString = await qrCode.serialize()
+  if (!svgString) throw new Error('Failed to generate QR code')
 
-  const base64 = Buffer.from(svgString).toString('base64');
-  return { dataUrl: 'data:image/svg+xml;base64,' + base64, svg: svgString };
-}
-
-let inputData = '';
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', (chunk) => { inputData += chunk; });
-process.stdin.on('end', async () => {
-  try {
-    const input = JSON.parse(inputData);
-    const result = await generateQR(input);
-    console.log(JSON.stringify(result));
-    process.exit(0);
-  } catch (error) {
-    console.error(JSON.stringify({ error: error.message }));
-    process.exit(1);
-  }
-});
-`;
-
-async function generateQRViaScript(input: GenerateRequest): Promise<{ dataUrl: string; svg: string }> {
-  return new Promise((resolve, reject) => {
-    // Always use inline script - external .mjs file has ESM resolution issues on Vercel
-    const child = spawn(process.execPath, ['-e', INLINE_SCRIPT], {
-      cwd: process.cwd(),
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
-
-    let stdout = '';
-    let stderr = '';
-
-    child.stdout.on('data', (data: Buffer) => {
-      stdout += data.toString();
-    });
-
-    child.stderr.on('data', (data: Buffer) => {
-      stderr += data.toString();
-    });
-
-    child.on('close', (code: number | null) => {
-      if (code === 0) {
-        try {
-          const result = JSON.parse(stdout);
-          resolve(result);
-        } catch {
-          reject(new Error('Failed to parse QR generation result: ' + stdout));
-        }
-      } else {
-        try {
-          const errorResult = JSON.parse(stderr);
-          reject(new Error(errorResult.error || 'QR generation failed'));
-        } catch {
-          reject(new Error(stderr || 'QR generation failed with code ' + code));
-        }
-      }
-    });
-
-    child.on('error', (err: Error) => {
-      reject(err);
-    });
-
-    // Send input to script via stdin
-    child.stdin.write(JSON.stringify(input));
-    child.stdin.end();
-  });
+  const base64 = Buffer.from(svgString).toString('base64')
+  return { dataUrl: 'data:image/svg+xml;base64,' + base64, svg: svgString }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GenerateRequest = await request.json();
-    const { url, style, size, logoUrl, logoSize } = body;
+    const body: GenerateRequest = await request.json()
+    const { url, style, size, logoUrl, logoSize } = body
 
     if (!url) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+      return NextResponse.json({ error: 'URL is required' }, { status: 400 })
     }
 
-    const result = await generateQRViaScript({
+    const result = await generateQR({
       url,
       style: style || {},
       size: size || 300,
       logoUrl,
       logoSize,
-    });
+    })
 
-    return NextResponse.json(result);
+    return NextResponse.json(result)
   } catch (error) {
-    console.error('Error generating QR code:', error);
+    console.error('Error generating QR code:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
