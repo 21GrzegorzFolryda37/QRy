@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { spawn } from 'child_process'
-import path from 'path'
-import fs from 'fs'
 
 /**
  * Server-side QR code generation using @qr-platform/qr-code.js
@@ -134,35 +132,11 @@ process.stdin.on('end', async () => {
 
 async function generateQRViaScript(input: GenerateRequest): Promise<{ dataUrl: string; svg: string }> {
   return new Promise((resolve, reject) => {
-    // Try to find the script file first
-    const possiblePaths = [
-      path.join(process.cwd(), 'scripts', 'generate-qr.mjs'),
-      path.join(process.cwd(), '.next', 'server', 'scripts', 'generate-qr.mjs'),
-      path.join(__dirname, '..', '..', '..', '..', 'scripts', 'generate-qr.mjs'),
-    ];
-
-    let scriptPath: string | null = null;
-    for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        scriptPath = p;
-        break;
-      }
-    }
-
-    let child;
-    if (scriptPath) {
-      // Use external script file
-      child = spawn(process.execPath, [scriptPath], {
-        cwd: process.cwd(),
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-    } else {
-      // Fallback: use inline script via -e flag
-      child = spawn(process.execPath, ['-e', INLINE_SCRIPT], {
-        cwd: process.cwd(),
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-    }
+    // Always use inline script - external .mjs file has ESM resolution issues on Vercel
+    const child = spawn(process.execPath, ['-e', INLINE_SCRIPT], {
+      cwd: process.cwd(),
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
 
     let stdout = '';
     let stderr = '';
