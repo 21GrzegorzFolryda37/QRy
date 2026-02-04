@@ -22,7 +22,7 @@ export const DEFAULT_QR_STYLE: QrStyle = {
 
   // Ustawienia generowania
   errorCorrectionLevel: 'M',
-  margin: 4,
+  margin: 2,
   width: 400,
 
   // Kształt całego kodu QR

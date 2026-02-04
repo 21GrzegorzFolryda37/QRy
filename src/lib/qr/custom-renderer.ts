@@ -237,15 +237,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
         const x = offset + col * moduleSize
         const y = offset + row * moduleSize
 
-        // Apply gradient or solid color
-        if (typeof dotsColorOrGradient === 'string') {
-          renderDot(ctx, dotsType, x, y, moduleSize, dotsColorOrGradient)
-        } else {
-          ctx.save()
-          ctx.fillStyle = dotsColorOrGradient
-          renderDot(ctx, dotsType, x, y, moduleSize, foregroundColor)
-          ctx.restore()
-        }
+        renderDot(ctx, dotsType, x, y, moduleSize, dotsColorOrGradient)
       }
     }
   }
@@ -276,15 +268,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
       finderSize
     )
 
-    if (typeof squareColorOrGradient === 'string') {
-      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, squareColorOrGradient, pos.position)
-    } else {
-      ctx.save()
-      ctx.fillStyle = squareColorOrGradient
-      ctx.strokeStyle = squareColorOrGradient
-      renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, cornerSquareColor, pos.position)
-      ctx.restore()
-    }
+    renderCornerSquare(ctx, cornersSquareType, x, y, finderSize, squareColorOrGradient, pos.position)
 
     // Draw corner dot (inner dot) - centered, 3 modules
     const dotSize = 3 * moduleSize
@@ -301,14 +285,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
       dotSize
     )
 
-    if (typeof dotColorOrGradient === 'string') {
-      renderCornerDot(ctx, cornersDotType, dotX, dotY, dotSize, dotColorOrGradient)
-    } else {
-      ctx.save()
-      ctx.fillStyle = dotColorOrGradient
-      renderCornerDot(ctx, cornersDotType, dotX, dotY, dotSize, cornerDotColor)
-      ctx.restore()
-    }
+    renderCornerDot(ctx, cornersDotType, dotX, dotY, dotSize, dotColorOrGradient)
   }
 
   // Draw logo if provided

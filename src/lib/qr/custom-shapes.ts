@@ -9,23 +9,16 @@ import type { DotsType, CornersSquareType, CornersDotType } from '@/types/databa
 // Position of corner in QR code (for rotation)
 export type CornerPosition = 'top-left' | 'top-right' | 'bottom-left'
 
+// Color type that supports both solid colors and gradients
+type FillColor = string | CanvasGradient
+
 // Shape renderer function type
 type ShapeRenderer = (
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   size: number,
-  color: string
-) => void
-
-// Shape renderer with position support (for rotatable shapes)
-type PositionedShapeRenderer = (
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  color: string,
-  position: CornerPosition
+  color: FillColor
 ) => void
 
 // ============================================================================
@@ -501,7 +494,7 @@ export function renderDot(
   x: number,
   y: number,
   size: number,
-  color: string
+  color: FillColor
 ): void {
   const renderer = dotShapes[type] || dotShapes.square
   renderer(ctx, x, y, size, color)
@@ -513,7 +506,7 @@ export function renderCornerSquare(
   x: number,
   y: number,
   size: number,
-  color: string,
+  color: FillColor,
   position: CornerPosition = 'top-left'
 ): void {
   // Handle positioned shapes that need rotation based on corner position
@@ -536,7 +529,7 @@ function renderPositionedClassySquare(
   x: number,
   y: number,
   size: number,
-  color: string,
+  color: FillColor,
   position: CornerPosition
 ): void {
   const lineWidth = size / 7
@@ -599,7 +592,7 @@ export function renderCornerDot(
   x: number,
   y: number,
   size: number,
-  color: string
+  color: FillColor
 ): void {
   const renderer = cornerDotShapes[type] || cornerDotShapes.square
   renderer(ctx, x, y, size, color)
