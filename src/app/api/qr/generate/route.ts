@@ -99,7 +99,7 @@ async function generateQR(input) {
   };
 
   if (logoUrl) {
-    const effectiveLogoSize = logoSize || Math.round(size * 0.25);
+    const effectiveLogoSize = logoSize || Math.round(size * 0.2);
     options.image = logoUrl;
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,

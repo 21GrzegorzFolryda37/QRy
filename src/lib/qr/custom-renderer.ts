@@ -205,7 +205,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
   // Calculate logo area BEFORE rendering modules (so we can exclude modules in logo area)
   let logoArea: LogoArea | null = null
   if (logoUrl) {
-    const logoSizeValue = logoSize || Math.min(width, height) * 0.25
+    const logoSizeValue = logoSize || Math.min(width, height) * 0.2
     const logoX = (width - logoSizeValue) / 2 - logoMargin
     const logoY = (height - logoSizeValue) / 2 - logoMargin
     logoArea = {
