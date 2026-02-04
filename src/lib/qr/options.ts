@@ -83,7 +83,7 @@ function createBaseOptions(
   // Add logo if provided
   if (logoUrl) {
     const isDataUrl = logoUrl.startsWith('data:')
-    const effectiveLogoSize = logoSize || Math.round(size * 0.25)
+    const effectiveLogoSize = logoSize || Math.round(size * 0.4)
     options.image = logoUrl
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,
@@ -269,7 +269,7 @@ function drawFrameOnCanvas(
       ctx.arc(width / 2, width / 2, width / 2 - 2, 0, Math.PI * 2)
       ctx.fill()
       // Ribbon
-      const ribbonWidth = width * 0.255
+      const ribbonWidth = width * 0.45
       const ribbonHeight = height * 0.15
       ctx.fillRect((width - ribbonWidth) / 2, height - ribbonHeight - 4, ribbonWidth, ribbonHeight)
       ctx.beginPath()

@@ -88,7 +88,7 @@ async function addLogoToQr(
   size: number,
   logoSize: number
 ): Promise<Buffer> {
-  const logoSizePixels = logoSize || Math.round(size * 0.25)
+  const logoSizePixels = logoSize || Math.round(size * 0.4)
   const logoPosition = Math.round((size - logoSizePixels) / 2)
 
   let logoBuffer: Buffer
@@ -164,7 +164,7 @@ export async function generateQrCode(options: GenerateQrOptions): Promise<Buffer
       qrBuffer,
       options.logoUrl,
       size,
-      options.logoSize || Math.round(size * 0.25)
+      options.logoSize || Math.round(size * 0.4)
     )
   }
 
