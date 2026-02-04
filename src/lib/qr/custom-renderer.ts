@@ -113,6 +113,42 @@ function isFinderPattern(row: number, col: number, size: number): boolean {
 }
 
 /**
+ * Logo area for module exclusion
+ */
+interface LogoArea {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+/**
+ * Check if a module position overlaps with the logo area
+ * Modules in this area won't be rendered - the logo will occupy this space
+ */
+function isInLogoArea(
+  row: number,
+  col: number,
+  moduleSize: number,
+  offset: number,
+  logoArea: LogoArea | null
+): boolean {
+  if (!logoArea) return false
+
+  // Module position in pixels
+  const moduleX = offset + col * moduleSize
+  const moduleY = offset + row * moduleSize
+
+  // Check if module overlaps with logo area
+  return (
+    moduleX + moduleSize > logoArea.x &&
+    moduleX < logoArea.x + logoArea.width &&
+    moduleY + moduleSize > logoArea.y &&
+    moduleY < logoArea.y + logoArea.height
+  )
+}
+
+/**
  * Render the QR code to a canvas element
  */
 export async function renderCustomQRCode(options: CustomQROptions): Promise<HTMLCanvasElement> {
@@ -163,6 +199,20 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
   }
   ctx.fillRect(0, 0, width, height)
 
+  // Calculate logo area BEFORE rendering modules (so we can exclude modules in logo area)
+  let logoArea: LogoArea | null = null
+  if (logoUrl) {
+    const logoSizeValue = logoSize || Math.min(width, height) * 0.2
+    const logoX = (width - logoSizeValue) / 2 - logoMargin
+    const logoY = (height - logoSizeValue) / 2 - logoMargin
+    logoArea = {
+      x: logoX,
+      y: logoY,
+      width: logoSizeValue + logoMargin * 2,
+      height: logoSizeValue + logoMargin * 2,
+    }
+  }
+
   // Prepare colors/gradients for dots
   const dotsColorOrGradient = getColorOrGradient(
     ctx,
@@ -174,11 +224,13 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
     size - margin * 2
   )
 
-  // Draw data modules (excluding finder patterns)
+  // Draw data modules (excluding finder patterns and logo area)
   for (let row = 0; row < moduleCount; row++) {
     for (let col = 0; col < moduleCount; col++) {
       // Skip finder pattern areas
       if (isFinderPattern(row, col, moduleCount)) continue
+      // Skip logo area - modules won't be rendered where logo sits
+      if (isInLogoArea(row, col, moduleSize, offset, logoArea)) continue
 
       const idx = row * moduleCount + col
       if (moduleData[idx]) {
