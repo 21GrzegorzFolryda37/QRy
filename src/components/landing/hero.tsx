@@ -5,7 +5,7 @@ import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type TabType = 'sticker' | 'color' | 'shape' | 'edges' | 'logo' | 'templates'
+type TabType = 'color' | 'shape' | 'edges' | 'logo' | 'templates'
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
 type CornerDotShape = 'square' | 'dot'
@@ -53,21 +53,6 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
 }
 
 type FrameStyle = 'none' | 'simple' | 'rounded' | 'badge-top' | 'badge-bottom' | 'bubble' | 'pointer' | 'ticket' | 'stamp' | 'ribbon' | 'chat' | 'hexagon'
-
-const frameTemplates: { id: FrameStyle; label: string; text?: string }[] = [
-  { id: 'none', label: 'Brak' },
-  { id: 'simple', label: 'Prosta', text: 'SCAN ME' },
-  { id: 'rounded', label: 'Zaokrąglona', text: 'SCAN ME' },
-  { id: 'badge-top', label: 'Badge góra', text: 'SCAN ME' },
-  { id: 'badge-bottom', label: 'Badge dół', text: 'SKANUJ TUTAJ' },
-  { id: 'bubble', label: 'Bąbel', text: 'SCAN ME' },
-  { id: 'pointer', label: 'Wskaźnik', text: 'SKANUJ' },
-  { id: 'ticket', label: 'Bilet', text: 'SCAN ME' },
-  { id: 'stamp', label: 'Pieczątka', text: 'QR CODE' },
-  { id: 'ribbon', label: 'Wstążka', text: 'SCAN ME' },
-  { id: 'chat', label: 'Chat', text: 'ZESKANUJ!' },
-  { id: 'hexagon', label: 'Heksagon', text: 'SCAN' },
-]
 
 // Paleta kolorów - górny rząd (9 kolorów) + dolny rząd (5 kolorów)
 const colorPaletteTop = [
@@ -183,13 +168,13 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
 
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
-  const [activeTab, setActiveTab] = useState<TabType>('sticker')
+  const [activeTab, setActiveTab] = useState<TabType>('color')
 
   // Form fields
   const [formData, setFormData] = useState<Record<string, string>>({})
 
   // QR customization
-  const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('simple')
+  const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('none')
   const [frameText, setFrameText] = useState('SCAN ME')
   const [dotColor, setDotColor] = useState('#000000')
   const [dotGradient, setDotGradient] = useState(false)
@@ -551,10 +536,8 @@ export function Hero() {
     }
   }
 
-  const currentFrame = frameTemplates.find(f => f.id === selectedFrame)
   const tabs: { id: TabType; label: string }[] = [
     { id: 'templates', label: 'SZABLONY' },
-    { id: 'sticker', label: 'RAMKA' },
     { id: 'color', label: 'KOLOR' },
     { id: 'shape', label: 'KSZTAŁT' },
     { id: 'edges', label: 'KRAWĘDZIE' },
@@ -905,43 +888,6 @@ export function Hero() {
                             <span className="text-xs font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">Instagram</span>
                           </button>
                         </div>
-                      </div>
-                    )}
-
-                    {activeTab === 'sticker' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-6 gap-2">
-                          {frameTemplates.map((frame) => (
-                            <button
-                              key={frame.id}
-                              onClick={() => {
-                                setSelectedFrame(frame.id)
-                                if (frame.text) setFrameText(frame.text)
-                              }}
-                              className={`aspect-square rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
-                                selectedFrame === frame.id
-                                  ? 'border-[var(--success)] bg-[var(--success)]/5'
-                                  : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                              }`}
-                              title={frame.label}
-                            >
-                              <FramePreviewIcon frameId={frame.id} className="w-full h-full" />
-                            </button>
-                          ))}
-                        </div>
-                        {selectedFrame !== 'none' && (
-                          <div>
-                            <label className="block text-xs font-medium text-[var(--foreground-muted)] mb-1.5">Tekst ramki</label>
-                            <input
-                              type="text"
-                              value={frameText}
-                              onChange={(e) => setFrameText(e.target.value.toUpperCase())}
-                              placeholder="SCAN ME"
-                              maxLength={20}
-                              className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--success)]"
-                            />
-                          </div>
-                        )}
                       </div>
                     )}
 

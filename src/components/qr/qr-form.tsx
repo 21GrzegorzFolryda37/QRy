@@ -13,7 +13,6 @@ import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTyp
 import { GradientEditor } from './gradient-editor'
 import { LogoUploader } from './logo-uploader'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
-import { FrameSelector } from './frame-selector'
 import { LinkPageEditor, defaultLinkPageData } from './linkpage-editor'
 import { SurveyEditor, defaultSurveyData } from './survey-editor'
 
@@ -278,14 +277,6 @@ export function QrForm({ qrCode }: QrFormProps) {
             </CardContent>
           </Card>
         )}
-
-        {/* Ramka dekoracyjna */}
-        <CollapsibleSection title="Ramka dekoracyjna" defaultOpen={false}>
-          <FrameSelector
-            value={style.frame}
-            onChange={(value) => setStyle({ ...style, frame: value })}
-          />
-        </CollapsibleSection>
 
         {/* Styl modułów */}
         <CollapsibleSection title="Styl modulow" defaultOpen={false}>
