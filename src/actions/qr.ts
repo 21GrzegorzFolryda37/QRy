@@ -168,7 +168,7 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
 
   if (error) {
     console.error('Error creating QR code:', error)
-    return { error: 'Failed to create QR code' }
+    return { error: `Failed to create QR code: ${error.message || error.code || JSON.stringify(error)}` }
   }
 
   revalidatePath('/qr-codes')
@@ -259,7 +259,7 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
 
   if (error) {
     console.error('Error updating QR code:', error)
-    return { error: 'Failed to update QR code' }
+    return { error: `Failed to update QR code: ${error.message || error.code || JSON.stringify(error)}` }
   }
 
   revalidatePath('/qr-codes')

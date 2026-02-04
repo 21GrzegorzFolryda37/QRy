@@ -44,16 +44,16 @@ export const qrStyleSchema = z.object({
   frameShape: z.enum(['square', 'circle', 'rounded', 'heart', 'hexagon', 'star', 'diamond']),
 
   // Styl modułów (dots)
-  dotsType: z.enum(['square', 'rounded', 'dots', 'classy', 'classy-rounded', 'extra-rounded']),
+  dotsType: z.enum(['square', 'rounded', 'dots', 'classy', 'classy-rounded', 'extra-rounded', 'diamond', 'star', 'vertical-line', 'horizontal-line', 'random-dot', 'small-square', 'tiny-square']),
   dotsGradient: gradientOptionsSchema,
 
   // Styl narożników
-  cornersSquareType: z.enum(['square', 'dot', 'extra-rounded', 'classy', 'classy-rounded', 'dotted']),
+  cornersSquareType: z.enum(['square', 'dot', 'extra-rounded', 'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint']),
   cornersSquareColor: hexColorSchema.nullable(),
   cornersSquareGradient: gradientOptionsSchema,
 
   // Styl wewnętrznych kropek narożników
-  cornersDotType: z.enum(['square', 'dot', 'heart', 'star', 'diamond']),
+  cornersDotType: z.enum(['square', 'dot', 'heart', 'star', 'diamond', 'rounded', 'classy', 'outpoint', 'inpoint']),
   cornersDotColor: hexColorSchema.nullable(),
   cornersDotGradient: gradientOptionsSchema,
 
