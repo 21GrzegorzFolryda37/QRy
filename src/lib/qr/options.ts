@@ -83,7 +83,7 @@ function createBaseOptions(
   // Add logo if provided
   if (logoUrl) {
     const isDataUrl = logoUrl.startsWith('data:')
-    const effectiveLogoSize = logoSize || Math.round(size * 0.25)
+    const effectiveLogoSize = logoSize || Math.round(size * 0.3)
     options.image = logoUrl
     options.imageOptions = {
       imageSize: effectiveLogoSize / size,
