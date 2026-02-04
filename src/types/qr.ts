@@ -21,7 +21,7 @@ export const DEFAULT_QR_STYLE: QrStyle = {
   backgroundColor: '#FFFFFF',
 
   // Ustawienia generowania
-  errorCorrectionLevel: 'M',
+  errorCorrectionLevel: 'H',
   margin: 2,
   width: 400,
 
