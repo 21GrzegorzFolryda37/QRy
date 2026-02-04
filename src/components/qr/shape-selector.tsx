@@ -259,25 +259,24 @@ const CornerCircleRoundedIcon = () => (
 
 // 8. Koło + kwadrat ostry wewnątrz
 const CornerCircleSquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-    <rect x="8" y="8" width="8" height="8" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
+      fillRule="evenodd"
+    />
+    <rect x="9" y="9" width="6" height="6" />
   </svg>
 )
 
-// 9. Kształt "D" odwrócony (prawa ostra, lewa zaokrąglona) + "D" wewnątrz
+// 9. Kształt "D" odwrócony (prawa ostra, lewa zaokrąglona) + kwadrat zaokrąglony wewnątrz
 const CornerClassyReversedIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6">
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
-      d="M20 2 L10 2 Q2 2 2 12 Q2 22 10 22 L20 22 L20 2 Z"
-      stroke="currentColor"
-      strokeWidth="3"
-      fill="none"
+      d="M21 2 L21 22 L10 22 C4 22 2 18 2 12 C2 6 4 2 10 2 L21 2 Z
+         M18 5 L11 5 C7 5 5 7.5 5 12 C5 16.5 7 19 11 19 L18 19 L18 5 Z"
+      fillRule="evenodd"
     />
-    <path
-      d="M16 8 L11 8 Q8 8 8 12 Q8 16 11 16 L16 16 L16 8 Z"
-      fill="currentColor"
-    />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
   </svg>
 )
 
