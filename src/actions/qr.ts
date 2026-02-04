@@ -149,20 +149,27 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
 
   // Insert QR code record
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const insertData: Record<string, unknown> = {
+    user_id: user.id,
+    name,
+    short_code: shortCode,
+    destination_url: destinationUrl,
+    style: finalStyle,
+    logo_url: logoUrl || null,
+    logo_size: logoSize || null,
+    qr_image_url: qrImageUrl,
+    is_active: true,
+  }
+
+  // Only include content fields if non-website type (requires migration)
+  if (contentType && contentType !== 'website') {
+    insertData.content_type = contentType
+    insertData.content_data = contentData
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from('qr_codes') as any)
-    .insert({
-      user_id: user.id,
-      name,
-      short_code: shortCode,
-      destination_url: destinationUrl,
-      content_type: contentType,
-      content_data: contentData,
-      style: finalStyle,
-      logo_url: logoUrl || null,
-      logo_size: logoSize || null,
-      qr_image_url: qrImageUrl,
-      is_active: true,
-    })
+    .insert(insertData)
     .select()
     .single()
 
@@ -240,18 +247,25 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
 
   // Update QR code record
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: Record<string, unknown> = {
+    name: updates.name,
+    destination_url: updates.destinationUrl,
+    style: finalStyle,
+    logo_url: updates.logoUrl !== undefined ? updates.logoUrl : existingQr.logo_url,
+    logo_size: updates.logoSize !== undefined ? updates.logoSize : existingQr.logo_size,
+    qr_image_url: qrImageUrl,
+    is_active: updates.isActive !== undefined ? updates.isActive : existingQr.is_active,
+  }
+
+  // Only include content fields if non-website type (requires migration)
+  if (contentType && contentType !== 'website') {
+    updateData.content_type = contentType
+    updateData.content_data = contentData
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from('qr_codes') as any)
-    .update({
-      name: updates.name,
-      destination_url: updates.destinationUrl,
-      content_type: contentType,
-      content_data: contentData,
-      style: finalStyle,
-      logo_url: updates.logoUrl !== undefined ? updates.logoUrl : existingQr.logo_url,
-      logo_size: updates.logoSize !== undefined ? updates.logoSize : existingQr.logo_size,
-      qr_image_url: qrImageUrl,
-      is_active: updates.isActive !== undefined ? updates.isActive : existingQr.is_active,
-    })
+    .update(updateData)
     .eq('id', id)
     .eq('user_id', user.id)
     .select()
