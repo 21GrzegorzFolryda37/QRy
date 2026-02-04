@@ -40,6 +40,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const prevFrameShapeRef = useRef(frameShape)
   const prevHasLogoRef = useRef(!!logoUrl)
   const prevFrameStyleRef = useRef(frame?.style)
+  const prevUseCustomRendererRef = useRef(useCustomRenderer)
   useEffect(() => {
     if (prevFrameShapeRef.current !== frameShape) {
       qrCodeRef.current = null
@@ -55,7 +56,12 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
       qrCodeRef.current = null
       prevFrameStyleRef.current = frame?.style
     }
-  }, [frameShape, logoUrl, frame?.style])
+    // Reset when switching between custom renderer and qr-code-styling
+    if (prevUseCustomRendererRef.current !== useCustomRenderer) {
+      qrCodeRef.current = null
+      prevUseCustomRendererRef.current = useCustomRenderer
+    }
+  }, [frameShape, logoUrl, frame?.style, useCustomRenderer])
 
   // Dynamic import of library (client-side only)
   useEffect(() => {
