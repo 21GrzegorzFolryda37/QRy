@@ -38,7 +38,7 @@ const brandTemplates: BrandTemplate[] = [
     style: {
       foregroundColor: '#E1306C',
       dotsType: 'random-dot',
-      dotsGradient: { type: 'linear', rotation: 225, colorStops: [{ offset: 0, color: '#fdf497' }, { offset: 0.35, color: '#fd5949' }, { offset: 0.65, color: '#d6249f' }, { offset: 1, color: '#285AEB' }] },
+      dotsGradient: { type: 'linear', rotation: 225, colorStops: [{ offset: 0, color: '#f77737' }, { offset: 0.4, color: '#fd5949' }, { offset: 0.7, color: '#d6249f' }, { offset: 1, color: '#405de6' }] },
       cornersSquareType: 'extra-rounded',
       cornersSquareColor: '#d6249f',
       cornersDotType: 'dot',
