@@ -37,8 +37,8 @@ const brandTemplates: BrandTemplate[] = [
     color: '#E1306C',
     style: {
       foregroundColor: '#E1306C',
-      dotsType: 'rounded',
-      dotsGradient: { type: 'radial', rotation: 0, colorStops: [{ offset: 0, color: '#fdf497' }, { offset: 0.35, color: '#fd5949' }, { offset: 0.65, color: '#d6249f' }, { offset: 1, color: '#285AEB' }] },
+      dotsType: 'random-dot',
+      dotsGradient: { type: 'linear', rotation: 225, colorStops: [{ offset: 0, color: '#fdf497' }, { offset: 0.35, color: '#fd5949' }, { offset: 0.65, color: '#d6249f' }, { offset: 1, color: '#285AEB' }] },
       cornersSquareType: 'extra-rounded',
       cornersSquareColor: '#d6249f',
       cornersDotType: 'dot',
@@ -82,7 +82,7 @@ const brandTemplates: BrandTemplate[] = [
     color: '#FF0000',
     style: {
       foregroundColor: '#FF0000',
-      dotsType: 'classy-rounded',
+      dotsType: 'dots',
       dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#FF0000' }, { offset: 1, color: '#282828' }] },
       cornersSquareType: 'extra-rounded',
       cornersSquareColor: '#FF0000',
@@ -98,11 +98,11 @@ const brandTemplates: BrandTemplate[] = [
     style: {
       foregroundColor: '#000000',
       dotsType: 'rounded',
-      dotsGradient: { type: 'linear', rotation: 135, colorStops: [{ offset: 0, color: '#00f2ea' }, { offset: 0.5, color: '#000000' }, { offset: 1, color: '#ff0050' }] },
+      dotsGradient: { type: 'linear', rotation: 135, colorStops: [{ offset: 0, color: '#4de8e0' }, { offset: 0.4, color: '#2b2b2b' }, { offset: 0.6, color: '#2b2b2b' }, { offset: 1, color: '#e0345b' }] },
       cornersSquareType: 'classy-rounded',
-      cornersSquareColor: '#00f2ea',
+      cornersSquareColor: '#000000',
       cornersDotType: 'dot',
-      cornersDotColor: '#ff0050',
+      cornersDotColor: '#000000',
     },
   },
   {
