@@ -212,9 +212,13 @@ export function Hero() {
   // Active personalization tab
   const [activeTab, setActiveTab] = useState<PersonalizationTab>('templates')
 
-  // QRCodeStyling library for download
+  // QRCodeStyling library for generating QR
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
-  const [isDownloading, setIsDownloading] = useState(false)
+
+  // Email sending state
+  const [userEmail, setUserEmail] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   // Load QRCodeStyling library
   useEffect(() => {
@@ -268,9 +272,15 @@ export function Hero() {
     }
   }
 
-  // Download handler
-  const handleDownload = async () => {
-    setIsDownloading(true)
+  // Send email handler
+  const handleSendEmail = async () => {
+    if (!userEmail || !userEmail.includes('@')) {
+      return
+    }
+
+    setIsSending(true)
+    setSendStatus('idle')
+
     try {
       const dataUrl = await generateQrCodeImage(QRCodeStyling, {
         url: getQRData(),
@@ -281,15 +291,28 @@ export function Hero() {
       })
 
       if (dataUrl) {
-        const link = document.createElement('a')
-        link.download = 'qr-code.png'
-        link.href = dataUrl
-        link.click()
+        const response = await fetch('/api/send-qr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userEmail,
+            qrCodeBase64: dataUrl,
+            url: getQRData(),
+          }),
+        })
+
+        if (response.ok) {
+          setSendStatus('success')
+          setUserEmail('')
+        } else {
+          setSendStatus('error')
+        }
       }
     } catch (error) {
-      console.error('Error downloading QR code:', error)
+      console.error('Error sending QR code:', error)
+      setSendStatus('error')
     } finally {
-      setIsDownloading(false)
+      setIsSending(false)
     }
   }
 
@@ -926,35 +949,72 @@ export function Hero() {
                   </div>
                 </div>
 
-                {/* CTA Buttons */}
+                {/* Email form to receive QR */}
                 <div className="space-y-3">
-                  <Button
-                    variant="gradient"
-                    size="lg"
-                    className="w-full shadow-lg"
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      {isDownloading ? (
-                        <>
-                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                          Pobieranie...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                          Pobierz za darmo
-                        </>
+                  {sendStatus === 'success' ? (
+                    <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
+                      <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-green-800 font-medium">Kod QR wysłany!</p>
+                      <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
+                      <button
+                        onClick={() => setSendStatus('idle')}
+                        className="mt-3 text-sm text-green-700 underline hover:no-underline"
+                      >
+                        Wyślij ponownie
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">
+                          Twój adres e-mail
+                        </label>
+                        <input
+                          type="email"
+                          value={userEmail}
+                          onChange={(e) => setUserEmail(e.target.value)}
+                          placeholder="jan@example.com"
+                          className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
+                        />
+                      </div>
+
+                      {sendStatus === 'error' && (
+                        <p className="text-sm text-red-600 text-center">
+                          Wystąpił błąd. Spróbuj ponownie.
+                        </p>
                       )}
-                    </span>
-                  </Button>
+
+                      <Button
+                        variant="gradient"
+                        size="lg"
+                        className="w-full shadow-lg"
+                        onClick={handleSendEmail}
+                        disabled={isSending || !userEmail || !userEmail.includes('@')}
+                        style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          {isSending ? (
+                            <>
+                              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                              </svg>
+                              Wysyłanie...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              Wyślij kod QR na e-mail
+                            </>
+                          )}
+                        </span>
+                      </Button>
+                    </>
+                  )}
 
                   <Link href="/qr-codes/new" className="block">
                     <Button
@@ -973,7 +1033,7 @@ export function Hero() {
                 </div>
 
                 <p className="text-xs text-center text-[var(--foreground-subtle)] mt-3">
-                  Załóż konto aby śledzić skany i edytować kody QR
+                  Otrzymasz kod QR na swoją skrzynkę mailową
                 </p>
 
                 {/* Trust badge */}
