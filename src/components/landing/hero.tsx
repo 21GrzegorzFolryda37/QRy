@@ -5,10 +5,59 @@ import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type TabType = 'color' | 'shape' | 'edges' | 'logo' | 'templates'
+type TabType = 'color' | 'shape' | 'edges' | 'logo' | 'templates' | 'frame' | 'advanced'
+
+// Kształty wspierane przez qr-code-styling (client-side)
 type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
 type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
 type CornerDotShape = 'square' | 'dot'
+
+// Rozszerzone kształty dla UI (pokazywane użytkownikowi, ale mapowane do podstawowych)
+type ExtendedDotShape = DotShape | 'diamond' | 'star' | 'vertical-line' | 'horizontal-line' | 'random-dot' | 'small-square' | 'tiny-square'
+type ExtendedCornerSquareShape = CornerSquareShape | 'classy' | 'inpoint' | 'outpoint'
+type ExtendedCornerDotShape = CornerDotShape | 'diamond' | 'rounded'
+
+// Mapowanie rozszerzonych kształtów na podstawowe (dla qr-code-styling)
+const mapDotShapeToBasic = (shape: ExtendedDotShape): DotShape => {
+  const mapping: Record<ExtendedDotShape, DotShape> = {
+    'square': 'square',
+    'dots': 'dots',
+    'rounded': 'rounded',
+    'extra-rounded': 'extra-rounded',
+    'classy': 'classy',
+    'classy-rounded': 'classy-rounded',
+    'diamond': 'square', // fallback
+    'star': 'dots', // fallback
+    'vertical-line': 'square', // fallback
+    'horizontal-line': 'square', // fallback
+    'random-dot': 'dots', // fallback
+    'small-square': 'square', // fallback
+    'tiny-square': 'square', // fallback
+  }
+  return mapping[shape]
+}
+
+const mapCornerSquareShapeToBasic = (shape: ExtendedCornerSquareShape): CornerSquareShape => {
+  const mapping: Record<ExtendedCornerSquareShape, CornerSquareShape> = {
+    'square': 'square',
+    'dot': 'dot',
+    'extra-rounded': 'extra-rounded',
+    'classy': 'extra-rounded', // fallback - podobne zaokrąglenie
+    'inpoint': 'square', // fallback
+    'outpoint': 'square', // fallback
+  }
+  return mapping[shape]
+}
+
+const mapCornerDotShapeToBasic = (shape: ExtendedCornerDotShape): CornerDotShape => {
+  const mapping: Record<ExtendedCornerDotShape, CornerDotShape> = {
+    'square': 'square',
+    'dot': 'dot',
+    'diamond': 'square', // fallback
+    'rounded': 'dot', // fallback - podobne zaokrąglenie
+  }
+  return mapping[shape]
+}
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -74,27 +123,40 @@ const colorPaletteBottom = [
   '#22c55e', // Zielony
 ]
 
-// Kształty kropek QR
-const dotShapes: { id: DotShape; label: string }[] = [
+// Kształty kropek QR (rozszerzone o @qr-platform)
+const dotShapes: { id: ExtendedDotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dots', label: 'Kropki' },
   { id: 'rounded', label: 'Zaokrąglone' },
   { id: 'extra-rounded', label: 'Bardzo zaokrąglone' },
   { id: 'classy', label: 'Eleganckie' },
   { id: 'classy-rounded', label: 'Eleganckie zaokrąglone' },
+  // Nowe kształty @qr-platform (mapowane do podstawowych dla qr-code-styling)
+  { id: 'diamond', label: 'Diament' },
+  { id: 'star', label: 'Gwiazda' },
+  { id: 'vertical-line', label: 'Linia pionowa' },
+  { id: 'horizontal-line', label: 'Linia pozioma' },
+  { id: 'random-dot', label: 'Losowa kropka' },
+  { id: 'small-square', label: 'Mały kwadrat' },
+  { id: 'tiny-square', label: 'Miniaturowy' },
 ]
 
-// Kształty ramki narożnika (zewnętrzny element)
-const cornerSquareShapes: { id: CornerSquareShape; label: string }[] = [
+// Kształty ramki narożnika (zewnętrzny element) - rozszerzone
+const cornerSquareShapes: { id: ExtendedCornerSquareShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dot', label: 'Kropka' },
   { id: 'extra-rounded', label: 'Zaokrąglone' },
+  { id: 'classy', label: 'Eleganckie' },
+  { id: 'inpoint', label: 'Wewnętrzna' },
+  { id: 'outpoint', label: 'Zewnętrzna' },
 ]
 
-// Kształty środka narożnika (wewnętrzny element)
-const cornerDotShapes: { id: CornerDotShape; label: string }[] = [
+// Kształty środka narożnika (wewnętrzny element) - rozszerzone
+const cornerDotShapes: { id: ExtendedCornerDotShape; label: string }[] = [
   { id: 'square', label: 'Kwadrat' },
   { id: 'dot', label: 'Kropka' },
+  { id: 'diamond', label: 'Diament' },
+  { id: 'rounded', label: 'Zaokrąglony' },
 ]
 
 // Predefiniowane loga marek
@@ -166,6 +228,128 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
   },
 ]
 
+// Gotowe szablony marek (skopiowane z qr-form.tsx)
+interface BrandTemplate {
+  id: string
+  name: string
+  logoId: string
+  color: string
+  dotShape: ExtendedDotShape
+  cornerSquareShape: ExtendedCornerSquareShape
+  cornerDotShape: ExtendedCornerDotShape
+  dotGradient: { colors: string[]; rotation: number } | null
+  dotColor: string
+  cornerSquareColor: string | null
+  cornerDotColor: string | null
+}
+
+const brandTemplates: BrandTemplate[] = [
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    logoId: 'instagram',
+    color: '#E1306C',
+    dotShape: 'random-dot',
+    cornerSquareShape: 'extra-rounded',
+    cornerDotShape: 'dot',
+    dotGradient: { colors: ['#f77737', '#fd5949', '#d6249f', '#405de6'], rotation: 225 },
+    dotColor: '#E1306C',
+    cornerSquareColor: '#d6249f',
+    cornerDotColor: '#fd5949',
+  },
+  {
+    id: 'spotify',
+    name: 'Spotify',
+    logoId: 'spotify',
+    color: '#1DB954',
+    dotShape: 'dots',
+    cornerSquareShape: 'dot',
+    cornerDotShape: 'dot',
+    dotGradient: { colors: ['#1DB954', '#191414'], rotation: 180 },
+    dotColor: '#1DB954',
+    cornerSquareColor: '#1DB954',
+    cornerDotColor: '#191414',
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook',
+    logoId: 'facebook',
+    color: '#1877F2',
+    dotShape: 'rounded',
+    cornerSquareShape: 'extra-rounded',
+    cornerDotShape: 'dot',
+    dotGradient: null,
+    dotColor: '#1877F2',
+    cornerSquareColor: '#1877F2',
+    cornerDotColor: '#1877F2',
+  },
+  {
+    id: 'youtube',
+    name: 'YouTube',
+    logoId: 'youtube',
+    color: '#FF0000',
+    dotShape: 'dots',
+    cornerSquareShape: 'extra-rounded',
+    cornerDotShape: 'dot',
+    dotGradient: { colors: ['#FF0000', '#282828'], rotation: 180 },
+    dotColor: '#FF0000',
+    cornerSquareColor: '#FF0000',
+    cornerDotColor: '#FF0000',
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok',
+    logoId: 'tiktok',
+    color: '#00f2ea',
+    dotShape: 'rounded',
+    cornerSquareShape: 'extra-rounded',
+    cornerDotShape: 'dot',
+    dotGradient: { colors: ['#4de8e0', '#2b2b2b', '#e0345b'], rotation: 135 },
+    dotColor: '#000000',
+    cornerSquareColor: '#000000',
+    cornerDotColor: '#000000',
+  },
+  {
+    id: 'whatsapp',
+    name: 'WhatsApp',
+    logoId: 'whatsapp',
+    color: '#25D366',
+    dotShape: 'rounded',
+    cornerSquareShape: 'extra-rounded',
+    cornerDotShape: 'dot',
+    dotGradient: { colors: ['#25D366', '#128C7E'], rotation: 180 },
+    dotColor: '#25D366',
+    cornerSquareColor: '#25D366',
+    cornerDotColor: '#128C7E',
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    logoId: 'linkedin',
+    color: '#0A66C2',
+    dotShape: 'square',
+    cornerSquareShape: 'square',
+    cornerDotShape: 'square',
+    dotGradient: null,
+    dotColor: '#0A66C2',
+    cornerSquareColor: '#0A66C2',
+    cornerDotColor: '#0A66C2',
+  },
+  {
+    id: 'x',
+    name: 'X',
+    logoId: 'x',
+    color: '#000000',
+    dotShape: 'square',
+    cornerSquareShape: 'square',
+    cornerDotShape: 'square',
+    dotGradient: null,
+    dotColor: '#000000',
+    cornerSquareColor: '#000000',
+    cornerDotColor: '#000000',
+  },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [activeTab, setActiveTab] = useState<TabType>('color')
@@ -193,14 +377,30 @@ export function Hero() {
   const [cornerDotGradient, setCornerDotGradient] = useState(false)
   const [cornerDotGradientColors, setCornerDotGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
   const [cornerDotGradientRotation, setCornerDotGradientRotation] = useState(45)
-  const [dotShape, setDotShape] = useState<DotShape>('square')
-  const [cornerSquareShape, setCornerSquareShape] = useState<CornerSquareShape>('square')
-  const [cornerDotShape, setCornerDotShape] = useState<CornerDotShape>('square')
+  const [dotShape, setDotShape] = useState<ExtendedDotShape>('square')
+  const [cornerSquareShape, setCornerSquareShape] = useState<ExtendedCornerSquareShape>('square')
+  const [cornerDotShape, setCornerDotShape] = useState<ExtendedCornerDotShape>('square')
   const [logo, setLogo] = useState<string | null>(null)
   // Globalny gradient - jeden płynny gradient na całym kodzie QR
   const [useGlobalGradient, setUseGlobalGradient] = useState(false)
   const [globalGradientColors, setGlobalGradientColors] = useState<string[]>(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
   const [globalGradientRotation, setGlobalGradientRotation] = useState(45)
+
+  // Nowe ustawienia zaawansowane
+  const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<'L' | 'M' | 'Q' | 'H'>('H')
+  const [qrSize, setQrSize] = useState(400)
+  const [qrMargin, setQrMargin] = useState(2)
+  const [logoSize, setLogoSize] = useState(25) // procent
+
+  // Customizacja ramki
+  const [frameColor, setFrameColor] = useState('#000000')
+  const [frameTextColor, setFrameTextColor] = useState('#ffffff')
+  const [showFrameText, setShowFrameText] = useState(true)
+
+  // Gradient tła
+  const [backgroundGradient, setBackgroundGradient] = useState(false)
+  const [backgroundGradientColors, setBackgroundGradientColors] = useState<string[]>(['#ffffff', '#f0f0f0'])
+  const [backgroundGradientRotation, setBackgroundGradientRotation] = useState(180)
 
   // Download state
   const [showEmailCapture, setShowEmailCapture] = useState(false)
@@ -292,14 +492,16 @@ export function Hero() {
   }, [])
 
   // Helper function to create gradient or color options
+  // Używamy mapowania do podstawowych kształtów dla qr-code-styling
   const getDotsOptions = () => {
+    const basicShape = mapDotShapeToBasic(dotShape)
     if (dotGradient) {
       const colorStops = dotGradientColors.map((color, index) => ({
         offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
         color
       }))
       return {
-        type: dotShape,
+        type: basicShape,
         gradient: {
           type: dotGradientType as 'linear' | 'radial',
           rotation: dotGradientRotation,
@@ -307,10 +509,11 @@ export function Hero() {
         }
       }
     }
-    return { color: dotColor, type: dotShape }
+    return { color: dotColor, type: basicShape }
   }
 
   const getCornerSquareOptions = () => {
+    const basicShape = mapCornerSquareShapeToBasic(cornerSquareShape)
     // Jeśli tryb 'inherit', użyj ustawień z kropek
     if (cornerSquareColorMode === 'inherit') {
       if (dotGradient) {
@@ -319,7 +522,7 @@ export function Hero() {
           color
         }))
         return {
-          type: cornerSquareShape,
+          type: basicShape,
           gradient: {
             type: dotGradientType as 'linear' | 'radial',
             rotation: dotGradientRotation,
@@ -327,7 +530,7 @@ export function Hero() {
           }
         }
       }
-      return { color: dotColor, type: cornerSquareShape }
+      return { color: dotColor, type: basicShape }
     }
     // Tryb 'custom' - własne ustawienia
     if (cornerSquareGradient) {
@@ -336,7 +539,7 @@ export function Hero() {
         color
       }))
       return {
-        type: cornerSquareShape,
+        type: basicShape,
         gradient: {
           type: 'linear' as const,
           rotation: cornerSquareGradientRotation,
@@ -344,10 +547,11 @@ export function Hero() {
         }
       }
     }
-    return { color: cornerSquareColor, type: cornerSquareShape }
+    return { color: cornerSquareColor, type: basicShape }
   }
 
   const getCornerDotOptions = () => {
+    const basicShape = mapCornerDotShapeToBasic(cornerDotShape)
     // Jeśli tryb 'inherit', użyj ustawień z kropek
     if (cornerDotColorMode === 'inherit') {
       if (dotGradient) {
@@ -356,7 +560,7 @@ export function Hero() {
           color
         }))
         return {
-          type: cornerDotShape,
+          type: basicShape,
           gradient: {
             type: dotGradientType as 'linear' | 'radial',
             rotation: dotGradientRotation,
@@ -364,7 +568,7 @@ export function Hero() {
           }
         }
       }
-      return { color: dotColor, type: cornerDotShape }
+      return { color: dotColor, type: basicShape }
     }
     // Tryb 'custom' - własne ustawienia
     if (cornerDotGradient) {
@@ -373,7 +577,7 @@ export function Hero() {
         color
       }))
       return {
-        type: cornerDotShape,
+        type: basicShape,
         gradient: {
           type: 'linear' as const,
           rotation: cornerDotGradientRotation,
@@ -381,7 +585,25 @@ export function Hero() {
         }
       }
     }
-    return { color: cornerDotColor, type: cornerDotShape }
+    return { color: cornerDotColor, type: basicShape }
+  }
+
+  // Helper function for background options
+  const getBackgroundOptions = () => {
+    if (backgroundGradient) {
+      return {
+        color: backgroundColor,
+        gradient: {
+          type: 'linear' as const,
+          rotation: backgroundGradientRotation,
+          colorStops: backgroundGradientColors.map((color, index) => ({
+            offset: index / (backgroundGradientColors.length - 1),
+            color,
+          })),
+        },
+      }
+    }
+    return { color: backgroundColor }
   }
 
   // Initialize QR code
@@ -393,11 +615,15 @@ export function Hero() {
       height: 200,
       type: 'svg',
       data: getQRData(),
+      qrOptions: {
+        errorCorrectionLevel: logo ? 'H' : errorCorrectionLevel,
+      },
       dotsOptions: getDotsOptions(),
       cornersSquareOptions: getCornerSquareOptions(),
       cornersDotOptions: getCornerDotOptions(),
-      backgroundOptions: { color: backgroundColor },
-      imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 },
+      backgroundOptions: getBackgroundOptions(),
+      imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: logoSize / 100 },
+      margin: qrMargin,
     })
     qrRef.current.innerHTML = ''
     qrCodeRef.current.append(qrRef.current)
@@ -420,11 +646,20 @@ export function Hero() {
       if (qrCodeRef.current) {
         qrCodeRef.current.update({
           data: getQRData(),
+          qrOptions: {
+            errorCorrectionLevel: logo ? 'H' : errorCorrectionLevel,
+          },
           dotsOptions: getDotsOptions(),
           cornersSquareOptions: getCornerSquareOptions(),
           cornersDotOptions: getCornerDotOptions(),
-          backgroundOptions: { color: backgroundColor },
+          backgroundOptions: getBackgroundOptions(),
           image: logo || undefined,
+          imageOptions: logo ? {
+            crossOrigin: 'anonymous',
+            margin: 8,
+            imageSize: logoSize / 100,
+          } : undefined,
+          margin: qrMargin,
         })
       }
       setIsUpdatingQR(false)
@@ -435,7 +670,7 @@ export function Hero() {
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo])
+  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, backgroundGradient, backgroundGradientColors, backgroundGradientRotation, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo, logoSize, errorCorrectionLevel, qrMargin])
 
   // Apply global gradient to SVG (post-processing)
   useEffect(() => {
@@ -542,6 +777,8 @@ export function Hero() {
     { id: 'shape', label: 'KSZTAŁT' },
     { id: 'edges', label: 'KRAWĘDZIE' },
     { id: 'logo', label: 'LOGO' },
+    { id: 'frame', label: 'RAMKA' },
+    { id: 'advanced', label: 'WIĘCEJ' },
   ]
 
   const renderForm = () => {
@@ -853,41 +1090,72 @@ export function Hero() {
                   <div className="min-h-[160px]">
                     {activeTab === 'templates' && (
                       <div className="space-y-3">
-                        <p className="text-xs text-[var(--foreground-muted)]">Wybierz gotowy szablon kolorystyczny</p>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                          {/* Szablon Instagram */}
-                          <button
-                            onClick={() => {
-                              // Bez ramki zewnętrznej
-                              setSelectedFrame('none')
-                              // Okrągłe kropki
-                              setDotShape('dots')
-                              // Włącz globalny gradient - jeden płynny gradient na całym QR
-                              setUseGlobalGradient(true)
-                              setGlobalGradientColors(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
-                              setGlobalGradientRotation(45)
-                              // Wyłącz indywidualne gradienty (będą nadpisane przez globalny)
-                              setDotGradient(false)
-                              setDotColor('#000000')
-                              // Krawędzie - kształty
-                              setCornerSquareColorMode('inherit')
-                              setCornerSquareShape('extra-rounded')
-                              setCornerDotColorMode('inherit')
-                              setCornerDotShape('dot')
-                              // Białe tło
-                              setBackgroundColor('#ffffff')
-                              // Logo Instagram
-                              setLogo(brandLogos.find(b => b.id === 'instagram')?.svg || null)
-                            }}
-                            className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all group"
-                          >
-                            <div
-                              className="w-12 h-12 rounded-lg"
-                              style={{ background: 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)' }}
-                            />
-                            <span className="text-xs font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">Instagram</span>
-                          </button>
+                        <p className="text-xs text-[var(--foreground-muted)]">Wybierz gotowy szablon marki</p>
+                        <div className="grid grid-cols-4 gap-2">
+                          {brandTemplates.map((template) => {
+                            const brandLogo = brandLogos.find(b => b.id === template.logoId)
+                            return (
+                              <button
+                                key={template.id}
+                                onClick={() => {
+                                  // Resetuj globalny gradient
+                                  setUseGlobalGradient(false)
+                                  // Ustaw kształty
+                                  setDotShape(template.dotShape)
+                                  setCornerSquareShape(template.cornerSquareShape)
+                                  setCornerDotShape(template.cornerDotShape)
+                                  // Ustaw kolory
+                                  setDotColor(template.dotColor)
+                                  if (template.dotGradient) {
+                                    setDotGradient(true)
+                                    setDotGradientColors(template.dotGradient.colors)
+                                    setDotGradientRotation(template.dotGradient.rotation)
+                                  } else {
+                                    setDotGradient(false)
+                                  }
+                                  // Kolor ramki - włącz własny
+                                  if (template.cornerSquareColor) {
+                                    setCornerSquareColorMode('custom')
+                                    setCornerSquareColor(template.cornerSquareColor)
+                                    setCornerSquareGradient(false)
+                                  } else {
+                                    setCornerSquareColorMode('inherit')
+                                  }
+                                  if (template.cornerDotColor) {
+                                    setCornerDotColorMode('custom')
+                                    setCornerDotColor(template.cornerDotColor)
+                                    setCornerDotGradient(false)
+                                  } else {
+                                    setCornerDotColorMode('inherit')
+                                  }
+                                  // Białe tło
+                                  setBackgroundColor('#ffffff')
+                                  // Logo
+                                  setLogo(brandLogo?.svg || null)
+                                  // Kolor ramki dekoracyjnej
+                                  setFrameColor(template.color)
+                                }}
+                                className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all hover:scale-105 ${
+                                  logo === brandLogo?.svg
+                                    ? 'border-[var(--primary)] bg-[var(--primary)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                              >
+                                {brandLogo && (
+                                  <img
+                                    src={brandLogo.svg}
+                                    alt={template.name}
+                                    className="w-8 h-8"
+                                  />
+                                )}
+                                <span className="text-[10px] font-medium text-[var(--foreground-muted)]">{template.name}</span>
+                              </button>
+                            )
+                          })}
                         </div>
+                        <p className="text-[10px] text-[var(--foreground-subtle)]">
+                          Kliknij szablon, aby zastosować kolory, kształty i logo marki.
+                        </p>
                       </div>
                     )}
 
@@ -1360,6 +1628,25 @@ export function Hero() {
                           )}
                         </div>
 
+                        {/* Rozmiar logo */}
+                        {logo && (
+                          <div>
+                            <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Rozmiar logo: {logoSize}%</p>
+                            <input
+                              type="range"
+                              min="15"
+                              max="40"
+                              value={logoSize}
+                              onChange={(e) => setLogoSize(Number(e.target.value))}
+                              className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                            />
+                            <div className="flex justify-between text-[10px] text-[var(--foreground-subtle)] mt-1">
+                              <span>15%</span>
+                              <span>40%</span>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Usuń logo */}
                         {logo && (
                           <button
@@ -1369,6 +1656,204 @@ export function Hero() {
                             Usuń logo
                           </button>
                         )}
+                      </div>
+                    )}
+
+                    {activeTab === 'frame' && (
+                      <div className="space-y-4">
+                        {/* Wybór stylu ramki */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Styl ramki</p>
+                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                            {(['none', 'simple', 'rounded', 'badge-top', 'badge-bottom', 'bubble', 'pointer', 'ticket', 'stamp', 'ribbon', 'chat', 'hexagon'] as FrameStyle[]).map((frameId) => (
+                              <button
+                                key={frameId}
+                                onClick={() => setSelectedFrame(frameId)}
+                                className={`aspect-square rounded-lg border-2 p-1 transition-all flex items-center justify-center ${
+                                  selectedFrame === frameId
+                                    ? 'border-[var(--success)] bg-[var(--success)]/5'
+                                    : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                }`}
+                                title={frameId}
+                              >
+                                <FramePreviewIcon frameId={frameId} className="w-8 h-8" />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {selectedFrame !== 'none' && (
+                          <>
+                            {/* Kolor ramki */}
+                            <div>
+                              <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Kolor ramki</p>
+                              <div className="flex gap-1.5 flex-wrap">
+                                <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={frameColor} onChange={(e) => setFrameColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                                </label>
+                                {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
+                                  <button
+                                    key={`frame-${color}`}
+                                    onClick={() => setFrameColor(color)}
+                                    className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                      frameColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Tekst na ramce */}
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <p className="text-xs font-medium text-[var(--foreground-muted)]">Tekst na ramce</p>
+                                <button
+                                  onClick={() => setShowFrameText(!showFrameText)}
+                                  className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                    showFrameText ? 'bg-[var(--success)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                  }`}
+                                >
+                                  {showFrameText ? 'Włączony' : 'Wyłączony'}
+                                </button>
+                              </div>
+                              {showFrameText && (
+                                <input
+                                  type="text"
+                                  value={frameText}
+                                  onChange={(e) => setFrameText(e.target.value.toUpperCase())}
+                                  placeholder="SCAN ME"
+                                  maxLength={20}
+                                  className="w-full px-3 py-2 rounded-lg bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+                                />
+                              )}
+                            </div>
+
+                            {/* Kolor tekstu */}
+                            {showFrameText && (
+                              <div>
+                                <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Kolor tekstu</p>
+                                <div className="flex gap-1.5">
+                                  <button
+                                    onClick={() => setFrameTextColor('#ffffff')}
+                                    className={`w-7 h-7 rounded-md border-2 transition-all ${frameTextColor === '#ffffff' ? 'border-gray-800' : 'border-[var(--border)]'}`}
+                                    style={{ backgroundColor: '#ffffff' }}
+                                  />
+                                  <button
+                                    onClick={() => setFrameTextColor('#000000')}
+                                    className={`w-7 h-7 rounded-md border-2 transition-all ${frameTextColor === '#000000' ? 'border-gray-400 ring-1 ring-gray-400' : 'border-[var(--border)]'}`}
+                                    style={{ backgroundColor: '#000000' }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === 'advanced' && (
+                      <div className="space-y-4">
+                        {/* Poziom korekcji błędów */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Poziom korekcji błędów</p>
+                          <div className="flex gap-1">
+                            {(['L', 'M', 'Q', 'H'] as const).map((level) => (
+                              <button
+                                key={level}
+                                onClick={() => setErrorCorrectionLevel(level)}
+                                disabled={!!logo}
+                                className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                  (logo ? 'H' : errorCorrectionLevel) === level
+                                    ? 'bg-[var(--primary)] text-white'
+                                    : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
+                                } ${logo ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              >
+                                {level}
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-[var(--foreground-subtle)] mt-1">
+                            {logo ? 'Automatycznie H (maksymalny) gdy logo jest dodane' : 'L=7%, M=15%, Q=25%, H=30% tolerancji uszkodzeń'}
+                          </p>
+                        </div>
+
+                        {/* Rozmiar QR */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Rozmiar: {qrSize}px</p>
+                          <input
+                            type="range"
+                            min="200"
+                            max="1000"
+                            step="50"
+                            value={qrSize}
+                            onChange={(e) => setQrSize(Number(e.target.value))}
+                            className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                          />
+                          <div className="flex justify-between text-[10px] text-[var(--foreground-subtle)] mt-1">
+                            <span>200px</span>
+                            <span>1000px</span>
+                          </div>
+                        </div>
+
+                        {/* Margines */}
+                        <div>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Margines: {qrMargin}</p>
+                          <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            value={qrMargin}
+                            onChange={(e) => setQrMargin(Number(e.target.value))}
+                            className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                          />
+                        </div>
+
+                        {/* Gradient tła */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-medium text-[var(--foreground-muted)]">Gradient tła</p>
+                            <button
+                              onClick={() => setBackgroundGradient(!backgroundGradient)}
+                              className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
+                                backgroundGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                              }`}
+                            >
+                              {backgroundGradient ? 'Włączony' : 'Wyłączony'}
+                            </button>
+                          </div>
+                          {backgroundGradient && (
+                            <div className="space-y-2">
+                              <div
+                                className="h-6 rounded border border-[var(--border)]"
+                                style={{ background: `linear-gradient(${backgroundGradientRotation}deg, ${backgroundGradientColors.join(', ')})` }}
+                              />
+                              <div className="flex gap-1.5">
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={backgroundGradientColors[0]} onChange={(e) => setBackgroundGradientColors([e.target.value, backgroundGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                                <span className="text-[10px] text-[var(--foreground-subtle)] self-center">→</span>
+                                <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
+                                  <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                  <input type="color" value={backgroundGradientColors[1]} onChange={(e) => setBackgroundGradientColors([backgroundGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                </label>
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-[var(--foreground-subtle)] mb-1">Kąt: {backgroundGradientRotation}°</p>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="360"
+                                  value={backgroundGradientRotation}
+                                  onChange={(e) => setBackgroundGradientRotation(Number(e.target.value))}
+                                  className="w-full h-1.5 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1388,7 +1873,7 @@ export function Hero() {
                   <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
 
                   <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                    <QRFrameWrapper frameStyle={selectedFrame} text={frameText} dotColor={dotColor}>
+                    <QRFrameWrapper frameStyle={selectedFrame} text={showFrameText ? frameText : ''} dotColor={frameColor}>
                       <div ref={qrRef} className={`w-[180px] h-[180px] flex items-center justify-center transition-opacity duration-300 ${isUpdatingQR ? 'opacity-50' : 'opacity-100'}`} />
                     </QRFrameWrapper>
                     {/* Loading indicator */}
@@ -1466,8 +1951,8 @@ function UploadIcon({ className }: { className?: string }) {
   return <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
 }
 
-function DotShapePreview({ shapeId }: { shapeId: DotShape }) {
-  const shapes: Record<DotShape, React.ReactNode> = {
+function DotShapePreview({ shapeId }: { shapeId: ExtendedDotShape }) {
+  const shapes: Record<ExtendedDotShape, React.ReactNode> = {
     square: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <rect x="4" y="4" width="10" height="10" fill="currentColor" />
@@ -1528,12 +2013,78 @@ function DotShapePreview({ shapeId }: { shapeId: DotShape }) {
         <rect x="26" y="26" width="10" height="10" rx="2" fill="currentColor" />
       </svg>
     ),
+    // Nowe kształty @qr-platform
+    diamond: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M9 4 L14 9 L9 14 L4 9 Z" fill="currentColor" />
+        <path d="M23 4 L28 9 L23 14 L18 9 Z" fill="currentColor" />
+        <path d="M9 18 L14 23 L9 28 L4 23 Z" fill="currentColor" />
+        <path d="M31 18 L36 23 L31 28 L26 23 Z" fill="currentColor" />
+      </svg>
+    ),
+    star: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M9 2 L10 6 L14 6 L11 8 L12 12 L9 10 L6 12 L7 8 L4 6 L8 6 Z" fill="currentColor" />
+        <path d="M23 2 L24 6 L28 6 L25 8 L26 12 L23 10 L20 12 L21 8 L18 6 L22 6 Z" fill="currentColor" />
+        <path d="M9 16 L10 20 L14 20 L11 22 L12 26 L9 24 L6 26 L7 22 L4 20 L8 20 Z" fill="currentColor" />
+        <path d="M31 16 L32 20 L36 20 L33 22 L34 26 L31 24 L28 26 L29 22 L26 20 L30 20 Z" fill="currentColor" />
+      </svg>
+    ),
+    'vertical-line': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="7" y="4" width="3" height="10" fill="currentColor" />
+        <rect x="21" y="4" width="3" height="10" fill="currentColor" />
+        <rect x="7" y="18" width="3" height="10" fill="currentColor" />
+        <rect x="29" y="18" width="3" height="10" fill="currentColor" />
+        <rect x="14" y="26" width="3" height="10" fill="currentColor" />
+        <rect x="29" y="26" width="3" height="10" fill="currentColor" />
+      </svg>
+    ),
+    'horizontal-line': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="7" width="10" height="3" fill="currentColor" />
+        <rect x="18" y="7" width="10" height="3" fill="currentColor" />
+        <rect x="4" y="21" width="10" height="3" fill="currentColor" />
+        <rect x="26" y="21" width="10" height="3" fill="currentColor" />
+        <rect x="11" y="29" width="10" height="3" fill="currentColor" />
+        <rect x="26" y="29" width="10" height="3" fill="currentColor" />
+      </svg>
+    ),
+    'random-dot': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <circle cx="8" cy="8" r="4" fill="currentColor" />
+        <circle cx="24" cy="10" r="5" fill="currentColor" />
+        <circle cx="10" cy="24" r="3" fill="currentColor" />
+        <circle cx="30" cy="25" r="4" fill="currentColor" />
+        <circle cx="18" cy="32" r="3" fill="currentColor" />
+      </svg>
+    ),
+    'small-square': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="6" y="6" width="7" height="7" fill="currentColor" />
+        <rect x="20" y="6" width="7" height="7" fill="currentColor" />
+        <rect x="6" y="20" width="7" height="7" fill="currentColor" />
+        <rect x="27" y="20" width="7" height="7" fill="currentColor" />
+        <rect x="13" y="27" width="7" height="7" fill="currentColor" />
+        <rect x="27" y="27" width="7" height="7" fill="currentColor" />
+      </svg>
+    ),
+    'tiny-square': (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="7" y="7" width="5" height="5" fill="currentColor" />
+        <rect x="21" y="7" width="5" height="5" fill="currentColor" />
+        <rect x="7" y="21" width="5" height="5" fill="currentColor" />
+        <rect x="28" y="21" width="5" height="5" fill="currentColor" />
+        <rect x="14" y="28" width="5" height="5" fill="currentColor" />
+        <rect x="28" y="28" width="5" height="5" fill="currentColor" />
+      </svg>
+    ),
   }
   return shapes[shapeId] || shapes.square
 }
 
-function CornerSquareShapePreview({ shapeId }: { shapeId: CornerSquareShape }) {
-  const shapes: Record<CornerSquareShape, React.ReactNode> = {
+function CornerSquareShapePreview({ shapeId }: { shapeId: ExtendedCornerSquareShape }) {
+  const shapes: Record<ExtendedCornerSquareShape, React.ReactNode> = {
     square: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <rect x="4" y="4" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="6" />
@@ -1549,12 +2100,28 @@ function CornerSquareShapePreview({ shapeId }: { shapeId: CornerSquareShape }) {
         <rect x="4" y="4" width="32" height="32" rx="10" fill="none" stroke="currentColor" strokeWidth="6" />
       </svg>
     ),
+    classy: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M4 4 L24 4 Q36 4 36 16 L36 36 L4 36 Z" fill="none" stroke="currentColor" strokeWidth="5" />
+      </svg>
+    ),
+    inpoint: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="4" y="4" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="5" />
+        <circle cx="20" cy="20" r="8" fill="currentColor" />
+      </svg>
+    ),
+    outpoint: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M4 4 L36 4 L36 36 L4 36 L4 4 M12 20 L20 12 L28 20 L20 28 Z" fill="currentColor" fillRule="evenodd" />
+      </svg>
+    ),
   }
   return shapes[shapeId] || shapes.square
 }
 
-function CornerDotShapePreview({ shapeId }: { shapeId: CornerDotShape }) {
-  const shapes: Record<CornerDotShape, React.ReactNode> = {
+function CornerDotShapePreview({ shapeId }: { shapeId: ExtendedCornerDotShape }) {
+  const shapes: Record<ExtendedCornerDotShape, React.ReactNode> = {
     square: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <rect x="10" y="10" width="20" height="20" fill="currentColor" />
@@ -1563,6 +2130,16 @@ function CornerDotShapePreview({ shapeId }: { shapeId: CornerDotShape }) {
     dot: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <circle cx="20" cy="20" r="10" fill="currentColor" />
+      </svg>
+    ),
+    diamond: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <path d="M20 6 L34 20 L20 34 L6 20 Z" fill="currentColor" />
+      </svg>
+    ),
+    rounded: (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        <rect x="10" y="10" width="20" height="20" rx="5" fill="currentColor" />
       </svg>
     ),
   }
