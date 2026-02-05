@@ -13,8 +13,8 @@ export type CornerPosition = 'top-left' | 'top-right' | 'bottom-left'
 type FillColor = string | CanvasGradient
 
 // Standard finder pattern hole proportions
-const HOLE_RATIO = 3 / 7        // ~0.4286
-const HOLE_OFFSET_RATIO = 2 / 7 // ~0.2857
+const HOLE_RATIO = 5 / 7        // ~0.7143
+const HOLE_OFFSET_RATIO = 1 / 7 // ~0.1429
 
 // Shape renderer function type
 type ShapeRenderer = (
