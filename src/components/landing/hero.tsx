@@ -207,7 +207,7 @@ export function Hero() {
   // QR Style state
   const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
-  const [logoSize, setLogoSize] = useState(25)
+  const [logoSize, setLogoSize] = useState(45)
 
   // Active personalization tab
   const [activeTab, setActiveTab] = useState<PersonalizationTab>('templates')
