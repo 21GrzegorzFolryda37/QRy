@@ -172,20 +172,19 @@ const DotsTinySquareIcon = () => (
 
 // Opcje dla kształtów modułów (rozszerzone)
 export const dotsTypeOptions: ShapeOption<DotsType>[] = [
-  { id: 'square', label: 'Kwadrat', icon: <DotsSquareIcon /> },
-  { id: 'rounded', label: 'Zaokraglony', icon: <DotsRoundedIcon /> },
-  { id: 'dots', label: 'Kropki', icon: <DotsCircleIcon /> },
-  { id: 'classy', label: 'Classy', icon: <DotsClassyIcon /> },
-  { id: 'classy-rounded', label: 'Classy Round', icon: <DotsClassyRoundedIcon /> },
-  { id: 'extra-rounded', label: 'Extra Round', icon: <DotsExtraRoundedIcon /> },
-  // Rozszerzone kształty (@qr-platform)
-  { id: 'diamond', label: 'Diament', icon: <DotsDiamondIcon /> },
-  { id: 'star', label: 'Gwiazda', icon: <DotsStarIcon /> },
-  { id: 'vertical-line', label: 'Pionowe', icon: <DotsVerticalLineIcon /> },
-  { id: 'horizontal-line', label: 'Poziome', icon: <DotsHorizontalLineIcon /> },
-  { id: 'random-dot', label: 'Losowe', icon: <DotsRandomIcon /> },
-  { id: 'small-square', label: 'Male kwadr.', icon: <DotsSmallSquareIcon /> },
-  { id: 'tiny-square', label: 'Mini kwadr.', icon: <DotsTinySquareIcon /> },
+  { id: 'square', label: '', icon: <DotsSquareIcon /> },
+  { id: 'rounded', label: '', icon: <DotsRoundedIcon /> },
+  { id: 'dots', label: '', icon: <DotsCircleIcon /> },
+  { id: 'classy', label: '', icon: <DotsClassyIcon /> },
+  { id: 'classy-rounded', label: '', icon: <DotsClassyRoundedIcon /> },
+  { id: 'extra-rounded', label: '', icon: <DotsExtraRoundedIcon /> },
+  { id: 'diamond', label: '', icon: <DotsDiamondIcon /> },
+  { id: 'star', label: '', icon: <DotsStarIcon /> },
+  { id: 'vertical-line', label: '', icon: <DotsVerticalLineIcon /> },
+  { id: 'horizontal-line', label: '', icon: <DotsHorizontalLineIcon /> },
+  { id: 'random-dot', label: '', icon: <DotsRandomIcon /> },
+  { id: 'small-square', label: '', icon: <DotsSmallSquareIcon /> },
+  { id: 'tiny-square', label: '', icon: <DotsTinySquareIcon /> },
 ]
 
 // ============================================
@@ -351,11 +350,9 @@ const InnerInpointIcon = () => (
 
 // Opcje dla wewnętrznych kropek narożników
 export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
-  { id: 'square', label: 'Kwadrat', icon: <InnerSquareIcon /> },
-  { id: 'dot', label: 'Kropka', icon: <InnerDotIcon /> },
-  { id: 'star', label: 'Gwiazda', icon: <InnerStarIcon /> },
-  { id: 'diamond', label: 'Diament', icon: <InnerDiamondIcon /> },
-  { id: 'rounded', label: 'Zaokraglony', icon: <InnerRoundedIcon /> },
-  { id: 'outpoint', label: 'Zewnetrzny', icon: <InnerOutpointIcon /> },
-  { id: 'inpoint', label: 'Wewnetrzny', icon: <InnerInpointIcon /> },
+  { id: 'square', label: '', icon: <InnerSquareIcon /> },
+  { id: 'dot', label: '', icon: <InnerDotIcon /> },
+  { id: 'diamond', label: '', icon: <InnerDiamondIcon /> },
+  { id: 'rounded', label: '', icon: <InnerRoundedIcon /> },
+  { id: 'classy', label: '', icon: <InnerClassyIcon /> },
 ]
