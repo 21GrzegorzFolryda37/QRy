@@ -128,7 +128,9 @@ function getFrameDimensions(qrSize: number, frame: FrameOptions | null) {
     return { width: qrSize, height: qrSize, padding: 0, textHeight: 0 }
   }
 
-  const padding = Math.round(qrSize * FRAME_PADDING_RATIO)
+  const padding = frame.style === 'badge'
+    ? Math.round(qrSize * 0.2)
+    : Math.round(qrSize * FRAME_PADDING_RATIO)
   const textHeight = frame.showText ? Math.round(qrSize * TEXT_AREA_HEIGHT_RATIO) : 0
 
   return {
@@ -258,27 +260,30 @@ function drawFrameOnCanvas(
       ctx.fill()
       break
 
-    case 'badge':
+    case 'badge': {
       // Circle background
       ctx.fillStyle = fillStyle
       ctx.beginPath()
       ctx.arc(width / 2, width / 2, width / 2 - 2, 0, Math.PI * 2)
       ctx.fill()
       // Ribbon
+      const badgeArea = qrSize + padding * 2
       const ribbonWidth = width * 0.45
-      const ribbonHeight = height * 0.15
-      ctx.fillRect((width - ribbonWidth) / 2, height - ribbonHeight - 4, ribbonWidth, ribbonHeight)
+      const ribbonHeight = badgeArea * 0.1
+      ctx.fillRect((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4, ribbonWidth, ribbonHeight)
       ctx.beginPath()
-      ctx.moveTo((width - ribbonWidth) / 2, height - ribbonHeight - 4)
-      ctx.lineTo(width / 2, height - ribbonHeight / 2 - 4)
-      ctx.lineTo((width + ribbonWidth) / 2, height - ribbonHeight - 4)
+      ctx.moveTo((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
+      ctx.lineTo(width / 2, badgeArea - ribbonHeight / 2 - 4)
+      ctx.lineTo((width + ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
       ctx.fill()
-      // White circle for QR
+      // White circle for QR - thin frame
+      const badgeFrameThickness = Math.round(qrSize * 0.035)
       ctx.fillStyle = 'white'
       ctx.beginPath()
-      ctx.arc(width / 2, width / 2, qrSize / 2 + 4, 0, Math.PI * 2)
+      ctx.arc(width / 2, width / 2, width / 2 - 2 - badgeFrameThickness, 0, Math.PI * 2)
       ctx.fill()
       break
+    }
 
     case 'minimal':
       const cornerLength = 20

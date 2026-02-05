@@ -23,7 +23,7 @@ function getFrameBorder(style: FrameStyle, qrSize: number): number {
       return 12
 
     case 'badge':
-      return Math.round(qrSize * 0.08) + 10
+      return Math.round(qrSize * 0.2)
 
     default:
       return 12
@@ -171,17 +171,20 @@ function getFrameStyle(
 
     case 'badge': {
       const circleR = qrSize / 2 + border - 2
+      const frameThickness = Math.round(qrSize * 0.035)
+      const whiteR = circleR - frameThickness
+      const badgeH = qrSize + border * 2
       const ribbonW = qrSize * 0.5
       const ribbonH = 24
       return {
         background: (
           <>
             <circle cx={cx} cy={cy} r={circleR} fill={fill} />
-            <rect x={cx - ribbonW / 2} y={height - ribbonH - 4} width={ribbonW} height={ribbonH} fill={fill} />
-            <polygon points={`${cx - ribbonW / 2},${height - ribbonH - 4} ${cx},${height - ribbonH / 2 - 2} ${cx + ribbonW / 2},${height - ribbonH - 4}`} fill={fill} />
+            <rect x={cx - ribbonW / 2} y={badgeH - ribbonH - 4} width={ribbonW} height={ribbonH} fill={fill} />
+            <polygon points={`${cx - ribbonW / 2},${badgeH - ribbonH - 4} ${cx},${badgeH - ribbonH / 2 - 2} ${cx + ribbonW / 2},${badgeH - ribbonH - 4}`} fill={fill} />
           </>
         ),
-        decoration: <circle cx={cx} cy={cy} r={qrSize / 2 + 4} fill="white" />,
+        decoration: <circle cx={cx} cy={cy} r={whiteR} fill="white" />,
       }
     }
 
