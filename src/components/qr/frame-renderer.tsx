@@ -10,7 +10,7 @@ interface FrameRendererProps {
   className?: string
 }
 
-const TEXT_AREA_HEIGHT = 32
+const TEXT_AREA_HEIGHT = 44
 
 // Different frame types need different amounts of space
 function getFrameBorder(style: FrameStyle, qrSize: number): number {
@@ -74,8 +74,9 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
         {hasFrame && frame.showText && frame.text && (
           <text
             x={totalWidth / 2}
-            y={size + border * 2 + textHeight / 2 + 5}
+            y={size + border * 2 + textHeight / 2}
             textAnchor="middle"
+            dominantBaseline="central"
             fill={frame.textColor}
             fontSize={14}
             fontWeight="bold"
