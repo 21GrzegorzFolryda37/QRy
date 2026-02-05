@@ -1,63 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui'
 import type QRCodeStylingType from 'qr-code-styling'
+import { createQrCodeStylingOptions, generateQrCodeImage } from '@/lib/qr/options'
+import { QrStyle } from '@/types/database'
+import { DEFAULT_QR_STYLE } from '@/types/qr'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type TabType = 'color' | 'shape' | 'edges' | 'logo' | 'templates' | 'frame' | 'advanced'
 
-// Kształty wspierane przez qr-code-styling (client-side)
-type DotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded'
-type CornerSquareShape = 'square' | 'dot' | 'extra-rounded'
-type CornerDotShape = 'square' | 'dot'
-
-// Rozszerzone kształty dla UI (pokazywane użytkownikowi, ale mapowane do podstawowych)
-type ExtendedDotShape = DotShape | 'diamond' | 'star' | 'vertical-line' | 'horizontal-line' | 'random-dot' | 'small-square' | 'tiny-square'
-type ExtendedCornerSquareShape = CornerSquareShape | 'classy' | 'inpoint' | 'outpoint'
-type ExtendedCornerDotShape = CornerDotShape | 'diamond' | 'rounded'
-
-// Mapowanie rozszerzonych kształtów na podstawowe (dla qr-code-styling)
-const mapDotShapeToBasic = (shape: ExtendedDotShape): DotShape => {
-  const mapping: Record<ExtendedDotShape, DotShape> = {
-    'square': 'square',
-    'dots': 'dots',
-    'rounded': 'rounded',
-    'extra-rounded': 'extra-rounded',
-    'classy': 'classy',
-    'classy-rounded': 'classy-rounded',
-    'diamond': 'square', // fallback
-    'star': 'dots', // fallback
-    'vertical-line': 'square', // fallback
-    'horizontal-line': 'square', // fallback
-    'random-dot': 'dots', // fallback
-    'small-square': 'square', // fallback
-    'tiny-square': 'square', // fallback
-  }
-  return mapping[shape]
-}
-
-const mapCornerSquareShapeToBasic = (shape: ExtendedCornerSquareShape): CornerSquareShape => {
-  const mapping: Record<ExtendedCornerSquareShape, CornerSquareShape> = {
-    'square': 'square',
-    'dot': 'dot',
-    'extra-rounded': 'extra-rounded',
-    'classy': 'extra-rounded', // fallback - podobne zaokrąglenie
-    'inpoint': 'square', // fallback
-    'outpoint': 'square', // fallback
-  }
-  return mapping[shape]
-}
-
-const mapCornerDotShapeToBasic = (shape: ExtendedCornerDotShape): CornerDotShape => {
-  const mapping: Record<ExtendedCornerDotShape, CornerDotShape> = {
-    'square': 'square',
-    'dot': 'dot',
-    'diamond': 'square', // fallback
-    'rounded': 'dot', // fallback - podobne zaokrąglenie
-  }
-  return mapping[shape]
-}
+// Rozszerzone kształty dla UI (pokazywane użytkownikowi)
+type ExtendedDotShape = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded' | 'diamond' | 'star' | 'vertical-line' | 'horizontal-line' | 'random-dot' | 'small-square' | 'tiny-square'
+type ExtendedCornerSquareShape = 'square' | 'dot' | 'extra-rounded' | 'classy' | 'inpoint' | 'outpoint'
+type ExtendedCornerDotShape = 'square' | 'dot' | 'diamond' | 'rounded'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -101,7 +57,8 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
   appstore: { title: 'Link do aplikacji w kodzie QR', subtitle: 'App Store i Google Play w jednym kodzie' },
 }
 
-type FrameStyle = 'none' | 'simple' | 'rounded' | 'badge-top' | 'badge-bottom' | 'bubble' | 'pointer' | 'ticket' | 'stamp' | 'ribbon' | 'chat' | 'hexagon'
+// Frame styles for hero preview (different from database FrameStyle)
+type HeroFrameStyle = 'none' | 'simple' | 'rounded' | 'badge-top' | 'badge-bottom' | 'bubble' | 'pointer' | 'ticket' | 'stamp' | 'ribbon' | 'chat' | 'hexagon'
 
 // Paleta kolorów - górny rząd (9 kolorów) + dolny rząd (5 kolorów)
 const colorPaletteTop = [
@@ -228,19 +185,13 @@ const brandLogos: { id: string; name: string; svg: string }[] = [
   },
 ]
 
-// Gotowe szablony marek (skopiowane z qr-form.tsx)
+// Gotowe szablony marek z częściowym QrStyle
 interface BrandTemplate {
   id: string
   name: string
   logoId: string
-  color: string
-  dotShape: ExtendedDotShape
-  cornerSquareShape: ExtendedCornerSquareShape
-  cornerDotShape: ExtendedCornerDotShape
-  dotGradient: { colors: string[]; rotation: number } | null
-  dotColor: string
-  cornerSquareColor: string | null
-  cornerDotColor: string | null
+  frameColor: string // kolor ramki dekoracyjnej
+  style: Partial<QrStyle>
 }
 
 const brandTemplates: BrandTemplate[] = [
@@ -248,105 +199,159 @@ const brandTemplates: BrandTemplate[] = [
     id: 'instagram',
     name: 'Instagram',
     logoId: 'instagram',
-    color: '#E1306C',
-    dotShape: 'random-dot',
-    cornerSquareShape: 'extra-rounded',
-    cornerDotShape: 'dot',
-    dotGradient: { colors: ['#f77737', '#fd5949', '#d6249f', '#405de6'], rotation: 225 },
-    dotColor: '#E1306C',
-    cornerSquareColor: '#d6249f',
-    cornerDotColor: '#fd5949',
+    frameColor: '#E1306C',
+    style: {
+      dotsType: 'random-dot',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      foregroundColor: '#E1306C',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 225,
+        colorStops: [
+          { offset: 0, color: '#f77737' },
+          { offset: 0.33, color: '#fd5949' },
+          { offset: 0.66, color: '#d6249f' },
+          { offset: 1, color: '#405de6' },
+        ],
+      },
+      cornersSquareColor: '#d6249f',
+      cornersDotColor: '#fd5949',
+    },
   },
   {
     id: 'spotify',
     name: 'Spotify',
     logoId: 'spotify',
-    color: '#1DB954',
-    dotShape: 'dots',
-    cornerSquareShape: 'dot',
-    cornerDotShape: 'dot',
-    dotGradient: { colors: ['#1DB954', '#191414'], rotation: 180 },
-    dotColor: '#1DB954',
-    cornerSquareColor: '#1DB954',
-    cornerDotColor: '#191414',
+    frameColor: '#1DB954',
+    style: {
+      dotsType: 'dots',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+      foregroundColor: '#1DB954',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#1DB954' },
+          { offset: 1, color: '#191414' },
+        ],
+      },
+      cornersSquareColor: '#1DB954',
+      cornersDotColor: '#191414',
+    },
   },
   {
     id: 'facebook',
     name: 'Facebook',
     logoId: 'facebook',
-    color: '#1877F2',
-    dotShape: 'rounded',
-    cornerSquareShape: 'extra-rounded',
-    cornerDotShape: 'dot',
-    dotGradient: null,
-    dotColor: '#1877F2',
-    cornerSquareColor: '#1877F2',
-    cornerDotColor: '#1877F2',
+    frameColor: '#1877F2',
+    style: {
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      foregroundColor: '#1877F2',
+      dotsGradient: null,
+      cornersSquareColor: '#1877F2',
+      cornersDotColor: '#1877F2',
+    },
   },
   {
     id: 'youtube',
     name: 'YouTube',
     logoId: 'youtube',
-    color: '#FF0000',
-    dotShape: 'dots',
-    cornerSquareShape: 'extra-rounded',
-    cornerDotShape: 'dot',
-    dotGradient: { colors: ['#FF0000', '#282828'], rotation: 180 },
-    dotColor: '#FF0000',
-    cornerSquareColor: '#FF0000',
-    cornerDotColor: '#FF0000',
+    frameColor: '#FF0000',
+    style: {
+      dotsType: 'dots',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      foregroundColor: '#FF0000',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#FF0000' },
+          { offset: 1, color: '#282828' },
+        ],
+      },
+      cornersSquareColor: '#FF0000',
+      cornersDotColor: '#FF0000',
+    },
   },
   {
     id: 'tiktok',
     name: 'TikTok',
     logoId: 'tiktok',
-    color: '#00f2ea',
-    dotShape: 'rounded',
-    cornerSquareShape: 'extra-rounded',
-    cornerDotShape: 'dot',
-    dotGradient: { colors: ['#4de8e0', '#2b2b2b', '#e0345b'], rotation: 135 },
-    dotColor: '#000000',
-    cornerSquareColor: '#000000',
-    cornerDotColor: '#000000',
+    frameColor: '#00f2ea',
+    style: {
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      foregroundColor: '#000000',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#4de8e0' },
+          { offset: 0.5, color: '#2b2b2b' },
+          { offset: 1, color: '#e0345b' },
+        ],
+      },
+      cornersSquareColor: '#000000',
+      cornersDotColor: '#000000',
+    },
   },
   {
     id: 'whatsapp',
     name: 'WhatsApp',
     logoId: 'whatsapp',
-    color: '#25D366',
-    dotShape: 'rounded',
-    cornerSquareShape: 'extra-rounded',
-    cornerDotShape: 'dot',
-    dotGradient: { colors: ['#25D366', '#128C7E'], rotation: 180 },
-    dotColor: '#25D366',
-    cornerSquareColor: '#25D366',
-    cornerDotColor: '#128C7E',
+    frameColor: '#25D366',
+    style: {
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      foregroundColor: '#25D366',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#25D366' },
+          { offset: 1, color: '#128C7E' },
+        ],
+      },
+      cornersSquareColor: '#25D366',
+      cornersDotColor: '#128C7E',
+    },
   },
   {
     id: 'linkedin',
     name: 'LinkedIn',
     logoId: 'linkedin',
-    color: '#0A66C2',
-    dotShape: 'square',
-    cornerSquareShape: 'square',
-    cornerDotShape: 'square',
-    dotGradient: null,
-    dotColor: '#0A66C2',
-    cornerSquareColor: '#0A66C2',
-    cornerDotColor: '#0A66C2',
+    frameColor: '#0A66C2',
+    style: {
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+      foregroundColor: '#0A66C2',
+      dotsGradient: null,
+      cornersSquareColor: '#0A66C2',
+      cornersDotColor: '#0A66C2',
+    },
   },
   {
     id: 'x',
     name: 'X',
     logoId: 'x',
-    color: '#000000',
-    dotShape: 'square',
-    cornerSquareShape: 'square',
-    cornerDotShape: 'square',
-    dotGradient: null,
-    dotColor: '#000000',
-    cornerSquareColor: '#000000',
-    cornerDotColor: '#000000',
+    frameColor: '#000000',
+    style: {
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+      foregroundColor: '#000000',
+      dotsGradient: null,
+      cornersSquareColor: '#000000',
+      cornersDotColor: '#000000',
+    },
   },
 ]
 
@@ -357,50 +362,26 @@ export function Hero() {
   // Form fields
   const [formData, setFormData] = useState<Record<string, string>>({})
 
-  // QR customization
-  const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('none')
-  const [frameText, setFrameText] = useState('SCAN ME')
-  const [dotColor, setDotColor] = useState('#000000')
-  const [dotGradient, setDotGradient] = useState(false)
-  const [dotGradientColors, setDotGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
-  const [dotGradientType, setDotGradientType] = useState<'linear' | 'radial'>('linear')
-  const [dotGradientRotation, setDotGradientRotation] = useState(45)
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff')
-  // Tryb koloru krawędzi: 'inherit' = używa ustawień z sekcji KOLOR, 'custom' = własne ustawienia
-  const [cornerSquareColorMode, setCornerSquareColorMode] = useState<'inherit' | 'custom'>('inherit')
-  const [cornerSquareColor, setCornerSquareColor] = useState('#000000')
-  const [cornerSquareGradient, setCornerSquareGradient] = useState(false)
-  const [cornerSquareGradientColors, setCornerSquareGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
-  const [cornerSquareGradientRotation, setCornerSquareGradientRotation] = useState(45)
-  const [cornerDotColorMode, setCornerDotColorMode] = useState<'inherit' | 'custom'>('inherit')
-  const [cornerDotColor, setCornerDotColor] = useState('#000000')
-  const [cornerDotGradient, setCornerDotGradient] = useState(false)
-  const [cornerDotGradientColors, setCornerDotGradientColors] = useState<string[]>(['#000000', '#3b82f6'])
-  const [cornerDotGradientRotation, setCornerDotGradientRotation] = useState(45)
-  const [dotShape, setDotShape] = useState<ExtendedDotShape>('square')
-  const [cornerSquareShape, setCornerSquareShape] = useState<ExtendedCornerSquareShape>('square')
-  const [cornerDotShape, setCornerDotShape] = useState<ExtendedCornerDotShape>('square')
-  const [logo, setLogo] = useState<string | null>(null)
-  // Globalny gradient - jeden płynny gradient na całym kodzie QR
-  const [useGlobalGradient, setUseGlobalGradient] = useState(false)
-  const [globalGradientColors, setGlobalGradientColors] = useState<string[]>(['#F58529', '#DD2A7B', '#8134AF', '#515BD4'])
-  const [globalGradientRotation, setGlobalGradientRotation] = useState(45)
-
-  // Nowe ustawienia zaawansowane
-  const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<'L' | 'M' | 'Q' | 'H'>('H')
-  const [qrSize, setQrSize] = useState(400)
-  const [qrMargin, setQrMargin] = useState(2)
+  // Unified QR style state
+  const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const [logoSize, setLogoSize] = useState(25) // procent
 
-  // Customizacja ramki
+  // Helper to update style
+  const updateStyle = (updates: Partial<QrStyle>) => {
+    setStyle(prev => ({ ...prev, ...updates }))
+  }
+
+  // UI state for color mode toggles (not part of QrStyle, just UI helpers)
+  const [cornerSquareColorMode, setCornerSquareColorMode] = useState<'inherit' | 'custom'>('inherit')
+  const [cornerDotColorMode, setCornerDotColorMode] = useState<'inherit' | 'custom'>('inherit')
+
+  // Hero-specific frame preview (different from database frame)
+  const [selectedFrame, setSelectedFrame] = useState<HeroFrameStyle>('none')
+  const [frameText, setFrameText] = useState('SCAN ME')
   const [frameColor, setFrameColor] = useState('#000000')
   const [frameTextColor, setFrameTextColor] = useState('#ffffff')
   const [showFrameText, setShowFrameText] = useState(true)
-
-  // Gradient tła
-  const [backgroundGradient, setBackgroundGradient] = useState(false)
-  const [backgroundGradientColors, setBackgroundGradientColors] = useState<string[]>(['#ffffff', '#f0f0f0'])
-  const [backgroundGradientRotation, setBackgroundGradientRotation] = useState(180)
 
   // Download state
   const [showEmailCapture, setShowEmailCapture] = useState(false)
@@ -483,7 +464,7 @@ export function Hero() {
     }
   }
 
-  
+
   // Load QR code styling library (client-side only)
   useEffect(() => {
     import('qr-code-styling').then((module) => {
@@ -491,249 +472,57 @@ export function Hero() {
     })
   }, [])
 
-  // Helper function to create gradient or color options
-  // Używamy mapowania do podstawowych kształtów dla qr-code-styling
-  const getDotsOptions = () => {
-    const basicShape = mapDotShapeToBasic(dotShape)
-    if (dotGradient) {
-      const colorStops = dotGradientColors.map((color, index) => ({
-        offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
-        color
-      }))
-      return {
-        type: basicShape,
-        gradient: {
-          type: dotGradientType as 'linear' | 'radial',
-          rotation: dotGradientRotation,
-          colorStops
-        }
-      }
-    }
-    return { color: dotColor, type: basicShape }
-  }
-
-  const getCornerSquareOptions = () => {
-    const basicShape = mapCornerSquareShapeToBasic(cornerSquareShape)
-    // Jeśli tryb 'inherit', użyj ustawień z kropek
-    if (cornerSquareColorMode === 'inherit') {
-      if (dotGradient) {
-        const colorStops = dotGradientColors.map((color, index) => ({
-          offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
-          color
-        }))
-        return {
-          type: basicShape,
-          gradient: {
-            type: dotGradientType as 'linear' | 'radial',
-            rotation: dotGradientRotation,
-            colorStops
-          }
-        }
-      }
-      return { color: dotColor, type: basicShape }
-    }
-    // Tryb 'custom' - własne ustawienia
-    if (cornerSquareGradient) {
-      const colorStops = cornerSquareGradientColors.map((color, index) => ({
-        offset: cornerSquareGradientColors.length === 1 ? 0 : index / (cornerSquareGradientColors.length - 1),
-        color
-      }))
-      return {
-        type: basicShape,
-        gradient: {
-          type: 'linear' as const,
-          rotation: cornerSquareGradientRotation,
-          colorStops
-        }
-      }
-    }
-    return { color: cornerSquareColor, type: basicShape }
-  }
-
-  const getCornerDotOptions = () => {
-    const basicShape = mapCornerDotShapeToBasic(cornerDotShape)
-    // Jeśli tryb 'inherit', użyj ustawień z kropek
-    if (cornerDotColorMode === 'inherit') {
-      if (dotGradient) {
-        const colorStops = dotGradientColors.map((color, index) => ({
-          offset: dotGradientColors.length === 1 ? 0 : index / (dotGradientColors.length - 1),
-          color
-        }))
-        return {
-          type: basicShape,
-          gradient: {
-            type: dotGradientType as 'linear' | 'radial',
-            rotation: dotGradientRotation,
-            colorStops
-          }
-        }
-      }
-      return { color: dotColor, type: basicShape }
-    }
-    // Tryb 'custom' - własne ustawienia
-    if (cornerDotGradient) {
-      const colorStops = cornerDotGradientColors.map((color, index) => ({
-        offset: cornerDotGradientColors.length === 1 ? 0 : index / (cornerDotGradientColors.length - 1),
-        color
-      }))
-      return {
-        type: basicShape,
-        gradient: {
-          type: 'linear' as const,
-          rotation: cornerDotGradientRotation,
-          colorStops
-        }
-      }
-    }
-    return { color: cornerDotColor, type: basicShape }
-  }
-
-  // Helper function for background options
-  const getBackgroundOptions = () => {
-    if (backgroundGradient) {
-      return {
-        color: backgroundColor,
-        gradient: {
-          type: 'linear' as const,
-          rotation: backgroundGradientRotation,
-          colorStops: backgroundGradientColors.map((color, index) => ({
-            offset: index / (backgroundGradientColors.length - 1),
-            color,
-          })),
-        },
-      }
-    }
-    return { color: backgroundColor }
-  }
-
   // Initialize QR code
   useEffect(() => {
     if (!QRCodeStyling || !qrRef.current) return
 
-    qrCodeRef.current = new QRCodeStyling({
-      width: 200,
-      height: 200,
-      type: 'svg',
-      data: getQRData(),
-      qrOptions: {
-        errorCorrectionLevel: logo ? 'H' : errorCorrectionLevel,
-      },
-      dotsOptions: getDotsOptions(),
-      cornersSquareOptions: getCornerSquareOptions(),
-      cornersDotOptions: getCornerDotOptions(),
-      backgroundOptions: getBackgroundOptions(),
-      imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: logoSize / 100 },
-      margin: qrMargin,
+    const options = createQrCodeStylingOptions({
+      url: getQRData(),
+      style,
+      size: 200,
+      logoUrl: logoUrl || undefined,
+      logoSize,
     })
+
+    qrCodeRef.current = new QRCodeStyling(options)
     qrRef.current.innerHTML = ''
     qrCodeRef.current.append(qrRef.current)
   }, [QRCodeStyling])
 
-  // Update QR code with debounce (1.5s delay like qr.io)
+  // Update QR code with debounce
   useEffect(() => {
     if (!qrCodeRef.current) return
 
-    // Show loading state
     setIsUpdatingQR(true)
 
-    // Clear previous timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current)
     }
 
-    // Set new debounce timer
     debounceTimerRef.current = setTimeout(() => {
-      if (qrCodeRef.current) {
-        qrCodeRef.current.update({
-          data: getQRData(),
-          qrOptions: {
-            errorCorrectionLevel: logo ? 'H' : errorCorrectionLevel,
-          },
-          dotsOptions: getDotsOptions(),
-          cornersSquareOptions: getCornerSquareOptions(),
-          cornersDotOptions: getCornerDotOptions(),
-          backgroundOptions: getBackgroundOptions(),
-          image: logo || undefined,
-          imageOptions: logo ? {
-            crossOrigin: 'anonymous',
-            margin: 8,
-            imageSize: logoSize / 100,
-          } : undefined,
-          margin: qrMargin,
-        })
-      }
+      const options = createQrCodeStylingOptions({
+        url: getQRData(),
+        style,
+        size: 200,
+        logoUrl: logoUrl || undefined,
+        logoSize,
+      })
+      qrCodeRef.current?.update(options)
       setIsUpdatingQR(false)
-    }, 800) // 800ms debounce for smooth UX
+    }, 800)
 
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [formData, selectedType, dotColor, dotGradient, dotGradientColors, dotGradientType, dotGradientRotation, backgroundColor, backgroundGradient, backgroundGradientColors, backgroundGradientRotation, cornerSquareColorMode, cornerSquareColor, cornerSquareGradient, cornerSquareGradientColors, cornerSquareGradientRotation, cornerDotColorMode, cornerDotColor, cornerDotGradient, cornerDotGradientColors, cornerDotGradientRotation, dotShape, cornerSquareShape, cornerDotShape, logo, logoSize, errorCorrectionLevel, qrMargin])
-
-  // Apply global gradient to SVG (post-processing)
-  useEffect(() => {
-    if (!useGlobalGradient || !qrRef.current) return
-
-    const timer = setTimeout(() => {
-      const svg = qrRef.current?.querySelector('svg')
-      if (!svg) return
-
-      // Create gradient definition
-      const angle = globalGradientRotation
-      const angleRad = (angle * Math.PI) / 180
-      const x1 = 50 - Math.cos(angleRad) * 50
-      const y1 = 50 + Math.sin(angleRad) * 50
-      const x2 = 50 + Math.cos(angleRad) * 50
-      const y2 = 50 - Math.sin(angleRad) * 50
-
-      // Check if defs exists, create if not
-      let defs = svg.querySelector('defs')
-      if (!defs) {
-        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
-        svg.insertBefore(defs, svg.firstChild)
-      }
-
-      // Remove old global gradient if exists
-      const oldGradient = defs.querySelector('#globalQrGradient')
-      if (oldGradient) oldGradient.remove()
-
-      // Create new gradient
-      const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
-      gradient.setAttribute('id', 'globalQrGradient')
-      gradient.setAttribute('x1', `${x1}%`)
-      gradient.setAttribute('y1', `${y1}%`)
-      gradient.setAttribute('x2', `${x2}%`)
-      gradient.setAttribute('y2', `${y2}%`)
-
-      globalGradientColors.forEach((color, index) => {
-        const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
-        stop.setAttribute('offset', `${(index / (globalGradientColors.length - 1)) * 100}%`)
-        stop.setAttribute('stop-color', color)
-        gradient.appendChild(stop)
-      })
-
-      defs.appendChild(gradient)
-
-      // Apply gradient to all paths, rects, circles (except background)
-      const elements = svg.querySelectorAll('path, rect, circle')
-      elements.forEach((el) => {
-        const fill = el.getAttribute('fill')
-        // Skip background (usually white) and images
-        if (fill === backgroundColor || fill === '#ffffff' || fill === '#FFFFFF' || fill === 'none') return
-        el.setAttribute('fill', 'url(#globalQrGradient)')
-      })
-    }, 50)
-
-    return () => clearTimeout(timer)
-  }, [useGlobalGradient, globalGradientColors, globalGradientRotation, backgroundColor, formData, selectedType, dotColor, dotGradient, dotGradientColors, dotShape, cornerSquareShape, cornerDotShape, logo])
+  }, [style, logoUrl, logoSize, formData, selectedType])
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (event) => setLogo(event.target?.result as string)
+      reader.onload = (event) => setLogoUrl(event.target?.result as string)
       reader.readAsDataURL(file)
     }
   }
@@ -750,18 +539,26 @@ export function Hero() {
     if (!userEmail.trim() || !userEmail.includes('@')) return
     setIsSending(true)
     setSendStatus('idle')
+
     try {
-      const qrBlob = await qrCodeRef.current?.getRawData('png')
-      if (!qrBlob) throw new Error('Failed to generate QR')
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.readAsDataURL(qrBlob as Blob)
+      const qrImageDataUrl = await generateQrCodeImage(QRCodeStyling, {
+        url: getQRData(),
+        style,
+        size: style.width,
+        logoUrl: logoUrl || undefined,
+        logoSize,
       })
+
+      if (!qrImageDataUrl) {
+        setSendStatus('error')
+        setIsSending(false)
+        return
+      }
+
       const response = await fetch('/api/send-qr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, qrCodeBase64: base64, url: getQRData() }),
+        body: JSON.stringify({ email: userEmail, qrCodeBase64: qrImageDataUrl, url: getQRData() }),
       })
       setSendStatus(response.ok ? 'success' : 'error')
     } catch {
@@ -1098,45 +895,18 @@ export function Hero() {
                               <button
                                 key={template.id}
                                 onClick={() => {
-                                  // Resetuj globalny gradient
-                                  setUseGlobalGradient(false)
-                                  // Ustaw kształty
-                                  setDotShape(template.dotShape)
-                                  setCornerSquareShape(template.cornerSquareShape)
-                                  setCornerDotShape(template.cornerDotShape)
-                                  // Ustaw kolory
-                                  setDotColor(template.dotColor)
-                                  if (template.dotGradient) {
-                                    setDotGradient(true)
-                                    setDotGradientColors(template.dotGradient.colors)
-                                    setDotGradientRotation(template.dotGradient.rotation)
-                                  } else {
-                                    setDotGradient(false)
-                                  }
-                                  // Kolor ramki - włącz własny
-                                  if (template.cornerSquareColor) {
-                                    setCornerSquareColorMode('custom')
-                                    setCornerSquareColor(template.cornerSquareColor)
-                                    setCornerSquareGradient(false)
-                                  } else {
-                                    setCornerSquareColorMode('inherit')
-                                  }
-                                  if (template.cornerDotColor) {
-                                    setCornerDotColorMode('custom')
-                                    setCornerDotColor(template.cornerDotColor)
-                                    setCornerDotGradient(false)
-                                  } else {
-                                    setCornerDotColorMode('inherit')
-                                  }
-                                  // Białe tło
-                                  setBackgroundColor('#ffffff')
-                                  // Logo
-                                  setLogo(brandLogo?.svg || null)
-                                  // Kolor ramki dekoracyjnej
-                                  setFrameColor(template.color)
+                                  // Apply template style merged with defaults
+                                  setStyle({ ...DEFAULT_QR_STYLE, ...template.style })
+                                  // Set logo
+                                  setLogoUrl(brandLogo?.svg || null)
+                                  // Set frame color
+                                  setFrameColor(template.frameColor)
+                                  // Update color mode based on template
+                                  setCornerSquareColorMode(template.style.cornersSquareColor ? 'custom' : 'inherit')
+                                  setCornerDotColorMode(template.style.cornersDotColor ? 'custom' : 'inherit')
                                 }}
                                 className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all hover:scale-105 ${
-                                  logo === brandLogo?.svg
+                                  logoUrl === brandLogo?.svg
                                     ? 'border-[var(--primary)] bg-[var(--primary)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
@@ -1164,9 +934,9 @@ export function Hero() {
                         {/* Toggle gradient */}
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setDotGradient(false)}
+                            onClick={() => updateStyle({ dotsGradient: null })}
                             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                              !dotGradient
+                              !style.dotsGradient
                                 ? 'bg-[var(--primary)] text-white'
                                 : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
                             }`}
@@ -1174,9 +944,18 @@ export function Hero() {
                             Kolor
                           </button>
                           <button
-                            onClick={() => setDotGradient(true)}
+                            onClick={() => updateStyle({
+                              dotsGradient: {
+                                type: 'linear',
+                                rotation: 45,
+                                colorStops: [
+                                  { offset: 0, color: style.foregroundColor },
+                                  { offset: 1, color: '#3b82f6' },
+                                ],
+                              },
+                            })}
                             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                              dotGradient
+                              style.dotsGradient
                                 ? 'bg-[var(--primary)] text-white'
                                 : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
                             }`}
@@ -1185,7 +964,7 @@ export function Hero() {
                           </button>
                         </div>
 
-                        {!dotGradient ? (
+                        {!style.dotsGradient ? (
                           <>
                             {/* Górny rząd: color picker + 8 kolorów */}
                             <div className="flex gap-2">
@@ -1193,17 +972,17 @@ export function Hero() {
                                 <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
                                 <input
                                   type="color"
-                                  value={dotColor}
-                                  onChange={(e) => setDotColor(e.target.value)}
+                                  value={style.foregroundColor}
+                                  onChange={(e) => updateStyle({ foregroundColor: e.target.value })}
                                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                 />
                               </label>
                               {colorPaletteTop.map((color) => (
                                 <button
                                   key={color}
-                                  onClick={() => setDotColor(color)}
+                                  onClick={() => updateStyle({ foregroundColor: color })}
                                   className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
-                                    dotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    style.foregroundColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                   }`}
                                   style={{ backgroundColor: color }}
                                 />
@@ -1214,9 +993,9 @@ export function Hero() {
                               {colorPaletteBottom.map((color) => (
                                 <button
                                   key={color}
-                                  onClick={() => setDotColor(color)}
+                                  onClick={() => updateStyle({ foregroundColor: color })}
                                   className={`w-9 h-9 rounded-lg border-2 transition-all flex-shrink-0 ${
-                                    dotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                    style.foregroundColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                   }`}
                                   style={{ backgroundColor: color }}
                                 />
@@ -1229,9 +1008,9 @@ export function Hero() {
                             <div
                               className="h-8 rounded-lg border border-[var(--border)]"
                               style={{
-                                background: dotGradientType === 'linear'
-                                  ? `linear-gradient(${dotGradientRotation}deg, ${dotGradientColors.join(', ')})`
-                                  : `radial-gradient(circle, ${dotGradientColors.join(', ')})`
+                                background: style.dotsGradient.type === 'linear'
+                                  ? `linear-gradient(${style.dotsGradient.rotation}deg, ${style.dotsGradient.colorStops.map(s => s.color).join(', ')})`
+                                  : `radial-gradient(circle, ${style.dotsGradient.colorStops.map(s => s.color).join(', ')})`
                               }}
                             />
 
@@ -1240,18 +1019,27 @@ export function Hero() {
                               <p className="text-xs text-[var(--foreground-muted)] mb-1">Popularne gradienty</p>
                               <div className="flex gap-1.5 flex-wrap">
                                 {[
-                                  { colors: ['#8b5cf6', '#06b6d4'] as [string, string], name: 'Fiolet-Cyan' },
-                                  { colors: ['#f97316', '#ec4899'] as [string, string], name: 'Pomarańcz-Róż' },
-                                  { colors: ['#22c55e', '#06b6d4'] as [string, string], name: 'Zieleń-Cyan' },
-                                  { colors: ['#3b82f6', '#8b5cf6'] as [string, string], name: 'Niebieski-Fiolet' },
-                                  { colors: ['#ef4444', '#f97316'] as [string, string], name: 'Czerw-Pomarańcz' },
-                                  { colors: ['#000000', '#6b7280'] as [string, string], name: 'Czarny-Szary' },
+                                  { colors: ['#8b5cf6', '#06b6d4'], name: 'Fiolet-Cyan' },
+                                  { colors: ['#f97316', '#ec4899'], name: 'Pomarańcz-Róż' },
+                                  { colors: ['#22c55e', '#06b6d4'], name: 'Zieleń-Cyan' },
+                                  { colors: ['#3b82f6', '#8b5cf6'], name: 'Niebieski-Fiolet' },
+                                  { colors: ['#ef4444', '#f97316'], name: 'Czerw-Pomarańcz' },
+                                  { colors: ['#000000', '#6b7280'], name: 'Czarny-Szary' },
                                 ].map((preset, idx) => (
                                   <button
                                     key={`preset-${idx}`}
-                                    onClick={() => setDotGradientColors(preset.colors)}
+                                    onClick={() => updateStyle({
+                                      dotsGradient: {
+                                        type: style.dotsGradient?.type || 'linear',
+                                        rotation: style.dotsGradient?.rotation || 45,
+                                        colorStops: [
+                                          { offset: 0, color: preset.colors[0] },
+                                          { offset: 1, color: preset.colors[1] },
+                                        ],
+                                      },
+                                    })}
                                     className={`w-9 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                      dotGradientColors[0] === preset.colors[0] && dotGradientColors[1] === preset.colors[1]
+                                      style.dotsGradient?.colorStops[0]?.color === preset.colors[0] && style.dotsGradient?.colorStops[1]?.color === preset.colors[1]
                                         ? 'border-gray-800 ring-1 ring-gray-400'
                                         : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                     }`}
@@ -1268,9 +1056,11 @@ export function Hero() {
                                 <p className="text-xs text-[var(--foreground-muted)] mb-1">Typ</p>
                                 <div className="flex gap-1">
                                   <button
-                                    onClick={() => setDotGradientType('linear')}
+                                    onClick={() => updateStyle({
+                                      dotsGradient: { ...style.dotsGradient!, type: 'linear' },
+                                    })}
                                     className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                      dotGradientType === 'linear'
+                                      style.dotsGradient?.type === 'linear'
                                         ? 'bg-[var(--primary)] text-white'
                                         : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
                                     }`}
@@ -1278,9 +1068,11 @@ export function Hero() {
                                     Liniowy
                                   </button>
                                   <button
-                                    onClick={() => setDotGradientType('radial')}
+                                    onClick={() => updateStyle({
+                                      dotsGradient: { ...style.dotsGradient!, type: 'radial' },
+                                    })}
                                     className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                      dotGradientType === 'radial'
+                                      style.dotsGradient?.type === 'radial'
                                         ? 'bg-[var(--primary)] text-white'
                                         : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
                                     }`}
@@ -1289,15 +1081,17 @@ export function Hero() {
                                   </button>
                                 </div>
                               </div>
-                              {dotGradientType === 'linear' && (
+                              {style.dotsGradient?.type === 'linear' && (
                                 <div className="flex-1">
-                                  <p className="text-xs text-[var(--foreground-muted)] mb-1">Kąt: {dotGradientRotation}°</p>
+                                  <p className="text-xs text-[var(--foreground-muted)] mb-1">Kąt: {style.dotsGradient.rotation}°</p>
                                   <input
                                     type="range"
                                     min="0"
                                     max="360"
-                                    value={dotGradientRotation}
-                                    onChange={(e) => setDotGradientRotation(Number(e.target.value))}
+                                    value={style.dotsGradient.rotation}
+                                    onChange={(e) => updateStyle({
+                                      dotsGradient: { ...style.dotsGradient!, rotation: Number(e.target.value) },
+                                    })}
                                     className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
                                   />
                                 </div>
@@ -1310,14 +1104,30 @@ export function Hero() {
                               <div className="flex gap-1.5 flex-wrap">
                                 <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
                                   <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                  <input type="color" value={dotGradientColors[0]} onChange={(e) => setDotGradientColors([e.target.value, dotGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                                  <input type="color" value={style.dotsGradient?.colorStops[0]?.color || '#000000'} onChange={(e) => updateStyle({
+                                    dotsGradient: {
+                                      ...style.dotsGradient!,
+                                      colorStops: [
+                                        { offset: 0, color: e.target.value },
+                                        style.dotsGradient!.colorStops[1] || { offset: 1, color: '#3b82f6' },
+                                      ],
+                                    },
+                                  })} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
                                 </label>
                                 {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
                                   <button
                                     key={`g1-${color}`}
-                                    onClick={() => setDotGradientColors([color, dotGradientColors[1]])}
+                                    onClick={() => updateStyle({
+                                      dotsGradient: {
+                                        ...style.dotsGradient!,
+                                        colorStops: [
+                                          { offset: 0, color },
+                                          style.dotsGradient!.colorStops[1] || { offset: 1, color: '#3b82f6' },
+                                        ],
+                                      },
+                                    })}
                                     className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                      dotGradientColors[0] === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                      style.dotsGradient?.colorStops[0]?.color === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                     }`}
                                     style={{ backgroundColor: color }}
                                   />
@@ -1330,14 +1140,30 @@ export function Hero() {
                               <div className="flex gap-1.5 flex-wrap">
                                 <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
                                   <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                  <input type="color" value={dotGradientColors[1]} onChange={(e) => setDotGradientColors([dotGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                                  <input type="color" value={style.dotsGradient?.colorStops[1]?.color || '#3b82f6'} onChange={(e) => updateStyle({
+                                    dotsGradient: {
+                                      ...style.dotsGradient!,
+                                      colorStops: [
+                                        style.dotsGradient!.colorStops[0] || { offset: 0, color: '#000000' },
+                                        { offset: 1, color: e.target.value },
+                                      ],
+                                    },
+                                  })} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
                                 </label>
                                 {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
                                   <button
                                     key={`g2-${color}`}
-                                    onClick={() => setDotGradientColors([dotGradientColors[0], color])}
+                                    onClick={() => updateStyle({
+                                      dotsGradient: {
+                                        ...style.dotsGradient!,
+                                        colorStops: [
+                                          style.dotsGradient!.colorStops[0] || { offset: 0, color: '#000000' },
+                                          { offset: 1, color },
+                                        ],
+                                      },
+                                    })}
                                     className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                      dotGradientColors[1] === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
+                                      style.dotsGradient?.colorStops[1]?.color === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                     }`}
                                     style={{ backgroundColor: color }}
                                   />
@@ -1355,9 +1181,9 @@ export function Hero() {
                           {dotShapes.map((shape) => (
                             <button
                               key={shape.id}
-                              onClick={() => setDotShape(shape.id)}
+                              onClick={() => updateStyle({ dotsType: shape.id })}
                               className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                dotShape === shape.id
+                                style.dotsType === shape.id
                                   ? 'border-[var(--success)] bg-[var(--success)]/5'
                                   : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                               }`}
@@ -1368,7 +1194,7 @@ export function Hero() {
                           ))}
                         </div>
                         <p className="text-xs text-[var(--foreground-muted)]">
-                          Wybrany: <span className="font-medium">{dotShapes.find(s => s.id === dotShape)?.label}</span>
+                          Wybrany: <span className="font-medium">{dotShapes.find(s => s.id === style.dotsType)?.label}</span>
                         </p>
                       </div>
                     )}
@@ -1381,7 +1207,10 @@ export function Hero() {
                             <p className="text-xs font-medium text-[var(--foreground-muted)]">Ramka narożnika</p>
                             <div className="flex gap-1">
                               <button
-                                onClick={() => setCornerSquareColorMode('inherit')}
+                                onClick={() => {
+                                  setCornerSquareColorMode('inherit')
+                                  updateStyle({ cornersSquareColor: null, cornersSquareGradient: null })
+                                }}
                                 className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
                                   cornerSquareColorMode === 'inherit' ? 'bg-[var(--success)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
                                 }`}
@@ -1402,9 +1231,9 @@ export function Hero() {
                             {cornerSquareShapes.map((shape) => (
                               <button
                                 key={shape.id}
-                                onClick={() => setCornerSquareShape(shape.id)}
+                                onClick={() => updateStyle({ cornersSquareType: shape.id })}
                                 className={`w-10 h-10 rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
-                                  cornerSquareShape === shape.id
+                                  style.cornersSquareType === shape.id
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
@@ -1417,65 +1246,22 @@ export function Hero() {
                           {cornerSquareColorMode === 'inherit' ? (
                             <p className="text-xs text-[var(--foreground-subtle)] italic">Używa koloru z sekcji KOLOR</p>
                           ) : (
-                            <>
-                              <div className="flex gap-1 mb-2">
+                            <div className="flex gap-1.5 flex-wrap">
+                              <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                <input type="color" value={style.cornersSquareColor || style.foregroundColor} onChange={(e) => updateStyle({ cornersSquareColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                              </label>
+                              {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
                                 <button
-                                  onClick={() => setCornerSquareGradient(false)}
-                                  className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
-                                    !cornerSquareGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                  key={`csq-${color}`}
+                                  onClick={() => updateStyle({ cornersSquareColor: color })}
+                                  className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                    style.cornersSquareColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                   }`}
-                                >
-                                  Kolor
-                                </button>
-                                <button
-                                  onClick={() => setCornerSquareGradient(true)}
-                                  className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
-                                    cornerSquareGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
-                                  }`}
-                                >
-                                  Gradient
-                                </button>
-                              </div>
-                              {!cornerSquareGradient ? (
-                                <div className="flex gap-1.5 flex-wrap">
-                                  <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
-                                    <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                    <input type="color" value={cornerSquareColor} onChange={(e) => setCornerSquareColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-                                  </label>
-                                  {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
-                                    <button
-                                      key={`csq-${color}`}
-                                      onClick={() => setCornerSquareColor(color)}
-                                      className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                        cornerSquareColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                      }`}
-                                      style={{ backgroundColor: color }}
-                                    />
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="space-y-2">
-                                  <div className="h-6 rounded border border-[var(--border)]" style={{ background: `linear-gradient(90deg, ${cornerSquareGradientColors[0]}, ${cornerSquareGradientColors[cornerSquareGradientColors.length - 1]})` }} />
-                                  <div className="flex gap-1.5 flex-wrap">
-                                    <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
-                                      <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                      <input type="color" value={cornerSquareGradientColors[0]} onChange={(e) => setCornerSquareGradientColors([e.target.value, cornerSquareGradientColors[cornerSquareGradientColors.length - 1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                    </label>
-                                    {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
-                                      <button key={`csqg1-${color}`} onClick={() => setCornerSquareGradientColors([color, cornerSquareGradientColors[cornerSquareGradientColors.length - 1]])} className={`w-6 h-6 rounded border ${cornerSquareGradientColors[0] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
-                                    ))}
-                                    <span className="text-[10px] text-[var(--foreground-subtle)] self-center mx-1">→</span>
-                                    <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
-                                      <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                      <input type="color" value={cornerSquareGradientColors[cornerSquareGradientColors.length - 1]} onChange={(e) => setCornerSquareGradientColors([cornerSquareGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                    </label>
-                                    {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
-                                      <button key={`csqg2-${color}`} onClick={() => setCornerSquareGradientColors([cornerSquareGradientColors[0], color])} className={`w-6 h-6 rounded border ${cornerSquareGradientColors[cornerSquareGradientColors.length - 1] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </>
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
                           )}
                         </div>
 
@@ -1485,7 +1271,10 @@ export function Hero() {
                             <p className="text-xs font-medium text-[var(--foreground-muted)]">Środek narożnika</p>
                             <div className="flex gap-1">
                               <button
-                                onClick={() => setCornerDotColorMode('inherit')}
+                                onClick={() => {
+                                  setCornerDotColorMode('inherit')
+                                  updateStyle({ cornersDotColor: null, cornersDotGradient: null })
+                                }}
                                 className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
                                   cornerDotColorMode === 'inherit' ? 'bg-[var(--success)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
                                 }`}
@@ -1506,9 +1295,9 @@ export function Hero() {
                             {cornerDotShapes.map((shape) => (
                               <button
                                 key={shape.id}
-                                onClick={() => setCornerDotShape(shape.id)}
+                                onClick={() => updateStyle({ cornersDotType: shape.id })}
                                 className={`w-10 h-10 rounded-lg border-2 p-1.5 transition-all flex items-center justify-center ${
-                                  cornerDotShape === shape.id
+                                  style.cornersDotType === shape.id
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                 }`}
@@ -1521,65 +1310,22 @@ export function Hero() {
                           {cornerDotColorMode === 'inherit' ? (
                             <p className="text-xs text-[var(--foreground-subtle)] italic">Używa koloru z sekcji KOLOR</p>
                           ) : (
-                            <>
-                              <div className="flex gap-1 mb-2">
+                            <div className="flex gap-1.5 flex-wrap">
+                              <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
+                                <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
+                                <input type="color" value={style.cornersDotColor || style.foregroundColor} onChange={(e) => updateStyle({ cornersDotColor: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+                              </label>
+                              {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
                                 <button
-                                  onClick={() => setCornerDotGradient(false)}
-                                  className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
-                                    !cornerDotGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                  key={`cd-${color}`}
+                                  onClick={() => updateStyle({ cornersDotColor: color })}
+                                  className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
+                                    style.cornersDotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
                                   }`}
-                                >
-                                  Kolor
-                                </button>
-                                <button
-                                  onClick={() => setCornerDotGradient(true)}
-                                  className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
-                                    cornerDotGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
-                                  }`}
-                                >
-                                  Gradient
-                                </button>
-                              </div>
-                              {!cornerDotGradient ? (
-                                <div className="flex gap-1.5 flex-wrap">
-                                  <label className="relative w-7 h-7 rounded-md cursor-pointer overflow-hidden border-2 border-[var(--border)] hover:border-[var(--border-hover)] transition-all flex-shrink-0">
-                                    <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                    <input type="color" value={cornerDotColor} onChange={(e) => setCornerDotColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-                                  </label>
-                                  {[...colorPaletteTop, ...colorPaletteBottom].map((color) => (
-                                    <button
-                                      key={`cd-${color}`}
-                                      onClick={() => setCornerDotColor(color)}
-                                      className={`w-7 h-7 rounded-md border-2 transition-all flex-shrink-0 ${
-                                        cornerDotColor === color ? 'border-gray-800 ring-1 ring-gray-400' : 'border-[var(--border)] hover:border-[var(--border-hover)]'
-                                      }`}
-                                      style={{ backgroundColor: color }}
-                                    />
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="space-y-2">
-                                  <div className="h-6 rounded border border-[var(--border)]" style={{ background: `linear-gradient(90deg, ${cornerDotGradientColors[0]}, ${cornerDotGradientColors[cornerDotGradientColors.length - 1]})` }} />
-                                  <div className="flex gap-1.5 flex-wrap">
-                                    <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
-                                      <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                      <input type="color" value={cornerDotGradientColors[0]} onChange={(e) => setCornerDotGradientColors([e.target.value, cornerDotGradientColors[cornerDotGradientColors.length - 1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                    </label>
-                                    {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
-                                      <button key={`cdg1-${color}`} onClick={() => setCornerDotGradientColors([color, cornerDotGradientColors[cornerDotGradientColors.length - 1]])} className={`w-6 h-6 rounded border ${cornerDotGradientColors[0] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
-                                    ))}
-                                    <span className="text-[10px] text-[var(--foreground-subtle)] self-center mx-1">→</span>
-                                    <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
-                                      <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                      <input type="color" value={cornerDotGradientColors[cornerDotGradientColors.length - 1]} onChange={(e) => setCornerDotGradientColors([cornerDotGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                    </label>
-                                    {[...colorPaletteTop.slice(0, 5), ...colorPaletteBottom.slice(0, 3)].map((color) => (
-                                      <button key={`cdg2-${color}`} onClick={() => setCornerDotGradientColors([cornerDotGradientColors[0], color])} className={`w-6 h-6 rounded border ${cornerDotGradientColors[cornerDotGradientColors.length - 1] === color ? 'border-gray-800' : 'border-[var(--border)]'}`} style={{ backgroundColor: color }} />
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </>
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1594,9 +1340,9 @@ export function Hero() {
                             {brandLogos.map((brand) => (
                               <button
                                 key={brand.id}
-                                onClick={() => setLogo(brand.svg)}
+                                onClick={() => setLogoUrl(brand.svg)}
                                 className={`aspect-square rounded-lg border-2 p-2 transition-all flex items-center justify-center ${
-                                  logo === brand.svg
+                                  logoUrl === brand.svg
                                     ? 'border-[var(--success)] bg-[var(--success)]/5'
                                     : 'border-[var(--border)] hover:border-[var(--border-hover)] bg-white'
                                 }`}
@@ -1611,7 +1357,7 @@ export function Hero() {
                         {/* Upload własnego logo */}
                         <div>
                           <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Własne logo</p>
-                          {!logo || brandLogos.some(b => b.svg === logo) ? (
+                          {!logoUrl || brandLogos.some(b => b.svg === logoUrl) ? (
                             <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-muted)] transition-all">
                               <UploadIcon className="w-5 h-5 text-[var(--foreground-muted)] mb-1" />
                               <span className="text-xs text-[var(--foreground-muted)]">Dodaj własne logo</span>
@@ -1619,17 +1365,17 @@ export function Hero() {
                             </label>
                           ) : (
                             <div className="flex items-center gap-3 p-3 bg-[var(--background-surface)] rounded-xl">
-                              <img src={logo} alt="Logo" className="w-10 h-10 object-contain rounded-lg border border-[var(--border)]" />
+                              <img src={logoUrl} alt="Logo" className="w-10 h-10 object-contain rounded-lg border border-[var(--border)]" />
                               <div className="flex-1">
                                 <p className="text-xs font-medium text-[var(--foreground)]">Własne logo</p>
-                                <button onClick={() => { setLogo(null); if (fileInputRef.current) fileInputRef.current.value = '' }} className="text-xs text-[var(--error)] hover:underline">Usuń</button>
+                                <button onClick={() => { setLogoUrl(null); if (fileInputRef.current) fileInputRef.current.value = '' }} className="text-xs text-[var(--error)] hover:underline">Usuń</button>
                               </div>
                             </div>
                           )}
                         </div>
 
                         {/* Rozmiar logo */}
-                        {logo && (
+                        {logoUrl && (
                           <div>
                             <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Rozmiar logo: {logoSize}%</p>
                             <input
@@ -1648,9 +1394,9 @@ export function Hero() {
                         )}
 
                         {/* Usuń logo */}
-                        {logo && (
+                        {logoUrl && (
                           <button
-                            onClick={() => { setLogo(null); if (fileInputRef.current) fileInputRef.current.value = '' }}
+                            onClick={() => { setLogoUrl(null); if (fileInputRef.current) fileInputRef.current.value = '' }}
                             className="w-full py-2 text-xs text-[var(--foreground-muted)] hover:text-[var(--error)] transition-colors"
                           >
                             Usuń logo
@@ -1665,7 +1411,7 @@ export function Hero() {
                         <div>
                           <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Styl ramki</p>
                           <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                            {(['none', 'simple', 'rounded', 'badge-top', 'badge-bottom', 'bubble', 'pointer', 'ticket', 'stamp', 'ribbon', 'chat', 'hexagon'] as FrameStyle[]).map((frameId) => (
+                            {(['none', 'simple', 'rounded', 'badge-top', 'badge-bottom', 'bubble', 'pointer', 'ticket', 'stamp', 'ribbon', 'chat', 'hexagon'] as HeroFrameStyle[]).map((frameId) => (
                               <button
                                 key={frameId}
                                 onClick={() => setSelectedFrame(frameId)}
@@ -1762,33 +1508,33 @@ export function Hero() {
                             {(['L', 'M', 'Q', 'H'] as const).map((level) => (
                               <button
                                 key={level}
-                                onClick={() => setErrorCorrectionLevel(level)}
-                                disabled={!!logo}
+                                onClick={() => updateStyle({ errorCorrectionLevel: level })}
+                                disabled={!!logoUrl}
                                 className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                  (logo ? 'H' : errorCorrectionLevel) === level
+                                  (logoUrl ? 'H' : style.errorCorrectionLevel) === level
                                     ? 'bg-[var(--primary)] text-white'
                                     : 'bg-[var(--background-surface)] text-[var(--foreground-muted)] hover:bg-[var(--border)]'
-                                } ${logo ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                } ${logoUrl ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
                                 {level}
                               </button>
                             ))}
                           </div>
                           <p className="text-[10px] text-[var(--foreground-subtle)] mt-1">
-                            {logo ? 'Automatycznie H (maksymalny) gdy logo jest dodane' : 'L=7%, M=15%, Q=25%, H=30% tolerancji uszkodzeń'}
+                            {logoUrl ? 'Automatycznie H (maksymalny) gdy logo jest dodane' : 'L=7%, M=15%, Q=25%, H=30% tolerancji uszkodzeń'}
                           </p>
                         </div>
 
                         {/* Rozmiar QR */}
                         <div>
-                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Rozmiar: {qrSize}px</p>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Rozmiar: {style.width}px</p>
                           <input
                             type="range"
                             min="200"
                             max="1000"
                             step="50"
-                            value={qrSize}
-                            onChange={(e) => setQrSize(Number(e.target.value))}
+                            value={style.width}
+                            onChange={(e) => updateStyle({ width: Number(e.target.value) })}
                             className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
                           />
                           <div className="flex justify-between text-[10px] text-[var(--foreground-subtle)] mt-1">
@@ -1799,13 +1545,13 @@ export function Hero() {
 
                         {/* Margines */}
                         <div>
-                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Margines: {qrMargin}</p>
+                          <p className="text-xs font-medium text-[var(--foreground-muted)] mb-2">Margines: {style.margin}</p>
                           <input
                             type="range"
                             min="0"
                             max="10"
-                            value={qrMargin}
-                            onChange={(e) => setQrMargin(Number(e.target.value))}
+                            value={style.margin}
+                            onChange={(e) => updateStyle({ margin: Number(e.target.value) })}
                             className="w-full h-2 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
                           />
                         </div>
@@ -1815,39 +1561,66 @@ export function Hero() {
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-xs font-medium text-[var(--foreground-muted)]">Gradient tła</p>
                             <button
-                              onClick={() => setBackgroundGradient(!backgroundGradient)}
+                              onClick={() => updateStyle({
+                                backgroundGradient: style.backgroundGradient ? null : {
+                                  type: 'linear',
+                                  rotation: 180,
+                                  colorStops: [
+                                    { offset: 0, color: '#ffffff' },
+                                    { offset: 1, color: '#f0f0f0' },
+                                  ],
+                                },
+                              })}
                               className={`px-2 py-0.5 text-[10px] font-medium rounded transition-all ${
-                                backgroundGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
+                                style.backgroundGradient ? 'bg-[var(--primary)] text-white' : 'bg-[var(--background-surface)] text-[var(--foreground-muted)]'
                               }`}
                             >
-                              {backgroundGradient ? 'Włączony' : 'Wyłączony'}
+                              {style.backgroundGradient ? 'Włączony' : 'Wyłączony'}
                             </button>
                           </div>
-                          {backgroundGradient && (
+                          {style.backgroundGradient && (
                             <div className="space-y-2">
                               <div
                                 className="h-6 rounded border border-[var(--border)]"
-                                style={{ background: `linear-gradient(${backgroundGradientRotation}deg, ${backgroundGradientColors.join(', ')})` }}
+                                style={{ background: `linear-gradient(${style.backgroundGradient.rotation}deg, ${style.backgroundGradient.colorStops.map(s => s.color).join(', ')})` }}
                               />
                               <div className="flex gap-1.5">
                                 <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
                                   <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                  <input type="color" value={backgroundGradientColors[0]} onChange={(e) => setBackgroundGradientColors([e.target.value, backgroundGradientColors[1]])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                  <input type="color" value={style.backgroundGradient.colorStops[0]?.color || '#ffffff'} onChange={(e) => updateStyle({
+                                    backgroundGradient: {
+                                      ...style.backgroundGradient!,
+                                      colorStops: [
+                                        { offset: 0, color: e.target.value },
+                                        style.backgroundGradient!.colorStops[1] || { offset: 1, color: '#f0f0f0' },
+                                      ],
+                                    },
+                                  })} className="absolute inset-0 opacity-0 cursor-pointer" />
                                 </label>
                                 <span className="text-[10px] text-[var(--foreground-subtle)] self-center">→</span>
                                 <label className="relative w-6 h-6 rounded cursor-pointer overflow-hidden border border-[var(--border)]">
                                   <div className="w-full h-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }} />
-                                  <input type="color" value={backgroundGradientColors[1]} onChange={(e) => setBackgroundGradientColors([backgroundGradientColors[0], e.target.value])} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                  <input type="color" value={style.backgroundGradient.colorStops[1]?.color || '#f0f0f0'} onChange={(e) => updateStyle({
+                                    backgroundGradient: {
+                                      ...style.backgroundGradient!,
+                                      colorStops: [
+                                        style.backgroundGradient!.colorStops[0] || { offset: 0, color: '#ffffff' },
+                                        { offset: 1, color: e.target.value },
+                                      ],
+                                    },
+                                  })} className="absolute inset-0 opacity-0 cursor-pointer" />
                                 </label>
                               </div>
                               <div>
-                                <p className="text-[10px] text-[var(--foreground-subtle)] mb-1">Kąt: {backgroundGradientRotation}°</p>
+                                <p className="text-[10px] text-[var(--foreground-subtle)] mb-1">Kąt: {style.backgroundGradient.rotation}°</p>
                                 <input
                                   type="range"
                                   min="0"
                                   max="360"
-                                  value={backgroundGradientRotation}
-                                  onChange={(e) => setBackgroundGradientRotation(Number(e.target.value))}
+                                  value={style.backgroundGradient.rotation}
+                                  onChange={(e) => updateStyle({
+                                    backgroundGradient: { ...style.backgroundGradient!, rotation: Number(e.target.value) },
+                                  })}
                                   className="w-full h-1.5 bg-[var(--background-surface)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
                                 />
                               </div>
@@ -2260,7 +2033,7 @@ function QRFrameWrapper({
   dotColor,
   children
 }: {
-  frameStyle: FrameStyle
+  frameStyle: HeroFrameStyle
   text: string
   dotColor: string
   children: React.ReactNode
