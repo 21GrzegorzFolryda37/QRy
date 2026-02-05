@@ -48,7 +48,7 @@ export const qrStyleSchema = z.object({
   dotsGradient: gradientOptionsSchema,
 
   // Styl narożników
-  cornersSquareType: z.enum(['square', 'dot', 'extra-rounded', 'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint']),
+  cornersSquareType: z.enum(['square', 'dot', 'extra-rounded', 'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint', 'diagonalRounded', 'threeRounded', 'threeArc']),
   cornersSquareColor: hexColorSchema.nullable(),
   cornersSquareGradient: gradientOptionsSchema,
 

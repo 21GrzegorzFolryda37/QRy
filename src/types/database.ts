@@ -124,6 +124,7 @@ export type CornersSquareType =
   | 'classy' | 'classy-rounded' | 'dotted' | 'rounded' | 'outpoint' | 'inpoint'  // @qr-platform
   | 'diagonalRounded'
   | 'threeRounded'
+  | 'threeArc'
 
 // Narożniki wewnętrzne - rozszerzone o @qr-platform
 export type CornersDotType =
