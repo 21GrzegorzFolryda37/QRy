@@ -14,7 +14,7 @@ import { generateQrCodeImage } from '@/lib/qr/options'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type PersonalizationTab = 'color' | 'shape' | 'corners' | 'frame' | 'logo' | 'more'
+type PersonalizationTab = 'templates' | 'color' | 'shape' | 'corners' | 'frame' | 'logo' | 'more'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -59,12 +59,225 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
 }
 
 const personalizationTabs: { id: PersonalizationTab; label: string }[] = [
+  { id: 'templates', label: 'Szablony' },
   { id: 'color', label: 'Kolor' },
   { id: 'shape', label: 'Kształt' },
   { id: 'corners', label: 'Rogi' },
   { id: 'frame', label: 'Ramka' },
   { id: 'logo', label: 'Logo' },
   { id: 'more', label: 'Więcej' },
+]
+
+// Ready-made QR style templates
+interface QrTemplate {
+  id: string
+  name: string
+  style: Partial<QrStyle>
+  preview: {
+    fg: string
+    bg: string
+    accent?: string
+  }
+}
+
+const qrTemplates: QrTemplate[] = [
+  {
+    id: 'classic',
+    name: 'Klasyczny',
+    style: {
+      foregroundColor: '#000000',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+    },
+    preview: { fg: '#000000', bg: '#FFFFFF' }
+  },
+  {
+    id: 'rounded',
+    name: 'Zaokrąglony',
+    style: {
+      foregroundColor: '#1a1a1a',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#1a1a1a', bg: '#FFFFFF' }
+  },
+  {
+    id: 'dots',
+    name: 'Kropki',
+    style: {
+      foregroundColor: '#374151',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'dots',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#374151', bg: '#FFFFFF' }
+  },
+  {
+    id: 'purple-gradient',
+    name: 'Fioletowy',
+    style: {
+      foregroundColor: '#7c3aed',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#7c3aed' },
+          { offset: 1, color: '#c026d3' }
+        ]
+      }
+    },
+    preview: { fg: '#7c3aed', bg: '#FFFFFF', accent: '#c026d3' }
+  },
+  {
+    id: 'ocean',
+    name: 'Ocean',
+    style: {
+      foregroundColor: '#0891b2',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#0891b2' },
+          { offset: 1, color: '#0ea5e9' }
+        ]
+      }
+    },
+    preview: { fg: '#0891b2', bg: '#FFFFFF', accent: '#0ea5e9' }
+  },
+  {
+    id: 'sunset',
+    name: 'Zachód słońca',
+    style: {
+      foregroundColor: '#ea580c',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'extra-rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#ea580c' },
+          { offset: 1, color: '#facc15' }
+        ]
+      }
+    },
+    preview: { fg: '#ea580c', bg: '#FFFFFF', accent: '#facc15' }
+  },
+  {
+    id: 'forest',
+    name: 'Las',
+    style: {
+      foregroundColor: '#16a34a',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'classy-rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#16a34a' },
+          { offset: 1, color: '#22d3ee' }
+        ]
+      }
+    },
+    preview: { fg: '#16a34a', bg: '#FFFFFF', accent: '#22d3ee' }
+  },
+  {
+    id: 'rose',
+    name: 'Róża',
+    style: {
+      foregroundColor: '#e11d48',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'radial',
+        rotation: 0,
+        colorStops: [
+          { offset: 0, color: '#f43f5e' },
+          { offset: 1, color: '#e11d48' }
+        ]
+      }
+    },
+    preview: { fg: '#e11d48', bg: '#FFFFFF', accent: '#f43f5e' }
+  },
+  {
+    id: 'dark',
+    name: 'Ciemny',
+    style: {
+      foregroundColor: '#f8fafc',
+      backgroundColor: '#0f172a',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#f8fafc', bg: '#0f172a' }
+  },
+  {
+    id: 'neon',
+    name: 'Neon',
+    style: {
+      foregroundColor: '#22d3ee',
+      backgroundColor: '#18181b',
+      dotsType: 'dots',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 90,
+        colorStops: [
+          { offset: 0, color: '#22d3ee' },
+          { offset: 0.5, color: '#a855f7' },
+          { offset: 1, color: '#ec4899' }
+        ]
+      }
+    },
+    preview: { fg: '#22d3ee', bg: '#18181b', accent: '#a855f7' }
+  },
+  {
+    id: 'corporate',
+    name: 'Biznesowy',
+    style: {
+      foregroundColor: '#1e40af',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+      cornersSquareColor: '#1e3a8a',
+      cornersDotColor: '#1e3a8a',
+    },
+    preview: { fg: '#1e40af', bg: '#FFFFFF', accent: '#1e3a8a' }
+  },
+  {
+    id: 'elegant',
+    name: 'Elegancki',
+    style: {
+      foregroundColor: '#78716c',
+      backgroundColor: '#fafaf9',
+      dotsType: 'classy',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      cornersSquareColor: '#292524',
+      cornersDotColor: '#292524',
+    },
+    preview: { fg: '#78716c', bg: '#fafaf9', accent: '#292524' }
+  },
 ]
 
 export function Hero() {
@@ -77,7 +290,7 @@ export function Hero() {
   const [logoSize, setLogoSize] = useState(25)
 
   // Active personalization tab
-  const [activeTab, setActiveTab] = useState<PersonalizationTab>('color')
+  const [activeTab, setActiveTab] = useState<PersonalizationTab>('templates')
 
   // QRCodeStyling library for download
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
@@ -400,8 +613,77 @@ export function Hero() {
     }
   }
 
+  // Apply template
+  const applyTemplate = (template: QrTemplate) => {
+    setStyle(prev => ({
+      ...prev,
+      ...template.style,
+      // Reset gradients that aren't in the template
+      dotsGradient: template.style.dotsGradient || null,
+      cornersSquareGradient: template.style.cornersSquareGradient || null,
+      cornersDotGradient: template.style.cornersDotGradient || null,
+      backgroundGradient: template.style.backgroundGradient || null,
+      cornersSquareColor: template.style.cornersSquareColor || null,
+      cornersDotColor: template.style.cornersDotColor || null,
+      frame: template.style.frame || null,
+    }))
+  }
+
   const renderPersonalizationContent = () => {
     switch (activeTab) {
+      case 'templates':
+        return (
+          <div className="space-y-3">
+            <p className="text-sm text-gray-500 mb-2">Wybierz gotowy szablon</p>
+            <div className="grid grid-cols-2 gap-2">
+              {qrTemplates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => applyTemplate(template)}
+                  className="group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all"
+                >
+                  {/* Mini QR preview */}
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center relative overflow-hidden"
+                    style={{ backgroundColor: template.preview.bg }}
+                  >
+                    {/* Simplified QR pattern */}
+                    <svg viewBox="0 0 24 24" className="w-10 h-10">
+                      {/* Corner patterns */}
+                      <rect x="1" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                      <rect x="2.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                      <rect x="3.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+
+                      <rect x="16" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                      <rect x="17.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                      <rect x="18.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+
+                      <rect x="1" y="16" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                      <rect x="2.5" y="17.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                      <rect x="3.5" y="18.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+
+                      {/* Data modules */}
+                      <rect x="10" y="2" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="13" y="3" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="2" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="5" y="11" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="10" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="13" y="11" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="17" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="20" y="13" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="10" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="13" y="19" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="17" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                      <rect x="20" y="20" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900">{template.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+
       case 'color':
         return (
           <div className="space-y-4">
