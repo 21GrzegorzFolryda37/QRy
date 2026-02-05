@@ -122,7 +122,6 @@ export type FrameShape = 'square' | 'circle' | 'rounded' | 'heart' | 'hexagon' |
 export type CornersSquareType =
   | 'square' | 'dot' | 'extra-rounded'  // qr-code-styling
   | 'classy' | 'classy-rounded' | 'dotted' | 'rounded' | 'outpoint' | 'inpoint'  // @qr-platform
-  | 'classyD'  // kwadrat z wyciętą ćwiartką koła
 
 // Narożniki wewnętrzne - rozszerzone o @qr-platform
 export type CornersDotType =

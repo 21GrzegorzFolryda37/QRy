@@ -59,7 +59,6 @@ export function mapCornersSquareTypeForPreview(type: CornersSquareType): Preview
     'rounded': 'extra-rounded',
     'outpoint': 'square',
     'inpoint': 'square',
-    'classyD': 'square',
   }
   return mapping[type] || 'square'
 }
