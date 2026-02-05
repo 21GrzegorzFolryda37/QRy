@@ -193,15 +193,14 @@ export const dotsTypeOptions: ShapeOption<DotsType>[] = [
 // Wzorowane na qr.io - pokazują pełny finder pattern (ramka + wypełnienie)
 // ============================================
 
-// 1. Kwadrat ostry + kwadrat ostry
+// 1. Kwadrat ostry — samo obramowanie
 const CornerSquareIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path d="M2 2 H22 V22 H2 Z M5 5 H19 V19 H5 Z" fillRule="evenodd" />
-    <rect x="9" y="9" width="6" height="6" />
   </svg>
 )
 
-// 2. Kwadrat zaokrąglony + koło wewnątrz
+// 2. Kwadrat zaokrąglony — samo obramowanie
 const CornerRoundedCircleIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
@@ -209,22 +208,20 @@ const CornerRoundedCircleIcon = () => (
          M8 5 Q5 5 5 8 V16 Q5 19 8 19 H16 Q19 19 19 16 V8 Q19 5 16 5 Z"
       fillRule="evenodd"
     />
-    <circle cx="12" cy="12" r="3" />
   </svg>
 )
 
-// 3. Koło + koło
+// 3. Koło — samo obramowanie
 const CornerDotIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
       d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
       fillRule="evenodd"
     />
-    <circle cx="12" cy="12" r="3" />
   </svg>
 )
 
-// 4. Kształt "D" (lewa ostra, prawa zaokrąglona) + "D" wewnątrz
+// 4. Kształt "D" — samo obramowanie
 const CornerClassyIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
@@ -232,11 +229,10 @@ const CornerClassyIcon = () => (
          M5 5 L5 19 L13 19 Q19 19 19 12 Q19 5 13 5 Z"
       fillRule="evenodd"
     />
-    <path d="M8 9 L13 9 Q15 9 15 12 Q15 15 13 15 L8 15 Z" />
   </svg>
 )
 
-// 5. Kwadrat zaokrąglony + kwadrat zaokrąglony
+// 5. Kwadrat zaokrąglony (classy-rounded) — samo obramowanie
 const CornerExtraRoundedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
@@ -244,7 +240,6 @@ const CornerExtraRoundedIcon = () => (
          M7 5 Q5 5 5 7 V17 Q5 19 7 19 H17 Q19 19 19 17 V7 Q19 5 17 5 Z"
       fillRule="evenodd"
     />
-    <rect x="9" y="9" width="6" height="6" rx="1" />
   </svg>
 )
 
@@ -270,13 +265,13 @@ const CornerDiagonalRoundedIcon = () => (
 
 // Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
-  { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
-  { id: 'extra-rounded', label: 'Zaokr + Kolo', icon: <CornerRoundedCircleIcon /> },
-  { id: 'dot', label: 'Kolo', icon: <CornerDotIcon /> },
-  { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
-  { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
-  { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerSquareCircleHoleIcon /> },
-  { id: 'diagonalRounded', label: 'Diag Zaokr', icon: <CornerDiagonalRoundedIcon /> },
+  { id: 'square', label: '', icon: <CornerSquareIcon /> },
+  { id: 'extra-rounded', label: '', icon: <CornerRoundedCircleIcon /> },
+  { id: 'dot', label: '', icon: <CornerDotIcon /> },
+  { id: 'classy', label: '', icon: <CornerClassyIcon /> },
+  { id: 'classy-rounded', label: '', icon: <CornerExtraRoundedIcon /> },
+  { id: 'inpoint', label: '', icon: <CornerSquareCircleHoleIcon /> },
+  { id: 'diagonalRounded', label: '', icon: <CornerDiagonalRoundedIcon /> },
 ]
 
 // ============================================
