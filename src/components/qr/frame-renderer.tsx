@@ -2,6 +2,12 @@
 
 import { useId } from 'react'
 import { FrameOptions, FrameStyle } from '@/types/database'
+import {
+  BADGE_OUTER_STROKE_RATIO,
+  BADGE_INNER_CIRCLE_RATIO,
+  isBadgeCellFilled,
+  getBadgeCellSize,
+} from '@/lib/qr/badge-pattern'
 
 interface FrameRendererProps {
   children: React.ReactNode
@@ -40,7 +46,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
   const totalHeight = size + border * 2 + textHeight
 
   const fillValue = hasFrame && frame.gradient ? `url(#${gradientId})` : (frame?.color || '#000000')
-  const frameStyleResult = hasFrame ? getFrameStyle(frame.style, fillValue, totalWidth, totalHeight, border, size) : null
+  const frameStyleResult = hasFrame ? getFrameStyle(frame.style, fillValue, totalWidth, totalHeight, border, size, gradientId) : null
 
   return (
     <div className={className} style={{ width: totalWidth, height: totalHeight, position: 'relative' }}>
@@ -68,6 +74,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
               ))}
             </radialGradient>
           ) : null}
+          {frameStyleResult?.defs}
         </defs>
         {frameStyleResult?.background}
         {frameStyleResult?.decoration}
@@ -105,6 +112,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
 interface FrameStyleResult {
   background: React.ReactNode
   decoration: React.ReactNode
+  defs?: React.ReactNode
 }
 
 function getFrameStyle(
@@ -113,7 +121,8 @@ function getFrameStyle(
   width: number,
   height: number,
   border: number,
-  qrSize: number
+  qrSize: number,
+  uniqueId: string
 ): FrameStyleResult {
   const qrLeft = border
   const qrTop = border
@@ -170,21 +179,93 @@ function getFrameStyle(
     }
 
     case 'badge': {
-      const circleR = qrSize / 2 + border - 2
-      const frameThickness = Math.round(qrSize * 0.035)
-      const whiteR = circleR - frameThickness
+      const outerR = qrSize / 2 + border - 2
+      const innerR = outerR * BADGE_INNER_CIRCLE_RATIO
+      const strokeW = Math.max(2, Math.round(qrSize * BADGE_OUTER_STROKE_RATIO))
+      const cellSize = getBadgeCellSize(outerR)
       const badgeH = qrSize + border * 2
       const ribbonW = qrSize * 0.5
       const ribbonH = 24
+
+      const patternId = `badge-pat-${uniqueId}`
+      const clipId = `badge-clip-${uniqueId}`
+      const maskId = `badge-mask-${uniqueId}`
+
+      // Build pattern cells (4×4 tile)
+      const tileSize = cellSize * 4
+      const patternCells: React.ReactNode[] = []
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (isBadgeCellFilled(r, c)) {
+            patternCells.push(
+              <rect key={`${r}-${c}`} x={c * cellSize} y={r * cellSize} width={cellSize} height={cellSize} />
+            )
+          }
+        }
+      }
+
+      // Donut path (outer CW, inner CCW via even-odd)
+      const donutPath = [
+        `M ${cx - outerR + strokeW} ${cy}`,
+        `A ${outerR - strokeW} ${outerR - strokeW} 0 1 1 ${cx + outerR - strokeW} ${cy}`,
+        `A ${outerR - strokeW} ${outerR - strokeW} 0 1 1 ${cx - outerR + strokeW} ${cy}`,
+        `Z`,
+        `M ${cx - innerR} ${cy}`,
+        `A ${innerR} ${innerR} 0 1 0 ${cx + innerR} ${cy}`,
+        `A ${innerR} ${innerR} 0 1 0 ${cx - innerR} ${cy}`,
+        `Z`,
+      ].join(' ')
+
+      const isGradient = fill.startsWith('url(')
+
+      const defs = (
+        <>
+          {/* Clip path: donut between outer stroke and inner circle */}
+          <clipPath id={clipId}>
+            <path d={donutPath} fillRule="evenodd" />
+          </clipPath>
+          {isGradient ? (
+            // Mask approach for gradient fills
+            <mask id={maskId}>
+              <rect x={0} y={0} width={width} height={height} fill="black" />
+              <pattern id={patternId} x={cx - outerR} y={cy - outerR} width={tileSize} height={tileSize} patternUnits="userSpaceOnUse">
+                {patternCells.map((cell, i) => (
+                  <g key={i} fill="white">{cell}</g>
+                ))}
+              </pattern>
+              <rect x={0} y={0} width={width} height={height} fill={`url(#${patternId})`} clipPath={`url(#${clipId})`} />
+            </mask>
+          ) : (
+            // Simple pattern for solid fills
+            <pattern id={patternId} x={cx - outerR} y={cy - outerR} width={tileSize} height={tileSize} patternUnits="userSpaceOnUse">
+              {patternCells.map((cell, i) => (
+                <g key={i} fill={fill}>{cell}</g>
+              ))}
+            </pattern>
+          )}
+        </>
+      )
+
       return {
+        defs,
         background: (
           <>
-            <circle cx={cx} cy={cy} r={circleR} fill={fill} />
+            {/* White ring background */}
+            <circle cx={cx} cy={cy} r={outerR} fill="white" />
+            {/* Decorative pattern in donut area */}
+            {isGradient ? (
+              <rect x={0} y={0} width={width} height={height} fill={fill} mask={`url(#${maskId})`} />
+            ) : (
+              <rect x={0} y={0} width={width} height={height} fill={`url(#${patternId})`} clipPath={`url(#${clipId})`} />
+            )}
+            {/* Thin outer stroke */}
+            <circle cx={cx} cy={cy} r={outerR - strokeW / 2} fill="none" stroke={fill} strokeWidth={strokeW} />
+            {/* Ribbon */}
             <rect x={cx - ribbonW / 2} y={badgeH - ribbonH - 4} width={ribbonW} height={ribbonH} fill={fill} />
             <polygon points={`${cx - ribbonW / 2},${badgeH - ribbonH - 4} ${cx},${badgeH - ribbonH / 2 - 2} ${cx + ribbonW / 2},${badgeH - ribbonH - 4}`} fill={fill} />
           </>
         ),
-        decoration: <circle cx={cx} cy={cy} r={whiteR} fill="white" />,
+        decoration: <circle cx={cx} cy={cy} r={innerR} fill="white" />,
       }
     }
 

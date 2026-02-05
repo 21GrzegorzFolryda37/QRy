@@ -76,8 +76,12 @@ const frameStyleOptions: FrameStyleOption[] = [
     label: 'Odznaka',
     preview: (color) => (
       <svg viewBox="0 0 60 72" className="w-full h-full">
-        <circle cx="30" cy="30" r="28" fill={color} />
-        <circle cx="30" cy="30" r="24" fill="white" />
+        {/* Thin outer stroke */}
+        <circle cx="30" cy="30" r="28" fill="none" stroke={color} strokeWidth="2" />
+        {/* Dashed ring hinting at decorative pattern */}
+        <circle cx="30" cy="30" r="25.5" fill="none" stroke={color} strokeWidth="3" strokeDasharray="2,2" opacity="0.5" />
+        {/* White inner circle */}
+        <circle cx="30" cy="30" r="23" fill="white" />
         <rect x="12" y="12" width="36" height="36" fill="#e5e7eb" rx="2" />
         <rect x="20" y="56" width="20" height="14" fill={color} />
         <polygon points="20,56 30,64 40,56" fill={color} />
