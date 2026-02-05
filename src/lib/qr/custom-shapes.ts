@@ -158,7 +158,110 @@ const dotShapes: Record<DotsType, ShapeRenderer> = {
 }
 
 // ============================================================================
-// CORNER SQUARE SHAPES (9 types) - Outer frame of finder patterns
+// CLASSY D-SHAPE HELPERS
+// ============================================================================
+
+const HOLE_RATIO = 5 / 7
+const HOLE_OFFSET_RATIO = 1 / 7
+
+/**
+ * Kwadrat z wyciętą ćwiartką koła w prawym górnym rogu
+ *
+ * Geometria:
+ * - Kwadrat: [0, size] x [0, size]
+ * - Koło: środek w (size, size), promień = size
+ * - Kształt = kwadrat ∩ zewnętrze koła
+ *
+ * Brzeg składa się z:
+ * - Odcinek pionowy: x=0, y∈[0, size]
+ * - Odcinek poziomy: y=0, x∈[0, size]
+ * - Łuk 90°: od (size, 0) do (0, size)
+ */
+function pathClassyD(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number
+) {
+  // Start: lewy górny róg
+  ctx.moveTo(x, y)
+
+  // Lewa krawędź w dół
+  ctx.lineTo(x, y + size)
+
+  // Dolna krawędź w prawo
+  ctx.lineTo(x + size, y + size)
+
+  // Łuk 90° (ćwiartka koła) - od prawego dolnego do górnej krawędzi
+  // Środek łuku: (x + size, y + size), promień: size
+  // Kąt startowy: -π/2 (góra), kąt końcowy: -π (lewo)
+  // Rysujemy PRZECIWNIE do zegara (true) żeby wyciąć
+  ctx.arc(x + size, y + size, size, -Math.PI / 2, -Math.PI, true)
+
+  ctx.closePath()
+}
+
+/**
+ * Classy D-shape jako ring (ramka) z dziurą w środku
+ */
+export function cornerSquareClassyD(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: FillColor
+) {
+  const holeSize = size * HOLE_RATIO
+  const holeOffset = size * HOLE_OFFSET_RATIO
+
+  ctx.fillStyle = color
+  ctx.beginPath()
+
+  // Zewnętrzny kształt (classy D)
+  pathClassyD(ctx, x, y, size)
+
+  // Wewnętrzna dziura (kwadrat)
+  ctx.rect(x + holeOffset, y + holeOffset, holeSize, holeSize)
+
+  ctx.fill("evenodd")
+}
+
+/**
+ * Classy D-shape z rotacją dla różnych pozycji finder pattern
+ * Kąt prosty zawsze skierowany w róg QR kodu
+ */
+export function cornerSquareClassyDWithRotation(
+  position: CornerPosition
+): ShapeRenderer {
+  return (ctx, x, y, size, color) => {
+    ctx.save()
+    const cx = x + size / 2
+    const cy = y + size / 2
+
+    ctx.translate(cx, cy)
+
+    switch (position) {
+      case 'top-left':
+        // Domyślnie - kąt prosty w lewym górnym
+        break
+      case 'top-right':
+        ctx.rotate(Math.PI / 2) // 90°
+        break
+      case 'bottom-left':
+        ctx.rotate(-Math.PI / 2) // -90°
+        break
+    }
+
+    ctx.translate(-cx, -cy)
+
+    cornerSquareClassyD(ctx, x, y, size, color)
+
+    ctx.restore()
+  }
+}
+
+// ============================================================================
+// CORNER SQUARE SHAPES (10 types) - Outer frame of finder patterns
 // ============================================================================
 
 const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
@@ -214,21 +317,9 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.stroke()
   },
 
-  // Classy frame - square with one rounded corner (positioned version handles rotation)
+  // Classy frame - D-shape (square with quarter circle cut)
   classy: (ctx, x, y, size, color) => {
-    const lineWidth = size / 7
-    const radius = size / 3
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.beginPath()
-    ctx.roundRect(
-      x + lineWidth / 2,
-      y + lineWidth / 2,
-      size - lineWidth,
-      size - lineWidth,
-      [0, 0, radius, 0]
-    )
-    ctx.stroke()
+    cornerSquareClassyD(ctx, x, y, size, color)
   },
 
   // Classy rounded frame (positioned version handles rotation)
@@ -313,6 +404,11 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
     ctx.closePath()
     ctx.fill("evenodd")
+  },
+
+  // ClassyD - D-shape alias (kwadrat z wyciętą ćwiartką koła)
+  classyD: (ctx, x, y, size, color) => {
+    cornerSquareClassyD(ctx, x, y, size, color)
   },
 }
 
@@ -484,9 +580,16 @@ export function renderCornerSquare(
   color: FillColor,
   position: CornerPosition = 'top-left'
 ): void {
-  // Handle positioned shapes that need rotation based on corner position
-  if (type === 'classy' || type === 'classy-rounded') {
-    renderPositionedClassySquare(ctx, type, x, y, size, color, position)
+  // Handle D-shape types with rotation
+  if (type === 'classy' || type === 'classyD') {
+    const rotatedRenderer = cornerSquareClassyDWithRotation(position)
+    rotatedRenderer(ctx, x, y, size, color)
+    return
+  }
+
+  // Handle classy-rounded with radii-based rotation
+  if (type === 'classy-rounded') {
+    renderPositionedClassySquare(ctx, 'classy-rounded', x, y, size, color, position)
     return
   }
 
