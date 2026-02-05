@@ -340,7 +340,7 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
   diagonalRounded: (ctx, x, y, size, color) => {
     // Default version (top-left) — renderCornerSquare handles position
     const holeRadius = (size * 0.75) / 2
-    const cornerRadius = size * 0.2
+    const cornerRadius = size * 0.35
     const cx = x + size / 2
     const cy = y + size / 2
 
@@ -613,7 +613,7 @@ function renderPositionedDiagonalRounded(
   color: FillColor, position: CornerPosition
 ): void {
   const holeRadius = (size * 0.75) / 2
-  const cornerRadius = size * 0.2
+  const cornerRadius = size * 0.35
   const cx = x + size / 2
   const cy = y + size / 2
 
