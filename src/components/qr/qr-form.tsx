@@ -12,6 +12,7 @@ import { QrPreview } from './qr-preview'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from './shape-selector'
 import { GradientEditor } from './gradient-editor'
 import { LogoUploader, brandLogos } from './logo-uploader'
+import { FrameSelector } from './frame-selector'
 import { ContentTypeSelector, getContentTypeOption } from './content-type-selector'
 import { LinkPageEditor, defaultLinkPageData } from './linkpage-editor'
 import { SurveyEditor, defaultSurveyData } from './survey-editor'
@@ -619,6 +620,14 @@ export function QrForm({ qrCode }: QrFormProps) {
             value={logoUrl}
             onChange={setLogoUrl}
             onClear={() => setLogoUrl('')}
+          />
+        </CollapsibleSection>
+
+        {/* Ramka */}
+        <CollapsibleSection title="Ramka" defaultOpen={false}>
+          <FrameSelector
+            value={style.frame}
+            onChange={(frame) => setStyle({ ...style, frame })}
           />
         </CollapsibleSection>
 
