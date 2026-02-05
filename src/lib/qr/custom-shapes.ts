@@ -210,8 +210,91 @@ function pathThreeRoundedSquare(
   ctx.closePath()
 }
 
+/**
+ * Rysuje ścieżkę kwadratu z:
+ * - 1 ostrym rogiem (90°)
+ * - 1 okrągłym rogiem (ćwiartka koła) - przeciwległy do ostrego
+ * - 2 zaokrąglonymi rogami
+ */
+function pathMixedCornersSquare(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  r: number,
+  sharpCorner: SharpCorner
+) {
+  const s = size
+  const arcRadius = s * 0.35
+
+  // Determine corner types
+  const types: Record<SharpCorner, 'sharp' | 'arc' | 'rounded'> = {
+    TL: 'rounded', TR: 'rounded', BR: 'rounded', BL: 'rounded',
+  }
+  types[sharpCorner] = 'sharp'
+  const opposite: Record<SharpCorner, SharpCorner> = {
+    TL: 'BR', TR: 'BL', BR: 'TL', BL: 'TR',
+  }
+  types[opposite[sharpCorner]] = 'arc'
+
+  // Start: top-left corner
+  if (types.TL === 'sharp') {
+    ctx.moveTo(x, y)
+  } else if (types.TL === 'arc') {
+    ctx.moveTo(x + arcRadius, y)
+  } else {
+    ctx.moveTo(x + r, y)
+  }
+
+  // Top edge -> top-right corner
+  if (types.TR === 'sharp') {
+    ctx.lineTo(x + s, y)
+  } else if (types.TR === 'arc') {
+    ctx.lineTo(x + s - arcRadius, y)
+    ctx.arc(x + s - arcRadius, y + arcRadius, arcRadius, -Math.PI / 2, 0)
+  } else {
+    ctx.lineTo(x + s - r, y)
+    ctx.quadraticCurveTo(x + s, y, x + s, y + r)
+  }
+
+  // Right edge -> bottom-right corner
+  if (types.BR === 'sharp') {
+    ctx.lineTo(x + s, y + s)
+  } else if (types.BR === 'arc') {
+    ctx.lineTo(x + s, y + s - arcRadius)
+    ctx.arc(x + s - arcRadius, y + s - arcRadius, arcRadius, 0, Math.PI / 2)
+  } else {
+    ctx.lineTo(x + s, y + s - r)
+    ctx.quadraticCurveTo(x + s, y + s, x + s - r, y + s)
+  }
+
+  // Bottom edge -> bottom-left corner
+  if (types.BL === 'sharp') {
+    ctx.lineTo(x, y + s)
+  } else if (types.BL === 'arc') {
+    ctx.lineTo(x + arcRadius, y + s)
+    ctx.arc(x + arcRadius, y + s - arcRadius, arcRadius, Math.PI / 2, Math.PI)
+  } else {
+    ctx.lineTo(x + r, y + s)
+    ctx.quadraticCurveTo(x, y + s, x, y + s - r)
+  }
+
+  // Left edge -> top-left corner
+  if (types.TL === 'sharp') {
+    ctx.lineTo(x, y)
+  } else if (types.TL === 'arc') {
+    ctx.lineTo(x, y + arcRadius)
+    ctx.arc(x + arcRadius, y + arcRadius, arcRadius, Math.PI, -Math.PI / 2)
+  } else {
+    ctx.lineTo(x, y + r)
+    ctx.quadraticCurveTo(x, y, x + r, y)
+  }
+
+  ctx.closePath()
+}
+
 // ============================================================================
-// CORNER SQUARE SHAPES (10 types) - Outer frame of finder patterns
+// CORNER SQUARE SHAPES (11 types) - Outer frame of finder patterns
 // ============================================================================
 
 const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
@@ -410,6 +493,20 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
     ctx.fill("evenodd")
   },
+
+  // MixedCorners - 1 sharp corner, 1 arc (quarter circle) opposite, 2 rounded
+  mixedCorners: (ctx, x, y, size, color) => {
+    const outerR = size * 0.2
+    const holeSize = size * HOLE_RATIO
+    const holeOffset = size * HOLE_OFFSET_RATIO
+    const innerR = holeSize * 0.2
+
+    ctx.fillStyle = color
+    ctx.beginPath()
+    pathMixedCornersSquare(ctx, x, y, size, outerR, 'TL')
+    pathMixedCornersSquare(ctx, x + holeOffset, y + holeOffset, holeSize, innerR, 'TL')
+    ctx.fill("evenodd")
+  },
 }
 
 // ============================================================================
@@ -596,6 +693,11 @@ export function renderCornerSquare(
     return
   }
 
+  if (type === 'mixedCorners') {
+    renderPositionedMixedCorners(ctx, x, y, size, color, position)
+    return
+  }
+
   const renderer = cornerSquareShapes[type] || cornerSquareShapes.square
   renderer(ctx, x, y, size, color)
 }
@@ -749,6 +851,30 @@ function renderPositionedThreeRounded(
   ctx.lineTo(rTL ? ix + rTL : ix, iy)
   ctx.closePath()
 
+  ctx.fill("evenodd")
+}
+
+/**
+ * Render mixedCorners shape with correct corner orientation
+ * 1 sharp corner (outer) + 1 arc (opposite diagonal) + 2 rounded
+ */
+function renderPositionedMixedCorners(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, size: number,
+  color: FillColor, position: CornerPosition
+): void {
+  const outerR = size * 0.2
+  const holeSize = size * HOLE_RATIO
+  const holeOffset = size * HOLE_OFFSET_RATIO
+  const innerR = holeSize * 0.2
+
+  const sharpCorner: SharpCorner = position === 'top-left' ? 'TL'
+    : position === 'top-right' ? 'TR' : 'BL'
+
+  ctx.fillStyle = color
+  ctx.beginPath()
+  pathMixedCornersSquare(ctx, x, y, size, outerR, sharpCorner)
+  pathMixedCornersSquare(ctx, x + holeOffset, y + holeOffset, holeSize, innerR, sharpCorner)
   ctx.fill("evenodd")
 }
 
