@@ -59,6 +59,7 @@ export function mapCornersSquareTypeForPreview(type: CornersSquareType): Preview
     'rounded': 'extra-rounded',
     'outpoint': 'square',
     'inpoint': 'square',
+    'diagonalRounded': 'square',
   }
   return mapping[type] || 'square'
 }
@@ -91,7 +92,7 @@ const EXTENDED_DOT_TYPES: DotsType[] = [
 ]
 
 const EXTENDED_CORNER_SQUARE_TYPES: CornersSquareType[] = [
-  'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint'
+  'classy', 'classy-rounded', 'dotted', 'rounded', 'outpoint', 'inpoint', 'diagonalRounded'
 ]
 
 const EXTENDED_CORNER_DOT_TYPES: CornersDotType[] = [

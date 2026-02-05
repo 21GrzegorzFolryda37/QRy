@@ -157,8 +157,29 @@ const dotShapes: Record<DotsType, ShapeRenderer> = {
   },
 }
 
+// Helper: draw a square with selectively rounded corners using quadraticCurveTo
+function pathRoundedSquareSelective(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, size: number, r: number,
+  roundTL: boolean, roundTR: boolean, roundBR: boolean, roundBL: boolean
+): void {
+  const right = x + size
+  const bottom = y + size
+
+  ctx.moveTo(roundTL ? x + r : x, y)
+  ctx.lineTo(roundTR ? right - r : right, y)
+  if (roundTR) ctx.quadraticCurveTo(right, y, right, y + r)
+  ctx.lineTo(right, roundBR ? bottom - r : bottom)
+  if (roundBR) ctx.quadraticCurveTo(right, bottom, right - r, bottom)
+  ctx.lineTo(roundBL ? x + r : x, bottom)
+  if (roundBL) ctx.quadraticCurveTo(x, bottom, x, bottom - r)
+  ctx.lineTo(x, roundTL ? y + r : y)
+  if (roundTL) ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
+}
+
 // ============================================================================
-// CORNER SQUARE SHAPES (9 types) - Outer frame of finder patterns
+// CORNER SQUARE SHAPES (10 types) - Outer frame of finder patterns
 // ============================================================================
 
 const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
@@ -312,6 +333,22 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.moveTo(cx + holeRadius, cy)
     ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
     ctx.closePath()
+    ctx.fill("evenodd")
+  },
+
+  // DiagonalRounded - square with circular hole + two diagonally rounded corners
+  diagonalRounded: (ctx, x, y, size, color) => {
+    // Default version (top-left) — renderCornerSquare handles position
+    const holeRadius = (size * 0.75) / 2
+    const cornerRadius = size * 0.2
+    const cx = x + size / 2
+    const cy = y + size / 2
+
+    ctx.fillStyle = color
+    ctx.beginPath()
+    pathRoundedSquareSelective(ctx, x, y, size, cornerRadius, true, false, true, false)
+    ctx.moveTo(cx + holeRadius, cy)
+    ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
     ctx.fill("evenodd")
   },
 }
@@ -490,6 +527,11 @@ export function renderCornerSquare(
     return
   }
 
+  if (type === 'diagonalRounded') {
+    renderPositionedDiagonalRounded(ctx, x, y, size, color, position)
+    return
+  }
+
   const renderer = cornerSquareShapes[type] || cornerSquareShapes.square
   renderer(ctx, x, y, size, color)
 }
@@ -559,6 +601,35 @@ function renderPositionedClassySquare(
     radii
   )
   ctx.stroke()
+}
+
+/**
+ * Render diagonalRounded shape with correct corner orientation
+ * Rounds two diagonal corners based on finder pattern position
+ */
+function renderPositionedDiagonalRounded(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, size: number,
+  color: FillColor, position: CornerPosition
+): void {
+  const holeRadius = (size * 0.75) / 2
+  const cornerRadius = size * 0.2
+  const cx = x + size / 2
+  const cy = y + size / 2
+
+  let roundTL = false, roundTR = false, roundBR = false, roundBL = false
+  switch (position) {
+    case 'top-left':     roundTL = true; roundBR = true; break
+    case 'top-right':    roundTR = true; roundBL = true; break
+    case 'bottom-left':  roundBL = true; roundTR = true; break
+  }
+
+  ctx.fillStyle = color
+  ctx.beginPath()
+  pathRoundedSquareSelective(ctx, x, y, size, cornerRadius, roundTL, roundTR, roundBR, roundBL)
+  ctx.moveTo(cx + holeRadius, cy)
+  ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
+  ctx.fill("evenodd")
 }
 
 export function renderCornerDot(

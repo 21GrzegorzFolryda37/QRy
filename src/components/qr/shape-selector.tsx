@@ -258,6 +258,16 @@ const CornerSquareCircleHoleIcon = () => (
   </svg>
 )
 
+// 7. Kwadrat z okrągłą dziurą + zaokrąglone rogi na przekątnej
+const CornerDiagonalRoundedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M5 2 H22 V19 A3 3 0 0 1 19 22 H2 V5 A3 3 0 0 1 5 2 Z M12 6 A6 6 0 1 0 12 18 A6 6 0 1 0 12 6 Z"
+      fillRule="evenodd"
+    />
+  </svg>
+)
+
 // Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
@@ -266,6 +276,7 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
   { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerSquareCircleHoleIcon /> },
+  { id: 'diagonalRounded', label: 'Diag Zaokr', icon: <CornerDiagonalRoundedIcon /> },
 ]
 
 // ============================================
