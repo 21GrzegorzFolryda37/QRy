@@ -8,9 +8,9 @@ import {
 } from './shape-mapping'
 import {
   BADGE_OUTER_STROKE_RATIO,
-  BADGE_INNER_CIRCLE_RATIO,
-  isBadgeCellFilled,
-  getBadgeCellSize,
+  BADGE_MODULE_COUNT,
+  BADGE_WHITE_PADDING_RATIO,
+  getDecorativePattern,
 } from './badge-pattern'
 import { requiresCustomRenderer } from './custom-shapes'
 import { renderCustomQRCodeToDataURL, type CustomQROptions } from './custom-renderer'
@@ -270,49 +270,46 @@ function drawFrameOnCanvas(
       const cxB = width / 2
       const cyB = width / 2
       const outerR = width / 2 - 2
-      const innerR = outerR * BADGE_INNER_CIRCLE_RATIO
-      const strokeW = Math.max(2, Math.round(qrSize * BADGE_OUTER_STROKE_RATIO))
-      const cellSize = getBadgeCellSize(outerR)
+      const strokeW = Math.max(2, Math.round(outerR * BADGE_OUTER_STROKE_RATIO))
+      const moduleSize = (outerR * 2) / BADGE_MODULE_COUNT
+      const pattern = getDecorativePattern()
+      const whitePadding = qrSize * BADGE_WHITE_PADDING_RATIO
+      const whiteSize = qrSize + whitePadding * 2
       const badgeArea = qrSize + padding * 2
       const ribbonWidth = width * 0.45
       const ribbonHeight = badgeArea * 0.1
 
-      // 1. White-filled outer circle (ring background)
-      ctx.fillStyle = 'white'
-      ctx.beginPath()
-      ctx.arc(cxB, cyB, outerR, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 2. Donut clip → draw decorative grid pattern
+      // 1. Clip to circle → draw decorative QR pattern
       ctx.save()
       ctx.beginPath()
-      ctx.arc(cxB, cyB, outerR - strokeW, 0, Math.PI * 2)       // outer edge CW
-      ctx.arc(cxB, cyB, innerR, 0, Math.PI * 2, true)            // inner edge CCW
+      ctx.arc(cxB, cyB, outerR - strokeW, 0, Math.PI * 2)
       ctx.clip()
 
       ctx.fillStyle = fillStyle
-      const gridStart = Math.floor(-outerR / cellSize) - 1
-      const gridEnd = Math.ceil(outerR / cellSize) + 1
-      for (let r = gridStart; r <= gridEnd; r++) {
-        for (let c = gridStart; c <= gridEnd; c++) {
-          // Use modular row/col for repeating pattern
-          const pr = ((r % 4) + 4) % 4
-          const pc = ((c % 4) + 4) % 4
-          if (isBadgeCellFilled(pr, pc)) {
-            ctx.fillRect(cxB + c * cellSize, cyB + r * cellSize, cellSize, cellSize)
+      const startX = cxB - outerR
+      const startY = cyB - outerR
+      for (let y = 0; y < BADGE_MODULE_COUNT; y++) {
+        for (let x = 0; x < BADGE_MODULE_COUNT; x++) {
+          if (pattern[y][x]) {
+            ctx.fillRect(
+              startX + x * moduleSize,
+              startY + y * moduleSize,
+              moduleSize,
+              moduleSize
+            )
           }
         }
       }
       ctx.restore()
 
-      // 3. Thin outer circle stroke
+      // 2. Thin outer stroke
       ctx.strokeStyle = fillStyle
       ctx.lineWidth = strokeW
       ctx.beginPath()
       ctx.arc(cxB, cyB, outerR - strokeW / 2, 0, Math.PI * 2)
       ctx.stroke()
 
-      // 4. Ribbon
+      // 3. Ribbon
       ctx.fillStyle = fillStyle
       ctx.fillRect((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4, ribbonWidth, ribbonHeight)
       ctx.beginPath()
@@ -321,11 +318,9 @@ function drawFrameOnCanvas(
       ctx.lineTo((width + ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
       ctx.fill()
 
-      // 5. White inner circle
+      // 4. White square for QR area
       ctx.fillStyle = 'white'
-      ctx.beginPath()
-      ctx.arc(cxB, cyB, innerR, 0, Math.PI * 2)
-      ctx.fill()
+      ctx.fillRect(cxB - whiteSize / 2, cyB - whiteSize / 2, whiteSize, whiteSize)
       break
     }
 

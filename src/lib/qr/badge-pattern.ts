@@ -1,15 +1,35 @@
-/** Badge frame: shared constants + deterministic pattern */
+/** Badge frame: shared constants + random decorative QR pattern */
 
-export const BADGE_OUTER_STROKE_RATIO = 0.025 // 2.5% of qrSize → thin outer ring
-export const BADGE_INNER_CIRCLE_RATIO = 0.82 // inner white circle as fraction of outer radius
+export const BADGE_OUTER_STROKE_RATIO = 0.02 // 2% stroke width
+export const BADGE_MODULE_COUNT = 37 // typical QR module grid
+export const BADGE_WHITE_PADDING_RATIO = 0.08 // 8% padding around QR
 
-/** Deterministic ~60% fill for the decorative ring pattern */
-export function isBadgeCellFilled(row: number, col: number): boolean {
-  return ((row * 7 + col * 13 + row * col * 3) % 5) < 3
+/** Simple seeded PRNG (deterministic, avoids hydration mismatch) */
+function createSeededRandom(seed: number): () => number {
+  let s = seed
+  return () => {
+    s = (s * 16807) % 2147483647
+    return s / 2147483647
+  }
 }
 
-/** Cell size for the decorative grid filling the ring */
-export function getBadgeCellSize(outerRadius: number): number {
-  const ringWidth = outerRadius * (1 - BADGE_INNER_CIRCLE_RATIO)
-  return Math.max(2, Math.round(ringWidth / 8))
+/** Cached decorative pattern — generated once, stable across renders */
+let cachedPattern: boolean[][] | null = null
+
+export function getDecorativePattern(): boolean[][] {
+  if (cachedPattern) return cachedPattern
+
+  const size = BADGE_MODULE_COUNT
+  const random = createSeededRandom(42)
+  const pattern: boolean[][] = []
+
+  for (let y = 0; y < size; y++) {
+    pattern[y] = []
+    for (let x = 0; x < size; x++) {
+      pattern[y][x] = random() > 0.5
+    }
+  }
+
+  cachedPattern = pattern
+  return pattern
 }

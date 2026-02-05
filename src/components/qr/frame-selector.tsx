@@ -77,12 +77,13 @@ const frameStyleOptions: FrameStyleOption[] = [
     preview: (color) => (
       <svg viewBox="0 0 60 72" className="w-full h-full">
         {/* Thin outer stroke */}
-        <circle cx="30" cy="30" r="28" fill="none" stroke={color} strokeWidth="2" />
-        {/* Dashed ring hinting at decorative pattern */}
-        <circle cx="30" cy="30" r="25.5" fill="none" stroke={color} strokeWidth="3" strokeDasharray="2,2" opacity="0.5" />
-        {/* White inner circle */}
-        <circle cx="30" cy="30" r="23" fill="white" />
-        <rect x="12" y="12" width="36" height="36" fill="#e5e7eb" rx="2" />
+        <circle cx="30" cy="30" r="28" fill="none" stroke={color} strokeWidth="1.5" />
+        {/* QR pattern fill hint */}
+        <circle cx="30" cy="30" r="26.5" fill={color} opacity="0.25" />
+        {/* White square for QR area */}
+        <rect x="14" y="14" width="32" height="32" fill="white" />
+        <rect x="16" y="16" width="28" height="28" fill="#e5e7eb" rx="2" />
+        {/* Ribbon */}
         <rect x="20" y="56" width="20" height="14" fill={color} />
         <polygon points="20,56 30,64 40,56" fill={color} />
         <text x="30" y="68" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">SCAN</text>
