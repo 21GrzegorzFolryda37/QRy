@@ -178,6 +178,34 @@ function pathRoundedSquareSelective(
   ctx.closePath()
 }
 
+// Helper: draw a square with 3 rounded corners and 1 sharp corner (clockwise)
+type SharpCorner = 'TL' | 'TR' | 'BR' | 'BL'
+
+function pathThreeRoundedSquare(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, size: number, r: number,
+  sharp: SharpCorner
+): void {
+  const right = x + size
+  const bottom = y + size
+
+  const rTL = sharp === 'TL' ? 0 : r
+  const rTR = sharp === 'TR' ? 0 : r
+  const rBR = sharp === 'BR' ? 0 : r
+  const rBL = sharp === 'BL' ? 0 : r
+
+  ctx.moveTo(rTL ? x + rTL : x, y)
+  ctx.lineTo(rTR ? right - rTR : right, y)
+  if (rTR) ctx.quadraticCurveTo(right, y, right, y + rTR)
+  ctx.lineTo(right, rBR ? bottom - rBR : bottom)
+  if (rBR) ctx.quadraticCurveTo(right, bottom, right - rBR, bottom)
+  ctx.lineTo(rBL ? x + rBL : x, bottom)
+  if (rBL) ctx.quadraticCurveTo(x, bottom, x, bottom - rBL)
+  ctx.lineTo(x, rTL ? y + rTL : y)
+  if (rTL) ctx.quadraticCurveTo(x, y, x + rTL, y)
+  ctx.closePath()
+}
+
 // ============================================================================
 // CORNER SQUARE SHAPES (10 types) - Outer frame of finder patterns
 // ============================================================================
@@ -340,25 +368,26 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
   threeRounded: (ctx, x, y, size, color) => {
     const r = size * 0.25
     const innerSize = size * 0.43
-    const offset = (size - innerSize) / 2
+    const innerOffset = (size - innerSize) / 2
     const ri = innerSize * 0.25
 
     ctx.fillStyle = color
     ctx.beginPath()
-    // Outer: sharp top-left, rounded rest
-    ctx.moveTo(x, y)
-    ctx.lineTo(x + size - r, y)
-    ctx.quadraticCurveTo(x + size, y, x + size, y + r)
-    ctx.lineTo(x + size, y + size - r)
-    ctx.quadraticCurveTo(x + size, y + size, x + size - r, y + size)
-    ctx.lineTo(x + r, y + size)
-    ctx.quadraticCurveTo(x, y + size, x, y + size - r)
-    ctx.lineTo(x, y)
-    ctx.closePath()
+    // Outer (clockwise)
+    pathThreeRoundedSquare(ctx, x, y, size, r, 'TL')
 
-    // Inner hole: same shape (sharp top-left, 3 rounded)
-    const ix = x + offset, iy = y + offset
-    pathRoundedSquareSelective(ctx, ix, iy, innerSize, ri, false, true, true, true)
+    // Inner hole (counter-clockwise) — sharp TL
+    const ix = x + innerOffset, iy = y + innerOffset
+    const iRight = ix + innerSize, iBottom = iy + innerSize
+    ctx.moveTo(ix, iy)
+    ctx.lineTo(ix, iy + innerSize - ri)
+    ctx.quadraticCurveTo(ix, iBottom, ix + ri, iBottom)
+    ctx.lineTo(iRight - ri, iBottom)
+    ctx.quadraticCurveTo(iRight, iBottom, iRight, iBottom - ri)
+    ctx.lineTo(iRight, iy + ri)
+    ctx.quadraticCurveTo(iRight, iy, iRight - ri, iy)
+    ctx.lineTo(ix, iy)
+    ctx.closePath()
     ctx.fill("evenodd")
   },
 
@@ -672,28 +701,49 @@ function renderPositionedThreeRounded(
   x: number, y: number, size: number,
   color: FillColor, position: CornerPosition
 ): void {
-  const r = size * 0.25
+  const outerR = size * 0.25
   const innerSize = size * 0.43
-  const offset = (size - innerSize) / 2
-  const ri = innerSize * 0.25
+  const innerOffset = (size - innerSize) / 2
+  const innerR = innerSize * 0.25
 
-  // Determine which corner is sharp (points outward from QR)
-  let sharpTL = false, sharpTR = false, sharpBR = false, sharpBL = false
-  switch (position) {
-    case 'top-left':    sharpTL = true; break
-    case 'top-right':   sharpTR = true; break
-    case 'bottom-left': sharpBL = true; break
-  }
+  // Map position to sharp corner
+  const sharpCorner: SharpCorner = position === 'top-left' ? 'TL'
+    : position === 'top-right' ? 'TR' : 'BL'
 
   ctx.fillStyle = color
   ctx.beginPath()
 
-  // Outer shape
-  pathRoundedSquareSelective(ctx, x, y, size, r, !sharpTL, !sharpTR, !sharpBR, !sharpBL)
+  // Outer (clockwise)
+  pathThreeRoundedSquare(ctx, x, y, size, outerR, sharpCorner)
 
-  // Inner hole (same sharp corner, matching shape)
-  const ix = x + offset, iy = y + offset
-  pathRoundedSquareSelective(ctx, ix, iy, innerSize, ri, !sharpTL, !sharpTR, !sharpBR, !sharpBL)
+  // Inner hole (counter-clockwise) — same sharp corner
+  // CCW order: TL → left edge down → BL → bottom right → BR → right edge up → TR → top left → TL
+  const ix = x + innerOffset, iy = y + innerOffset
+  const iRight = ix + innerSize, iBottom = iy + innerSize
+  const sharp = sharpCorner as SharpCorner
+  const rTL = sharp === 'TL' ? 0 : innerR
+  const rTR = sharp === 'TR' ? 0 : innerR
+  const rBR = sharp === 'BR' ? 0 : innerR
+  const rBL = sharp === 'BL' ? 0 : innerR
+
+  ctx.moveTo(rTL ? ix + rTL : ix, iy)
+  // TL corner (CCW: curve goes left-down)
+  if (rTL) ctx.quadraticCurveTo(ix, iy, ix, iy + rTL)
+  // Left edge down
+  ctx.lineTo(ix, rBL ? iBottom - rBL : iBottom)
+  // BL corner (CCW: curve goes down-right)
+  if (rBL) ctx.quadraticCurveTo(ix, iBottom, ix + rBL, iBottom)
+  // Bottom edge right
+  ctx.lineTo(rBR ? iRight - rBR : iRight, iBottom)
+  // BR corner (CCW: curve goes right-up)
+  if (rBR) ctx.quadraticCurveTo(iRight, iBottom, iRight, iBottom - rBR)
+  // Right edge up
+  ctx.lineTo(iRight, rTR ? iy + rTR : iy)
+  // TR corner (CCW: curve goes up-left)
+  if (rTR) ctx.quadraticCurveTo(iRight, iy, iRight - rTR, iy)
+  // Top edge left back to start
+  ctx.lineTo(rTL ? ix + rTL : ix, iy)
+  ctx.closePath()
 
   ctx.fill("evenodd")
 }
