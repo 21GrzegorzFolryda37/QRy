@@ -12,6 +12,10 @@ export type CornerPosition = 'top-left' | 'top-right' | 'bottom-left'
 // Color type that supports both solid colors and gradients
 type FillColor = string | CanvasGradient
 
+// Standard finder pattern hole proportions
+const HOLE_RATIO = 3 / 7        // ~0.4286
+const HOLE_OFFSET_RATIO = 2 / 7 // ~0.2857
+
 // Shape renderer function type
 type ShapeRenderer = (
   ctx: CanvasRenderingContext2D,
@@ -367,9 +371,9 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
   // ThreeRounded - square with 3 rounded corners and 1 sharp (default: top-left sharp)
   threeRounded: (ctx, x, y, size, color) => {
     const r = size * 0.25
-    const innerSize = size * 0.55
-    const innerOffset = (size - innerSize) / 2
-    const ri = innerSize * 0.25
+    const innerSize = size * HOLE_RATIO
+    const innerOffset = size * HOLE_OFFSET_RATIO
+    const ri = innerSize * 0.2
 
     ctx.fillStyle = color
     ctx.beginPath()
@@ -702,9 +706,9 @@ function renderPositionedThreeRounded(
   color: FillColor, position: CornerPosition
 ): void {
   const outerR = size * 0.25
-  const innerSize = size * 0.55
-  const innerOffset = (size - innerSize) / 2
-  const innerR = innerSize * 0.25
+  const innerSize = size * HOLE_RATIO
+  const innerOffset = size * HOLE_OFFSET_RATIO
+  const innerR = innerSize * 0.2
 
   // Map position to sharp corner
   const sharpCorner: SharpCorner = position === 'top-left' ? 'TL'
