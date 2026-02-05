@@ -354,5 +354,4 @@ export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
   { id: 'dot', label: '', icon: <InnerDotIcon /> },
   { id: 'diamond', label: '', icon: <InnerDiamondIcon /> },
   { id: 'rounded', label: '', icon: <InnerRoundedIcon /> },
-  { id: 'classy', label: '', icon: <InnerClassyIcon /> },
 ]
