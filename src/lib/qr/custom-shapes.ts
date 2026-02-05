@@ -298,46 +298,21 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.fill()
   },
 
-  // Inpoint - square with pointed inner corners
+  // Inpoint - square with circular hole (evenodd)
   inpoint: (ctx, x, y, size, color) => {
-    const lineWidth = size / 7
-    const innerSize = size - lineWidth * 2
-    const pointSize = innerSize / 4
+    const holeRadius = (size * 0.75) / 2
+    const cx = x + size / 2
+    const cy = y + size / 2
 
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.strokeRect(x + lineWidth / 2, y + lineWidth / 2, size - lineWidth, size - lineWidth)
-
-    // Draw inward points at corners
     ctx.fillStyle = color
-    const inner = lineWidth
-    const inX = x + inner
-    const inY = y + inner
-    const inS = size - inner * 2
-
     ctx.beginPath()
-    ctx.moveTo(inX, inY)
-    ctx.lineTo(inX + pointSize, inY)
-    ctx.lineTo(inX, inY + pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(inX + inS, inY)
-    ctx.lineTo(inX + inS - pointSize, inY)
-    ctx.lineTo(inX + inS, inY + pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(inX, inY + inS)
-    ctx.lineTo(inX + pointSize, inY + inS)
-    ctx.lineTo(inX, inY + inS - pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(inX + inS, inY + inS)
-    ctx.lineTo(inX + inS - pointSize, inY + inS)
-    ctx.lineTo(inX + inS, inY + inS - pointSize)
-    ctx.fill()
+    // Outer square
+    ctx.rect(x, y, size, size)
+    // Inner hole (circle) — counterclockwise for evenodd
+    ctx.moveTo(cx + holeRadius, cy)
+    ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
+    ctx.closePath()
+    ctx.fill("evenodd")
   },
 }
 

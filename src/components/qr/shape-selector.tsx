@@ -248,14 +248,13 @@ const CornerExtraRoundedIcon = () => (
   </svg>
 )
 
-// 6. Koło + kwadrat zaokrąglony wewnątrz
-const CornerCircleRoundedIcon = () => (
+// 6. Kwadrat z okrągłą dziurą
+const CornerSquareCircleHoleIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
     <path
-      d="M12 1 A11 11 0 1 1 12 23 A11 11 0 1 1 12 1 Z M12 4 A8 8 0 1 0 12 20 A8 8 0 1 0 12 4 Z"
+      d="M2 2 H22 V22 H2 Z M12 6 A6 6 0 1 0 12 18 A6 6 0 1 0 12 6 Z"
       fillRule="evenodd"
     />
-    <rect x="9" y="9" width="6" height="6" rx="1" />
   </svg>
 )
 
@@ -266,7 +265,7 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'dot', label: 'Kolo', icon: <CornerDotIcon /> },
   { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
-  { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerCircleRoundedIcon /> },
+  { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerSquareCircleHoleIcon /> },
 ]
 
 // ============================================
