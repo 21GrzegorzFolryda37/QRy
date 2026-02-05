@@ -22,6 +22,59 @@ type ShapeRenderer = (
 ) => void
 
 // ============================================================================
+// D-SHAPE HELPERS
+// ============================================================================
+
+/**
+ * Draw a D-shape path: left edge straight, right edge semicircular
+ * The "D" opens to the right
+ */
+function pathDRight(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  const r = size / 2
+  ctx.beginPath()
+  ctx.moveTo(x, y)
+  ctx.lineTo(x + r, y)
+  ctx.arc(x + r, y + r, r, -Math.PI / 2, Math.PI / 2)
+  ctx.lineTo(x, y + size)
+  ctx.closePath()
+}
+
+/**
+ * Draw an inverted D-shape path: right edge straight, left edge semicircular
+ * The "D" opens to the left (mirrored)
+ */
+function pathDLeft(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  const r = size / 2
+  ctx.beginPath()
+  ctx.moveTo(x + size, y)
+  ctx.lineTo(x + r, y)
+  ctx.arc(x + r, y + r, r, -Math.PI / 2, Math.PI / 2, true)
+  ctx.lineTo(x + size, y + size)
+  ctx.closePath()
+}
+
+/**
+ * Draw a ring (frame) using a D-shape path function.
+ * Uses lineWidth = size/7 to match other corner square shapes.
+ */
+function drawRing(
+  ctx: CanvasRenderingContext2D,
+  pathFn: (ctx: CanvasRenderingContext2D, x: number, y: number, size: number) => void,
+  x: number,
+  y: number,
+  size: number,
+  color: FillColor
+): void {
+  const lineWidth = size / 7
+  ctx.strokeStyle = color
+  ctx.lineWidth = lineWidth
+  ctx.save()
+  pathFn(ctx, x + lineWidth / 2, y + lineWidth / 2, size - lineWidth)
+  ctx.stroke()
+  ctx.restore()
+}
+
+// ============================================================================
 // DOT SHAPES (13 types)
 // ============================================================================
 
@@ -214,21 +267,9 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.stroke()
   },
 
-  // Classy frame - square with one rounded corner (positioned version handles rotation)
+  // Classy frame - D-shape ring (flat left, semicircular right) — positioned version handles rotation
   classy: (ctx, x, y, size, color) => {
-    const lineWidth = size / 7
-    const radius = size / 3
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.beginPath()
-    ctx.roundRect(
-      x + lineWidth / 2,
-      y + lineWidth / 2,
-      size - lineWidth,
-      size - lineWidth,
-      [0, 0, radius, 0]
-    )
-    ctx.stroke()
+    drawRing(ctx, pathDRight, x, y, size, color)
   },
 
   // Classy rounded frame (positioned version handles rotation)
@@ -260,42 +301,9 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.setLineDash([])
   },
 
-  // Outpoint - square with pointed outer corners
+  // Outpoint - inverted D-shape ring (flat right, semicircular left) — positioned version handles rotation
   outpoint: (ctx, x, y, size, color) => {
-    const lineWidth = size / 7
-    const pointSize = size / 5
-    ctx.fillStyle = color
-
-    // Draw main frame
-    ctx.fillRect(x, y + pointSize, size, lineWidth)
-    ctx.fillRect(x, y + size - pointSize - lineWidth, size, lineWidth)
-    ctx.fillRect(x + pointSize, y, lineWidth, size)
-    ctx.fillRect(x + size - pointSize - lineWidth, y, lineWidth, size)
-
-    // Draw corner points
-    ctx.beginPath()
-    ctx.moveTo(x, y + pointSize)
-    ctx.lineTo(x + pointSize, y)
-    ctx.lineTo(x + pointSize, y + pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(x + size, y + pointSize)
-    ctx.lineTo(x + size - pointSize, y)
-    ctx.lineTo(x + size - pointSize, y + pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(x, y + size - pointSize)
-    ctx.lineTo(x + pointSize, y + size)
-    ctx.lineTo(x + pointSize, y + size - pointSize)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.moveTo(x + size, y + size - pointSize)
-    ctx.lineTo(x + size - pointSize, y + size)
-    ctx.lineTo(x + size - pointSize, y + size - pointSize)
-    ctx.fill()
+    drawRing(ctx, pathDLeft, x, y, size, color)
   },
 
   // Inpoint - square with pointed inner corners
@@ -369,12 +377,10 @@ const cornerDotShapes: Record<CornersDotType, ShapeRenderer> = {
     ctx.fill()
   },
 
-  // Classy dot - square with one rounded corner
+  // Classy dot - filled D-shape (flat left, semicircular right) — positioned version handles rotation
   classy: (ctx, x, y, size, color) => {
-    const radius = size / 2
     ctx.fillStyle = color
-    ctx.beginPath()
-    ctx.roundRect(x, y, size, size, [0, 0, radius, 0])
+    pathDRight(ctx, x, y, size)
     ctx.fill()
   },
 
@@ -510,8 +516,13 @@ export function renderCornerSquare(
   position: CornerPosition = 'top-left'
 ): void {
   // Handle positioned shapes that need rotation based on corner position
-  if (type === 'classy' || type === 'classy-rounded') {
-    renderPositionedClassySquare(ctx, type, x, y, size, color, position)
+  if (type === 'classy' || type === 'outpoint') {
+    renderPositionedDShape(ctx, type, x, y, size, color, position)
+    return
+  }
+
+  if (type === 'classy-rounded') {
+    renderPositionedClassyRounded(ctx, x, y, size, color, position)
     return
   }
 
@@ -520,12 +531,57 @@ export function renderCornerSquare(
 }
 
 /**
- * Render classy/classy-rounded shapes with correct corner orientation
- * The sharp corner should point to the outer corner of the QR code
+ * Rotation angles for D-shapes by corner position.
+ * The base D-shape has its flat edge on the left (pathDRight) or right (pathDLeft).
+ * Rotation ensures the flat edge always faces the outer edge of the QR code.
+ *
+ * top-left:    180° — semicircle points toward bottom-right (QR center)
+ * top-right:   -90° — semicircle points toward bottom-left (QR center)
+ * bottom-left:  90° — semicircle points toward top-right (QR center)
  */
-function renderPositionedClassySquare(
+function getCornerRotation(position: CornerPosition): number {
+  switch (position) {
+    case 'top-left': return Math.PI
+    case 'top-right': return -Math.PI / 2
+    case 'bottom-left': return Math.PI / 2
+  }
+}
+
+/**
+ * Render D-shape (classy or outpoint) with rotation based on corner position.
+ * classy = pathDRight (flat left, round right)
+ * outpoint = pathDLeft (flat right, round left)
+ */
+function renderPositionedDShape(
   ctx: CanvasRenderingContext2D,
-  type: 'classy' | 'classy-rounded',
+  type: 'classy' | 'outpoint',
+  x: number,
+  y: number,
+  size: number,
+  color: FillColor,
+  position: CornerPosition
+): void {
+  const cx = x + size / 2
+  const cy = y + size / 2
+  const angle = getCornerRotation(position)
+
+  ctx.save()
+  ctx.translate(cx, cy)
+  ctx.rotate(angle)
+  ctx.translate(-cx, -cy)
+
+  const renderer = cornerSquareShapes[type]
+  renderer(ctx, x, y, size, color)
+
+  ctx.restore()
+}
+
+/**
+ * Render classy-rounded shape with correct corner orientation.
+ * Three rounded corners, one sharp (the outer corner of QR).
+ */
+function renderPositionedClassyRounded(
+  ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   size: number,
@@ -542,38 +598,16 @@ function renderPositionedClassySquare(
   // roundRect radii order: [top-left, top-right, bottom-right, bottom-left]
   let radii: [number, number, number, number]
 
-  if (type === 'classy') {
-    // One rounded corner - the one pointing toward center of QR code
-    switch (position) {
-      case 'top-left':
-        // Sharp: top-left, top-right, bottom-left. Rounded: bottom-right
-        radii = [0, 0, radius, 0]
-        break
-      case 'top-right':
-        // Sharp: top-left, top-right, bottom-right. Rounded: bottom-left
-        radii = [0, 0, 0, radius]
-        break
-      case 'bottom-left':
-        // Sharp: top-left, bottom-right, bottom-left. Rounded: top-right
-        radii = [0, radius, 0, 0]
-        break
-    }
-  } else {
-    // classy-rounded: Three rounded corners, one sharp (the outer corner)
-    switch (position) {
-      case 'top-left':
-        // Sharp: top-left. Rounded: top-right, bottom-right, bottom-left
-        radii = [0, radius, radius, radius]
-        break
-      case 'top-right':
-        // Sharp: top-right. Rounded: top-left, bottom-right, bottom-left
-        radii = [radius, 0, radius, radius]
-        break
-      case 'bottom-left':
-        // Sharp: bottom-left. Rounded: top-left, top-right, bottom-right
-        radii = [radius, radius, radius, 0]
-        break
-    }
+  switch (position) {
+    case 'top-left':
+      radii = [0, radius, radius, radius]
+      break
+    case 'top-right':
+      radii = [radius, 0, radius, radius]
+      break
+    case 'bottom-left':
+      radii = [radius, radius, radius, 0]
+      break
   }
 
   ctx.roundRect(
@@ -592,8 +626,27 @@ export function renderCornerDot(
   x: number,
   y: number,
   size: number,
-  color: FillColor
+  color: FillColor,
+  position: CornerPosition = 'top-left'
 ): void {
+  // Classy corner dot uses D-shape with rotation
+  if (type === 'classy') {
+    const cx = x + size / 2
+    const cy = y + size / 2
+    const angle = getCornerRotation(position)
+
+    ctx.save()
+    ctx.translate(cx, cy)
+    ctx.rotate(angle)
+    ctx.translate(-cx, -cy)
+
+    const renderer = cornerDotShapes.classy
+    renderer(ctx, x, y, size, color)
+
+    ctx.restore()
+    return
+  }
+
   const renderer = cornerDotShapes[type] || cornerDotShapes.square
   renderer(ctx, x, y, size, color)
 }

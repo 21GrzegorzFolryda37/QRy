@@ -236,6 +236,30 @@ const CornerClassyIcon = () => (
   </svg>
 )
 
+// Odwrócone "D" (prawa ostra, lewa zaokrąglona) + odwrócone "D" wewnątrz
+const CornerClassyReversedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M22 2 L10 2 Q2 2 2 12 Q2 22 10 22 L22 22 Z
+         M19 5 L19 19 L11 19 Q5 19 5 12 Q5 5 11 5 Z"
+      fillRule="evenodd"
+    />
+    <path d="M16 9 L11 9 Q9 9 9 12 Q9 15 11 15 L16 15 Z" />
+  </svg>
+)
+
+// Kwadrat zaokrąglony (ramka) + kwadrat zaokrąglony wewnątrz
+const CornerRoundedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M6 2 H18 Q22 2 22 6 V18 Q22 22 18 22 H6 Q2 22 2 18 V6 Q2 2 6 2 Z
+         M7 5 Q5 5 5 7 V17 Q5 19 7 19 H17 Q19 19 19 17 V7 Q19 5 17 5 Z"
+      fillRule="evenodd"
+    />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
+  </svg>
+)
+
 // 5. Kwadrat zaokrąglony + kwadrat zaokrąglony
 const CornerExtraRoundedIcon = () => (
   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
@@ -262,11 +286,13 @@ const CornerCircleRoundedIcon = () => (
 // Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: 'Kwadrat', icon: <CornerSquareIcon /> },
-  { id: 'extra-rounded', label: 'Zaokr + Kolo', icon: <CornerRoundedCircleIcon /> },
+  { id: 'rounded', label: 'Zaokraglony', icon: <CornerRoundedIcon /> },
   { id: 'dot', label: 'Kolo', icon: <CornerDotIcon /> },
-  { id: 'classy', label: 'Classy', icon: <CornerClassyIcon /> },
+  { id: 'classy', label: 'Classy D', icon: <CornerClassyIcon /> },
   { id: 'classy-rounded', label: 'Classy Round', icon: <CornerExtraRoundedIcon /> },
+  { id: 'extra-rounded', label: 'Kolo + Kolo', icon: <CornerRoundedCircleIcon /> },
   { id: 'inpoint', label: 'Kolo + Zaokr', icon: <CornerCircleRoundedIcon /> },
+  { id: 'outpoint', label: 'D Odwrocone', icon: <CornerClassyReversedIcon /> },
 ]
 
 // ============================================
