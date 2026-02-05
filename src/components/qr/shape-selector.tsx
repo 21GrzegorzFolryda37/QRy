@@ -332,7 +332,6 @@ export const cornersDotTypeOptions: ShapeOption<CornersDotType>[] = [
   { id: 'star', label: 'Gwiazda', icon: <InnerStarIcon /> },
   { id: 'diamond', label: 'Diament', icon: <InnerDiamondIcon /> },
   { id: 'rounded', label: 'Zaokraglony', icon: <InnerRoundedIcon /> },
-  { id: 'classy', label: 'Classy', icon: <InnerClassyIcon /> },
   { id: 'outpoint', label: 'Zewnetrzny', icon: <InnerOutpointIcon /> },
   { id: 'inpoint', label: 'Wewnetrzny', icon: <InnerInpointIcon /> },
 ]
