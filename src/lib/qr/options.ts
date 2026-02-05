@@ -118,7 +118,7 @@ export function createQrCodeExportOptions(
 
 // Frame dimensions
 const FRAME_PADDING_RATIO = 0.08
-const TEXT_AREA_HEIGHT_RATIO = 0.16
+const TEXT_AREA_HEIGHT_RATIO = 0.19
 
 /**
  * Calculate frame dimensions

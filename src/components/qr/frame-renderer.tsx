@@ -10,7 +10,7 @@ interface FrameRendererProps {
   className?: string
 }
 
-const TEXT_AREA_HEIGHT = 44
+const TEXT_AREA_HEIGHT = 56
 
 // Different frame types need different amounts of space
 function getFrameBorder(style: FrameStyle, qrSize: number): number {
