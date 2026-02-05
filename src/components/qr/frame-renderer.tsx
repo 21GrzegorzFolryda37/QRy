@@ -5,7 +5,7 @@ import { FrameOptions, FrameStyle } from '@/types/database'
 import {
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
-  BADGE_WHITE_CIRCLE_RATIO,
+  BADGE_WHITE_PADDING_RATIO,
   BADGE_MODULE_GAP,
   getDecorativePattern,
 } from '@/lib/qr/badge-pattern'
@@ -185,7 +185,8 @@ function getFrameStyle(
       const moduleSize = (outerR * 2) / BADGE_MODULE_COUNT
       const cellDraw = moduleSize * BADGE_MODULE_GAP
       const pattern = getDecorativePattern()
-      const whiteR = (qrSize / 2) * BADGE_WHITE_CIRCLE_RATIO
+      const whitePad = qrSize * BADGE_WHITE_PADDING_RATIO
+      const whiteSize = qrSize + whitePad * 2
       const badgeH = qrSize + border * 2
       const ribbonW = qrSize * 0.5
       const ribbonH = 24
@@ -243,7 +244,7 @@ function getFrameStyle(
           </>
         ),
         decoration: (
-          <circle cx={cx} cy={cy} r={whiteR} fill="white" />
+          <rect x={cx - whiteSize / 2} y={cy - whiteSize / 2} width={whiteSize} height={whiteSize} fill="white" />
         ),
       }
     }

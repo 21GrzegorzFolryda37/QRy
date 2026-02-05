@@ -9,7 +9,7 @@ import {
 import {
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
-  BADGE_WHITE_CIRCLE_RATIO,
+  BADGE_WHITE_PADDING_RATIO,
   BADGE_MODULE_GAP,
   getDecorativePattern,
 } from './badge-pattern'
@@ -275,7 +275,8 @@ function drawFrameOnCanvas(
       const moduleSize = (outerR * 2) / BADGE_MODULE_COUNT
       const cellDraw = moduleSize * BADGE_MODULE_GAP
       const pattern = getDecorativePattern()
-      const whiteR = (qrSize / 2) * BADGE_WHITE_CIRCLE_RATIO
+      const whitePad = qrSize * BADGE_WHITE_PADDING_RATIO
+      const whiteSize = qrSize + whitePad * 2
       const badgeArea = qrSize + padding * 2
       const ribbonWidth = width * 0.45
       const ribbonHeight = badgeArea * 0.1
@@ -309,11 +310,9 @@ function drawFrameOnCanvas(
       }
       ctx.restore()
 
-      // 3. White circle for QR area
+      // 3. White square for QR area (leaves decorative QR visible in corner arcs)
       ctx.fillStyle = 'white'
-      ctx.beginPath()
-      ctx.arc(cxB, cyB, whiteR, 0, Math.PI * 2)
-      ctx.fill()
+      ctx.fillRect(cxB - whiteSize / 2, cyB - whiteSize / 2, whiteSize, whiteSize)
 
       // 4. Thin outer stroke
       ctx.strokeStyle = fillStyle

@@ -80,8 +80,8 @@ const frameStyleOptions: FrameStyleOption[] = [
         <circle cx="30" cy="30" r="28" fill="none" stroke={color} strokeWidth="1.5" />
         {/* QR pattern fill hint */}
         <circle cx="30" cy="30" r="26.5" fill={color} opacity="0.25" />
-        {/* White circle for QR area */}
-        <circle cx="30" cy="30" r="21" fill="white" />
+        {/* White square for QR area (pattern visible in corner arcs) */}
+        <rect x="13" y="13" width="34" height="34" fill="white" />
         <rect x="14" y="14" width="32" height="32" fill="#e5e7eb" rx="2" />
         {/* Ribbon */}
         <rect x="20" y="56" width="20" height="14" fill={color} />
