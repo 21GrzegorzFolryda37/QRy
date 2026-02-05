@@ -74,7 +74,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
         {hasFrame && frame.showText && frame.text && (
           <text
             x={totalWidth / 2}
-            y={size + border * 2 + textHeight / 2}
+            y={size + border * 2 + textHeight / 2 - 3}
             textAnchor="middle"
             dominantBaseline="central"
             fill={frame.textColor}

@@ -320,7 +320,7 @@ function drawFrameOnCanvas(
     ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(frame.text, width / 2, qrSize + padding * 2 + textHeight / 2)
+    ctx.fillText(frame.text, width / 2, qrSize + padding * 2 + textHeight / 2 - 3)
   }
 
   ctx.restore()
