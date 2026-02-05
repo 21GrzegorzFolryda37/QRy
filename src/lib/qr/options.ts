@@ -278,9 +278,6 @@ function drawFrameOnCanvas(
       const pattern = getDecorativePattern()
       const whitePad = qrSize * BADGE_WHITE_PADDING_RATIO
       const whiteSize = qrSize + whitePad * 2
-      const badgeArea = qrSize + padding * 2
-      const ribbonWidth = width * 0.45
-      const ribbonHeight = badgeArea * 0.1
 
       // 1. White background circle
       ctx.fillStyle = 'white'
@@ -321,15 +318,6 @@ function drawFrameOnCanvas(
       ctx.beginPath()
       ctx.arc(cxB, cyB, outerR - strokeW / 2, 0, Math.PI * 2)
       ctx.stroke()
-
-      // 5. Ribbon
-      ctx.fillStyle = fillStyle
-      ctx.fillRect((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4, ribbonWidth, ribbonHeight)
-      ctx.beginPath()
-      ctx.moveTo((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
-      ctx.lineTo(width / 2, badgeArea - ribbonHeight / 2 - 4)
-      ctx.lineTo((width + ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
-      ctx.fill()
       break
     }
 

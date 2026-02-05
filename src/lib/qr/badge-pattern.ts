@@ -3,7 +3,7 @@
 export const BADGE_BORDER_RATIO = 0.25 // border around QR (makes circle big enough)
 export const BADGE_OUTER_STROKE_RATIO = 0.025 // 2.5% stroke width
 export const BADGE_MODULE_COUNT = 41 // decorative QR module grid
-export const BADGE_WHITE_PADDING_RATIO = 0.01 // 1% minimal padding around QR square
+export const BADGE_WHITE_PADDING_RATIO = 0 // no padding - QR fills white square exactly
 export const BADGE_MODULE_GAP = 0.85 // gap between modules (fraction of moduleSize)
 
 /** Simple seeded PRNG (deterministic, avoids hydration mismatch) */

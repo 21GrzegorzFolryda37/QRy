@@ -75,18 +75,14 @@ const frameStyleOptions: FrameStyleOption[] = [
     id: 'badge',
     label: 'Odznaka',
     preview: (color) => (
-      <svg viewBox="0 0 60 72" className="w-full h-full">
+      <svg viewBox="0 0 60 60" className="w-full h-full">
         {/* Thin outer stroke */}
         <circle cx="30" cy="30" r="28" fill="none" stroke={color} strokeWidth="1.5" />
         {/* QR pattern fill hint */}
         <circle cx="30" cy="30" r="26.5" fill={color} opacity="0.25" />
         {/* White square for QR area (pattern visible in corner arcs) */}
-        <rect x="13" y="13" width="34" height="34" fill="white" />
+        <rect x="12" y="12" width="36" height="36" fill="white" />
         <rect x="14" y="14" width="32" height="32" fill="#e5e7eb" rx="2" />
-        {/* Ribbon */}
-        <rect x="20" y="56" width="20" height="14" fill={color} />
-        <polygon points="20,56 30,64 40,56" fill={color} />
-        <text x="30" y="68" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">SCAN</text>
       </svg>
     ),
   },

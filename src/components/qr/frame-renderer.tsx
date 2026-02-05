@@ -188,9 +188,6 @@ function getFrameStyle(
       const pattern = getDecorativePattern()
       const whitePad = qrSize * BADGE_WHITE_PADDING_RATIO
       const whiteSize = qrSize + whitePad * 2
-      const badgeH = qrSize + border * 2
-      const ribbonW = qrSize * 0.5
-      const ribbonH = 24
 
       const clipId = `badge-clip-${uniqueId}`
       const maskId = `badge-mask-${uniqueId}`
@@ -239,9 +236,6 @@ function getFrameStyle(
             )}
             {/* Thin outer stroke */}
             <circle cx={cx} cy={cy} r={outerR - strokeW / 2} fill="none" stroke={fill} strokeWidth={strokeW} />
-            {/* Ribbon */}
-            <rect x={cx - ribbonW / 2} y={badgeH - ribbonH - 4} width={ribbonW} height={ribbonH} fill={fill} />
-            <polygon points={`${cx - ribbonW / 2},${badgeH - ribbonH - 4} ${cx},${badgeH - ribbonH / 2 - 2} ${cx + ribbonW / 2},${badgeH - ribbonH - 4}`} fill={fill} />
           </>
         ),
         decoration: (
