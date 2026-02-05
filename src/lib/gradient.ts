@@ -359,10 +359,10 @@ export class Gradient {
   material: any
   geometry: any
   minigl: MiniGl | null = null
-  amp: number = 320
+  amp: number = 180
   seed: number = 5
-  freqX: number = 14e-5
-  freqY: number = 29e-5
+  freqX: number = 10e-5
+  freqY: number = 20e-5
   activeColors: number[] = [1, 1, 1, 1]
   isStatic: boolean = false
   isMouseDown: boolean = false
@@ -579,7 +579,7 @@ void main() {
       u_global: new this.minigl.Uniform({
         value: {
           noiseFreq: new this.minigl.Uniform({ value: [this.freqX, this.freqY], type: "vec2" }),
-          noiseSpeed: new this.minigl.Uniform({ value: 5e-6 })
+          noiseSpeed: new this.minigl.Uniform({ value: 3e-6 })
         },
         type: "struct"
       }),
@@ -588,10 +588,10 @@ void main() {
           incline: new this.minigl.Uniform({ value: Math.sin(this.angle) / Math.cos(this.angle) }),
           offsetTop: new this.minigl.Uniform({ value: -.5 }),
           offsetBottom: new this.minigl.Uniform({ value: -.5 }),
-          noiseFreq: new this.minigl.Uniform({ value: [3, 4], type: "vec2" }),
+          noiseFreq: new this.minigl.Uniform({ value: [2, 3], type: "vec2" }),
           noiseAmp: new this.minigl.Uniform({ value: this.amp }),
-          noiseSpeed: new this.minigl.Uniform({ value: 10 }),
-          noiseFlow: new this.minigl.Uniform({ value: 3 }),
+          noiseSpeed: new this.minigl.Uniform({ value: 6 }),
+          noiseFlow: new this.minigl.Uniform({ value: 2 }),
           noiseSeed: new this.minigl.Uniform({ value: this.seed })
         },
         type: "struct",
@@ -605,12 +605,12 @@ void main() {
       this.uniforms.u_waveLayers.value.push(new this.minigl.Uniform({
         value: {
           color: new this.minigl.Uniform({ value: this.sectionColors[e], type: "vec3" }),
-          noiseFreq: new this.minigl.Uniform({ value: [2 + e / this.sectionColors.length, 3 + e / this.sectionColors.length], type: "vec2" }),
-          noiseSpeed: new this.minigl.Uniform({ value: 11 + .3 * e }),
-          noiseFlow: new this.minigl.Uniform({ value: 6.5 + .3 * e }),
+          noiseFreq: new this.minigl.Uniform({ value: [1.5 + e / this.sectionColors.length, 2 + e / this.sectionColors.length], type: "vec2" }),
+          noiseSpeed: new this.minigl.Uniform({ value: 6 + .2 * e }),
+          noiseFlow: new this.minigl.Uniform({ value: 4 + .2 * e }),
           noiseSeed: new this.minigl.Uniform({ value: this.seed + 10 * e }),
-          noiseFloor: new this.minigl.Uniform({ value: .1 }),
-          noiseCeil: new this.minigl.Uniform({ value: .63 + .07 * e })
+          noiseFloor: new this.minigl.Uniform({ value: .15 }),
+          noiseCeil: new this.minigl.Uniform({ value: .55 + .05 * e })
         },
         type: "struct"
       }))

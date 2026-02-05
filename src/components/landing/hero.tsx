@@ -855,7 +855,7 @@ export function Hero() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up animate-delay-100">
             <span className="text-[var(--foreground)]">Generator Kodów </span>
-            <span className="gradient-text">QR</span>
+            <span className="text-white drop-shadow-lg">QR</span>
           </h1>
           <p className="mt-4 text-lg text-[var(--foreground-muted)] max-w-2xl mx-auto animate-fade-in-up animate-delay-200">
             Stwórz profesjonalny kod QR w kilka sekund. Personalizuj kolory, kształty i dodaj logo.

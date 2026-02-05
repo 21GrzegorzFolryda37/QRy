@@ -108,16 +108,17 @@ body {
   z-index: 0;
   transform: skewY(-12deg);
   transform-origin: top left;
-  filter: blur(40px);
-  --gradient-color-1: #a78bfa;
-  --gradient-color-2: #c4b5fd;
-  --gradient-color-3: #8b5cf6;
-  --gradient-color-4: #ddd6fe;
+  filter: blur(60px);
+  opacity: 0.65;
+  --gradient-color-1: #c4b5fd;
+  --gradient-color-2: #ddd6fe;
+  --gradient-color-3: #a78bfa;
+  --gradient-color-4: #ede9fe;
 }
 
 #gradient-canvas.isLoaded {
-  opacity: 1;
-  transition: opacity 1s ease-out;
+  opacity: 0.65;
+  transition: opacity 1.5s ease-out;
 }
 
 /* ========================================
