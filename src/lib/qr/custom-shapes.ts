@@ -210,84 +210,8 @@ function pathThreeRoundedSquare(
   ctx.closePath()
 }
 
-/**
- * Kwadrat z 3 łukowymi bokami i 1 ostrym rogiem
- * Łuki są wypukłe (wygięte na zewnątrz)
- *
- * @param sharpCorner - który róg ma być ostry (90°)
- */
-function pathThreeArcSquare(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  sharpCorner: SharpCorner
-) {
-  const s = size
-
-  // Promień łuku dla arcTo — duży = delikatne wygięcie
-  const r = size
-
-  const sharpTL = sharpCorner === 'TL'
-  const sharpTR = sharpCorner === 'TR'
-  const sharpBR = sharpCorner === 'BR'
-  const sharpBL = sharpCorner === 'BL'
-
-  ctx.moveTo(x, y) // Start: lewy górny
-
-  // Górna krawędź (od lewej do prawej)
-  if (sharpTL && sharpTR) {
-    ctx.lineTo(x + s, y)
-  } else if (sharpTL) {
-    ctx.arcTo(x + s / 2, y - s * 0.15, x + s, y, s * 0.8)
-    ctx.lineTo(x + s, y)
-  } else if (sharpTR) {
-    ctx.arcTo(x + s / 2, y - s * 0.15, x + s, y, s * 0.8)
-  } else {
-    ctx.arcTo(x + s / 2, y - s * 0.2, x + s, y, s * 0.7)
-  }
-
-  // Prawa krawędź (od góry do dołu)
-  if (sharpTR && sharpBR) {
-    ctx.lineTo(x + s, y + s)
-  } else if (sharpTR) {
-    ctx.arcTo(x + s + s * 0.15, y + s / 2, x + s, y + s, s * 0.8)
-    ctx.lineTo(x + s, y + s)
-  } else if (sharpBR) {
-    ctx.arcTo(x + s + s * 0.15, y + s / 2, x + s, y + s, s * 0.8)
-  } else {
-    ctx.arcTo(x + s + s * 0.2, y + s / 2, x + s, y + s, s * 0.7)
-  }
-
-  // Dolna krawędź (od prawej do lewej)
-  if (sharpBR && sharpBL) {
-    ctx.lineTo(x, y + s)
-  } else if (sharpBR) {
-    ctx.arcTo(x + s / 2, y + s + s * 0.15, x, y + s, s * 0.8)
-    ctx.lineTo(x, y + s)
-  } else if (sharpBL) {
-    ctx.arcTo(x + s / 2, y + s + s * 0.15, x, y + s, s * 0.8)
-  } else {
-    ctx.arcTo(x + s / 2, y + s + s * 0.2, x, y + s, s * 0.7)
-  }
-
-  // Lewa krawędź (od dołu do góry)
-  if (sharpBL && sharpTL) {
-    ctx.lineTo(x, y)
-  } else if (sharpBL) {
-    ctx.arcTo(x - s * 0.15, y + s / 2, x, y, s * 0.8)
-    ctx.lineTo(x, y)
-  } else if (sharpTL) {
-    ctx.arcTo(x - s * 0.15, y + s / 2, x, y, s * 0.8)
-  } else {
-    ctx.arcTo(x - s * 0.2, y + s / 2, x, y, s * 0.7)
-  }
-
-  ctx.closePath()
-}
-
 // ============================================================================
-// CORNER SQUARE SHAPES (11 types) - Outer frame of finder patterns
+// CORNER SQUARE SHAPES (10 types) - Outer frame of finder patterns
 // ============================================================================
 
 const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
@@ -486,20 +410,6 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2, true)
     ctx.fill("evenodd")
   },
-
-  // ThreeArc - square frame with 3 convex arc sides and 1 sharp corner
-  threeArc: (ctx, x, y, size, color) => {
-    const holeSize = size * HOLE_RATIO
-    const holeOffset = size * HOLE_OFFSET_RATIO
-
-    ctx.fillStyle = color
-    ctx.beginPath()
-    // Outer shape (default: sharp TL)
-    pathThreeArcSquare(ctx, x, y, size, 'TL')
-    // Inner hole (same shape, smaller)
-    pathThreeArcSquare(ctx, x + holeOffset, y + holeOffset, holeSize, 'TL')
-    ctx.fill("evenodd")
-  },
 }
 
 // ============================================================================
@@ -686,11 +596,6 @@ export function renderCornerSquare(
     return
   }
 
-  if (type === 'threeArc') {
-    renderPositionedThreeArc(ctx, x, y, size, color, position)
-    return
-  }
-
   const renderer = cornerSquareShapes[type] || cornerSquareShapes.square
   renderer(ctx, x, y, size, color)
 }
@@ -843,34 +748,6 @@ function renderPositionedThreeRounded(
   // Top edge left back to start
   ctx.lineTo(rTL ? ix + rTL : ix, iy)
   ctx.closePath()
-
-  ctx.fill("evenodd")
-}
-
-/**
- * Render threeArc shape with correct corner orientation
- * 3 convex arc sides + 1 sharp corner pointing to the outer edge of QR code
- */
-function renderPositionedThreeArc(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, size: number,
-  color: FillColor, position: CornerPosition
-): void {
-  const holeSize = size * HOLE_RATIO
-  const holeOffset = size * HOLE_OFFSET_RATIO
-
-  // Map position to sharp corner
-  const sharpCorner: SharpCorner = position === 'top-left' ? 'TL'
-    : position === 'top-right' ? 'TR' : 'BL'
-
-  ctx.fillStyle = color
-  ctx.beginPath()
-
-  // Outer shape
-  pathThreeArcSquare(ctx, x, y, size, sharpCorner)
-
-  // Inner hole (same shape, smaller)
-  pathThreeArcSquare(ctx, x + holeOffset, y + holeOffset, holeSize, sharpCorner)
 
   ctx.fill("evenodd")
 }
