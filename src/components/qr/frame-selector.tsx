@@ -126,7 +126,7 @@ export function FrameSelector({ value, onChange }: FrameSelectorProps) {
         gradient: currentGradient,
         textColor: currentTextColor,
         text: currentText,
-        showText,
+        showText: style === 'badge' ? false : showText, // badge defaults to no text
       })
     }
   }
