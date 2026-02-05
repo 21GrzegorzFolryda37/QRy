@@ -9,7 +9,8 @@ import {
 import {
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
-  BADGE_WHITE_PADDING_RATIO,
+  BADGE_WHITE_CIRCLE_RATIO,
+  BADGE_MODULE_GAP,
   getDecorativePattern,
 } from './badge-pattern'
 import { requiresCustomRenderer } from './custom-shapes'
@@ -272,14 +273,20 @@ function drawFrameOnCanvas(
       const outerR = width / 2 - 2
       const strokeW = Math.max(2, Math.round(outerR * BADGE_OUTER_STROKE_RATIO))
       const moduleSize = (outerR * 2) / BADGE_MODULE_COUNT
+      const cellDraw = moduleSize * BADGE_MODULE_GAP
       const pattern = getDecorativePattern()
-      const whitePadding = qrSize * BADGE_WHITE_PADDING_RATIO
-      const whiteSize = qrSize + whitePadding * 2
+      const whiteR = (qrSize / 2) * BADGE_WHITE_CIRCLE_RATIO
       const badgeArea = qrSize + padding * 2
       const ribbonWidth = width * 0.45
       const ribbonHeight = badgeArea * 0.1
 
-      // 1. Clip to circle → draw decorative QR pattern
+      // 1. White background circle
+      ctx.fillStyle = 'white'
+      ctx.beginPath()
+      ctx.arc(cxB, cyB, outerR, 0, Math.PI * 2)
+      ctx.fill()
+
+      // 2. Clip to circle → draw decorative QR pattern
       ctx.save()
       ctx.beginPath()
       ctx.arc(cxB, cyB, outerR - strokeW, 0, Math.PI * 2)
@@ -294,22 +301,28 @@ function drawFrameOnCanvas(
             ctx.fillRect(
               startX + x * moduleSize,
               startY + y * moduleSize,
-              moduleSize,
-              moduleSize
+              cellDraw,
+              cellDraw
             )
           }
         }
       }
       ctx.restore()
 
-      // 2. Thin outer stroke
+      // 3. White circle for QR area
+      ctx.fillStyle = 'white'
+      ctx.beginPath()
+      ctx.arc(cxB, cyB, whiteR, 0, Math.PI * 2)
+      ctx.fill()
+
+      // 4. Thin outer stroke
       ctx.strokeStyle = fillStyle
       ctx.lineWidth = strokeW
       ctx.beginPath()
       ctx.arc(cxB, cyB, outerR - strokeW / 2, 0, Math.PI * 2)
       ctx.stroke()
 
-      // 3. Ribbon
+      // 5. Ribbon
       ctx.fillStyle = fillStyle
       ctx.fillRect((width - ribbonWidth) / 2, badgeArea - ribbonHeight - 4, ribbonWidth, ribbonHeight)
       ctx.beginPath()
@@ -317,10 +330,6 @@ function drawFrameOnCanvas(
       ctx.lineTo(width / 2, badgeArea - ribbonHeight / 2 - 4)
       ctx.lineTo((width + ribbonWidth) / 2, badgeArea - ribbonHeight - 4)
       ctx.fill()
-
-      // 4. White square for QR area
-      ctx.fillStyle = 'white'
-      ctx.fillRect(cxB - whiteSize / 2, cyB - whiteSize / 2, whiteSize, whiteSize)
       break
     }
 

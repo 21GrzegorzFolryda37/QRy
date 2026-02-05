@@ -5,7 +5,8 @@ import { FrameOptions, FrameStyle } from '@/types/database'
 import {
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
-  BADGE_WHITE_PADDING_RATIO,
+  BADGE_WHITE_CIRCLE_RATIO,
+  BADGE_MODULE_GAP,
   getDecorativePattern,
 } from '@/lib/qr/badge-pattern'
 
@@ -182,9 +183,9 @@ function getFrameStyle(
       const outerR = qrSize / 2 + border - 2
       const strokeW = Math.max(2, Math.round(outerR * BADGE_OUTER_STROKE_RATIO))
       const moduleSize = (outerR * 2) / BADGE_MODULE_COUNT
+      const cellDraw = moduleSize * BADGE_MODULE_GAP
       const pattern = getDecorativePattern()
-      const whitePadding = qrSize * BADGE_WHITE_PADDING_RATIO
-      const whiteSize = qrSize + whitePadding * 2
+      const whiteR = (qrSize / 2) * BADGE_WHITE_CIRCLE_RATIO
       const badgeH = qrSize + border * 2
       const ribbonW = qrSize * 0.5
       const ribbonH = 24
@@ -192,7 +193,7 @@ function getFrameStyle(
       const clipId = `badge-clip-${uniqueId}`
       const maskId = `badge-mask-${uniqueId}`
 
-      // Build single SVG path for all filled pattern cells
+      // Build single SVG path for all filled pattern cells (with gap)
       const startX = cx - outerR
       const startY = cy - outerR
       let patternPath = ''
@@ -201,7 +202,7 @@ function getFrameStyle(
           if (pattern[y][x]) {
             const px = startX + x * moduleSize
             const py = startY + y * moduleSize
-            patternPath += `M${px},${py}h${moduleSize}v${moduleSize}h${-moduleSize}Z `
+            patternPath += `M${px},${py}h${cellDraw}v${cellDraw}h${-cellDraw}Z `
           }
         }
       }
@@ -226,6 +227,8 @@ function getFrameStyle(
         defs,
         background: (
           <>
+            {/* White background circle */}
+            <circle cx={cx} cy={cy} r={outerR} fill="white" />
             {/* Decorative QR pattern clipped to circle */}
             {isGradient ? (
               <rect x={0} y={0} width={width} height={height} fill={fill} mask={`url(#${maskId})`} />
@@ -240,7 +243,7 @@ function getFrameStyle(
           </>
         ),
         decoration: (
-          <rect x={cx - whiteSize / 2} y={cy - whiteSize / 2} width={whiteSize} height={whiteSize} fill="white" />
+          <circle cx={cx} cy={cy} r={whiteR} fill="white" />
         ),
       }
     }
