@@ -1,10 +1,20 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui'
+import { useState, useEffect } from 'react'
+import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
+import { QrPreview } from '@/components/qr/qr-preview'
+import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from '@/components/qr/shape-selector'
+import { FrameSelector } from '@/components/qr/frame-selector'
+import { GradientEditor } from '@/components/qr/gradient-editor'
+import { LogoUploader } from '@/components/qr/logo-uploader'
+import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
+import { DEFAULT_QR_STYLE } from '@/types/qr'
+import { generateQrCodeImage } from '@/lib/qr/options'
+import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
+type PersonalizationTab = 'color' | 'shape' | 'corners' | 'frame' | 'logo' | 'more'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -48,9 +58,107 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
   appstore: { title: 'Link do aplikacji w kodzie QR', subtitle: 'App Store i Google Play w jednym kodzie' },
 }
 
+const personalizationTabs: { id: PersonalizationTab; label: string }[] = [
+  { id: 'color', label: 'Kolor' },
+  { id: 'shape', label: 'Kształt' },
+  { id: 'corners', label: 'Rogi' },
+  { id: 'frame', label: 'Ramka' },
+  { id: 'logo', label: 'Logo' },
+  { id: 'more', label: 'Więcej' },
+]
+
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [formData, setFormData] = useState<Record<string, string>>({})
+
+  // QR Style state
+  const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(25)
+
+  // Active personalization tab
+  const [activeTab, setActiveTab] = useState<PersonalizationTab>('color')
+
+  // QRCodeStyling library for download
+  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  // Load QRCodeStyling library
+  useEffect(() => {
+    import('qr-code-styling').then((module) => {
+      setQRCodeStyling(() => module.default)
+    })
+  }, [])
+
+  // Helper to update style
+  const updateStyle = (updates: Partial<QrStyle>) => {
+    setStyle(prev => ({ ...prev, ...updates }))
+  }
+
+  // Generate QR data based on selected type
+  const getQRData = () => {
+    switch (selectedType) {
+      case 'website':
+        return formData.url || 'https://example.com'
+      case 'text':
+        return formData.text || 'Przykładowy tekst'
+      case 'email':
+        return `mailto:${formData.email || ''}?subject=${encodeURIComponent(formData.subject || '')}&body=${encodeURIComponent(formData.body || '')}`
+      case 'phone':
+        return `tel:${formData.phone || ''}`
+      case 'sms':
+        return `sms:${formData.phone || ''}${formData.message ? `?body=${encodeURIComponent(formData.message)}` : ''}`
+      case 'whatsapp':
+        return `https://wa.me/${formData.phone || ''}${formData.message ? `?text=${encodeURIComponent(formData.message)}` : ''}`
+      case 'wifi':
+        return `WIFI:T:${formData.encryption || 'WPA'};S:${formData.ssid || ''};P:${formData.password || ''};;`
+      case 'vcard':
+        return `BEGIN:VCARD\nVERSION:3.0\nFN:${formData.name || ''}\nORG:${formData.company || ''}\nTEL:${formData.phone || ''}\nEMAIL:${formData.email || ''}\nEND:VCARD`
+      case 'event':
+        const startDate = formData.eventDate && formData.eventTime
+          ? `${formData.eventDate.replace(/-/g, '')}T${formData.eventTime.replace(':', '')}00`
+          : ''
+        const endDate = formData.eventDate && formData.eventEndTime
+          ? `${formData.eventDate.replace(/-/g, '')}T${formData.eventEndTime.replace(':', '')}00`
+          : ''
+        return `BEGIN:VEVENT\nSUMMARY:${formData.eventTitle || ''}\nDTSTART:${startDate}\nDTEND:${endDate}\nLOCATION:${formData.eventLocation || ''}\nEND:VEVENT`
+      case 'facebook':
+        return `https://facebook.com/${formData.username || ''}`
+      case 'instagram':
+        return `https://instagram.com/${formData.username || ''}`
+      case 'twitter':
+        return `https://twitter.com/${formData.username || ''}`
+      case 'bitcoin':
+        return `bitcoin:${formData.address || ''}${formData.amount ? `?amount=${formData.amount}` : ''}`
+      default:
+        return formData.url || 'https://example.com'
+    }
+  }
+
+  // Download handler
+  const handleDownload = async () => {
+    setIsDownloading(true)
+    try {
+      const dataUrl = await generateQrCodeImage(QRCodeStyling, {
+        url: getQRData(),
+        style,
+        size: style.width,
+        logoUrl: logoUrl || undefined,
+        logoSize,
+      })
+
+      if (dataUrl) {
+        const link = document.createElement('a')
+        link.download = 'qr-code.png'
+        link.href = dataUrl
+        link.click()
+      }
+    } catch (error) {
+      console.error('Error downloading QR code:', error)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   const isFormValid = () => {
     switch (selectedType) {
@@ -292,6 +400,242 @@ export function Hero() {
     }
   }
 
+  const renderPersonalizationContent = () => {
+    switch (activeTab) {
+      case 'color':
+        return (
+          <div className="space-y-4">
+            {/* Foreground Color */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor kropek</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={style.foregroundColor}
+                  onChange={(e) => updateStyle({ foregroundColor: e.target.value })}
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={style.foregroundColor}
+                  onChange={(e) => updateStyle({ foregroundColor: e.target.value })}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Dots Gradient */}
+            <GradientEditor
+              label="Gradient kropek"
+              value={style.dotsGradient}
+              onChange={(gradient) => updateStyle({ dotsGradient: gradient })}
+              baseColor={style.foregroundColor}
+            />
+
+            {/* Background Color */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor tła</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={style.backgroundColor}
+                  onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={style.backgroundColor}
+                  onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Background Gradient */}
+            <GradientEditor
+              label="Gradient tła"
+              value={style.backgroundGradient}
+              onChange={(gradient) => updateStyle({ backgroundGradient: gradient })}
+              baseColor={style.backgroundColor}
+            />
+          </div>
+        )
+
+      case 'shape':
+        return (
+          <div className="space-y-4">
+            <ShapeSelector
+              value={style.dotsType}
+              onChange={(value: DotsType) => updateStyle({ dotsType: value })}
+              options={dotsTypeOptions}
+              label="Kształt kropek"
+            />
+          </div>
+        )
+
+      case 'corners':
+        return (
+          <div className="space-y-6">
+            {/* Corners Square */}
+            <ShapeSelector
+              value={style.cornersSquareType}
+              onChange={(value: CornersSquareType) => updateStyle({ cornersSquareType: value })}
+              options={cornersSquareTypeOptions}
+              label="Zewnętrzne rogi"
+            />
+
+            {/* Corners Square Color */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor zewnętrznych rogów</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={style.cornersSquareColor || style.foregroundColor}
+                  onChange={(e) => updateStyle({ cornersSquareColor: e.target.value })}
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={style.cornersSquareColor || style.foregroundColor}
+                  onChange={(e) => updateStyle({ cornersSquareColor: e.target.value })}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Corners Square Gradient */}
+            <GradientEditor
+              label="Gradient zewnętrznych rogów"
+              value={style.cornersSquareGradient}
+              onChange={(gradient) => updateStyle({ cornersSquareGradient: gradient })}
+              baseColor={style.cornersSquareColor || style.foregroundColor}
+            />
+
+            {/* Corners Dot */}
+            <ShapeSelector
+              value={style.cornersDotType}
+              onChange={(value: CornersDotType) => updateStyle({ cornersDotType: value })}
+              options={cornersDotTypeOptions}
+              label="Wewnętrzne rogi"
+            />
+
+            {/* Corners Dot Color */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor wewnętrznych rogów</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={style.cornersDotColor || style.foregroundColor}
+                  onChange={(e) => updateStyle({ cornersDotColor: e.target.value })}
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={style.cornersDotColor || style.foregroundColor}
+                  onChange={(e) => updateStyle({ cornersDotColor: e.target.value })}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Corners Dot Gradient */}
+            <GradientEditor
+              label="Gradient wewnętrznych rogów"
+              value={style.cornersDotGradient}
+              onChange={(gradient) => updateStyle({ cornersDotGradient: gradient })}
+              baseColor={style.cornersDotColor || style.foregroundColor}
+            />
+          </div>
+        )
+
+      case 'frame':
+        return (
+          <FrameSelector
+            value={style.frame}
+            onChange={(frame) => updateStyle({ frame })}
+          />
+        )
+
+      case 'logo':
+        return (
+          <div className="space-y-4">
+            <LogoUploader
+              value={logoUrl || ''}
+              onChange={(url) => setLogoUrl(url)}
+              onClear={() => setLogoUrl(null)}
+            />
+
+            {logoUrl && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Rozmiar logo: {logoSize}%
+                </label>
+                <input
+                  type="range"
+                  min="10"
+                  max="40"
+                  value={logoSize}
+                  onChange={(e) => setLogoSize(Number(e.target.value))}
+                  className="w-full accent-gray-900"
+                />
+              </div>
+            )}
+          </div>
+        )
+
+      case 'more':
+        return (
+          <div className="space-y-4">
+            {/* Error Correction Level */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Poziom korekcji błędów</label>
+              <select
+                value={style.errorCorrectionLevel}
+                onChange={(e) => updateStyle({ errorCorrectionLevel: e.target.value as 'L' | 'M' | 'Q' | 'H' })}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900"
+              >
+                <option value="L">Niski (L) - 7%</option>
+                <option value="M">Średni (M) - 15%</option>
+                <option value="Q">Wysoki (Q) - 25%</option>
+                <option value="H">Najwyższy (H) - 30%</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Wyższy poziom = lepsze skanowanie z logo</p>
+            </div>
+
+            {/* Margin */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Margines: {style.margin}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={style.margin}
+                onChange={(e) => updateStyle({ margin: Number(e.target.value) })}
+                className="w-full accent-gray-900"
+              />
+            </div>
+
+            {/* Width */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rozmiar: {style.width}px
+              </label>
+              <input
+                type="range"
+                min="200"
+                max="600"
+                step="50"
+                value={style.width}
+                onChange={(e) => updateStyle({ width: Number(e.target.value) })}
+                className="w-full accent-gray-900"
+              />
+            </div>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
       {/* Noise texture with violet tint */}
@@ -330,18 +674,18 @@ export function Hero() {
         </div>
 
         {/* Generator Card */}
-        <div className="max-w-4xl mx-auto animate-fade-in-up animate-delay-400">
+        <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
-            <div className="grid grid-cols-1 lg:grid-cols-5 lg:items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-start">
               {/* Left Column - Form */}
-              <div className="lg:col-span-3 p-6 lg:p-8 space-y-6 lg:rounded-l-3xl">
+              <div className="lg:col-span-4 p-6 lg:p-8 space-y-6 lg:rounded-l-3xl border-b lg:border-b-0 lg:border-r border-[var(--border)]">
                 {/* Section 1: Content */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
                     <div>
                       <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">
-                        {typeContent[selectedType].title}
+                        Wprowadź dane
                       </h2>
                       <p className="text-sm text-[var(--foreground-muted)]">
                         {typeContent[selectedType].subtitle}
@@ -355,74 +699,106 @@ export function Hero() {
                 </div>
               </div>
 
-              {/* Right Column - Preview & CTA */}
-              <div className="lg:col-span-2 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:rounded-r-3xl">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">2</span>
-                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Stwórz kod QR</h2>
+              {/* Middle Column - Personalization */}
+              <div className="lg:col-span-4 p-6 lg:p-8 space-y-4 border-b lg:border-b-0 lg:border-r border-[var(--border)]">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
+                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj</h2>
                 </div>
 
-                {/* Static QR Preview Placeholder */}
+                {/* Personalization Tabs */}
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {personalizationTabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        activeTab === tab.id
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tab Content */}
+                <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
+                  {renderPersonalizationContent()}
+                </div>
+              </div>
+
+              {/* Right Column - Preview & CTA */}
+              <div className="lg:col-span-4 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] lg:rounded-r-3xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
+                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Podgląd</h2>
+                </div>
+
+                {/* Live QR Preview */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
-                  <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                    <div className="w-[160px] h-[160px] bg-white rounded-xl p-4 shadow-lg flex items-center justify-center">
-                      {/* Static QR placeholder SVG */}
-                      <svg viewBox="0 0 100 100" className="w-full h-full text-[var(--foreground)]">
-                        {/* QR code pattern placeholder */}
-                        <rect x="10" y="10" width="25" height="25" fill="currentColor" />
-                        <rect x="65" y="10" width="25" height="25" fill="currentColor" />
-                        <rect x="10" y="65" width="25" height="25" fill="currentColor" />
-                        <rect x="15" y="15" width="15" height="15" fill="white" />
-                        <rect x="70" y="15" width="15" height="15" fill="white" />
-                        <rect x="15" y="70" width="15" height="15" fill="white" />
-                        <rect x="20" y="20" width="5" height="5" fill="currentColor" />
-                        <rect x="75" y="20" width="5" height="5" fill="currentColor" />
-                        <rect x="20" y="75" width="5" height="5" fill="currentColor" />
-                        {/* Data modules */}
-                        <rect x="40" y="10" width="5" height="5" fill="currentColor" />
-                        <rect x="50" y="10" width="5" height="5" fill="currentColor" />
-                        <rect x="40" y="20" width="5" height="5" fill="currentColor" />
-                        <rect x="10" y="40" width="5" height="5" fill="currentColor" />
-                        <rect x="20" y="45" width="5" height="5" fill="currentColor" />
-                        <rect x="40" y="40" width="5" height="5" fill="currentColor" />
-                        <rect x="50" y="45" width="5" height="5" fill="currentColor" />
-                        <rect x="60" y="40" width="5" height="5" fill="currentColor" />
-                        <rect x="70" y="45" width="5" height="5" fill="currentColor" />
-                        <rect x="80" y="40" width="5" height="5" fill="currentColor" />
-                        <rect x="45" y="55" width="5" height="5" fill="currentColor" />
-                        <rect x="55" y="60" width="5" height="5" fill="currentColor" />
-                        <rect x="65" y="55" width="5" height="5" fill="currentColor" />
-                        <rect x="45" y="70" width="5" height="5" fill="currentColor" />
-                        <rect x="55" y="75" width="5" height="5" fill="currentColor" />
-                        <rect x="65" y="70" width="5" height="5" fill="currentColor" />
-                        <rect x="75" y="65" width="5" height="5" fill="currentColor" />
-                        <rect x="85" y="75" width="5" height="5" fill="currentColor" />
-                        <rect x="80" y="85" width="5" height="5" fill="currentColor" />
-                      </svg>
+                  <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                    <div className="bg-white rounded-xl p-2 shadow-lg">
+                      <QrPreview
+                        url={getQRData()}
+                        style={style}
+                        logoUrl={logoUrl || undefined}
+                        logoSize={logoSize}
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <Link href="/qr-codes/new" className="block">
+                {/* CTA Buttons */}
+                <div className="space-y-3">
                   <Button
                     variant="gradient"
                     size="lg"
-                    className="w-full shadow-lg shadow-[var(--success)]/30 hover:shadow-xl hover:shadow-[var(--success)]/40"
+                    className="w-full shadow-lg"
+                    onClick={handleDownload}
+                    disabled={isDownloading}
                     style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Stwórz swój kod QR
+                      {isDownloading ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Pobieranie...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          Pobierz za darmo
+                        </>
+                      )}
                     </span>
                   </Button>
-                </Link>
+
+                  <Link href="/qr-codes/new" className="block">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                        Stwórz konto i zapisz
+                      </span>
+                    </Button>
+                  </Link>
+                </div>
 
                 <p className="text-xs text-center text-[var(--foreground-subtle)] mt-3">
-                  Pełny edytor z podglądem na żywo
+                  Załóż konto aby śledzić skany i edytować kody QR
                 </p>
 
                 {/* Trust badge */}
