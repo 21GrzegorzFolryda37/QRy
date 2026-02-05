@@ -3,6 +3,7 @@
 import { useId } from 'react'
 import { FrameOptions, FrameStyle } from '@/types/database'
 import {
+  BADGE_BORDER_RATIO,
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
   BADGE_WHITE_PADDING_RATIO,
@@ -30,7 +31,7 @@ function getFrameBorder(style: FrameStyle, qrSize: number): number {
       return 12
 
     case 'badge':
-      return Math.round(qrSize * 0.2)
+      return Math.round(qrSize * BADGE_BORDER_RATIO)
 
     default:
       return 12

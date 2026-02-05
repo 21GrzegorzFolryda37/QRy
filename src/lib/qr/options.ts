@@ -7,6 +7,7 @@ import {
   mapCornersDotTypeForPreview,
 } from './shape-mapping'
 import {
+  BADGE_BORDER_RATIO,
   BADGE_OUTER_STROKE_RATIO,
   BADGE_MODULE_COUNT,
   BADGE_WHITE_PADDING_RATIO,
@@ -136,7 +137,7 @@ function getFrameDimensions(qrSize: number, frame: FrameOptions | null) {
   }
 
   const padding = frame.style === 'badge'
-    ? Math.round(qrSize * 0.2)
+    ? Math.round(qrSize * BADGE_BORDER_RATIO)
     : Math.round(qrSize * FRAME_PADDING_RATIO)
   const textHeight = frame.showText ? Math.round(qrSize * TEXT_AREA_HEIGHT_RATIO) : 0
 
