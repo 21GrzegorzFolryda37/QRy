@@ -258,13 +258,6 @@ function drawFrameOnCanvas(
       ctx.fill()
       break
 
-    case 'balloon':
-      drawBalloonFrame(ctx, fillStyle, width, height)
-      ctx.fillStyle = 'white'
-      roundRect(ctx, padding - 2, padding - 2, qrSize + 4, qrSize + 4, 4)
-      ctx.fill()
-      break
-
     case 'badge':
       // Circle background
       ctx.fillStyle = fillStyle
@@ -284,28 +277,6 @@ function drawFrameOnCanvas(
       ctx.fillStyle = 'white'
       ctx.beginPath()
       ctx.arc(width / 2, width / 2, qrSize / 2 + 4, 0, Math.PI * 2)
-      ctx.fill()
-      break
-
-    case 'banner':
-      const foldSize = 10
-      ctx.fillStyle = fillStyle
-      ctx.fillRect(0, foldSize, width, height - foldSize)
-      // Shadow folds
-      ctx.fillStyle = adjustColor(frame.color, -30)
-      ctx.beginPath()
-      ctx.moveTo(0, height)
-      ctx.lineTo(foldSize, height - foldSize)
-      ctx.lineTo(0, height - foldSize)
-      ctx.fill()
-      ctx.beginPath()
-      ctx.moveTo(width, height)
-      ctx.lineTo(width - foldSize, height - foldSize)
-      ctx.lineTo(width, height - foldSize)
-      ctx.fill()
-      // QR area
-      ctx.fillStyle = 'white'
-      roundRect(ctx, padding - 2, padding + foldSize - 2, qrSize + 4, qrSize + 4, 4)
       ctx.fill()
       break
 
@@ -399,34 +370,6 @@ function drawTicketFrame(ctx: CanvasRenderingContext2D, fillStyle: string | Canv
   ctx.fill()
 }
 
-function drawBalloonFrame(ctx: CanvasRenderingContext2D, fillStyle: string | CanvasGradient, width: number, height: number) {
-  const arrowSize = 16
-  ctx.fillStyle = fillStyle
-  ctx.beginPath()
-  ctx.moveTo(12, 0)
-  ctx.lineTo(width - 12, 0)
-  ctx.quadraticCurveTo(width, 0, width, 12)
-  ctx.lineTo(width, height - arrowSize - 12)
-  ctx.quadraticCurveTo(width, height - arrowSize, width - 12, height - arrowSize)
-  ctx.lineTo(width / 2 + arrowSize, height - arrowSize)
-  ctx.lineTo(width / 2, height)
-  ctx.lineTo(width / 2 - arrowSize, height - arrowSize)
-  ctx.lineTo(12, height - arrowSize)
-  ctx.quadraticCurveTo(0, height - arrowSize, 0, height - arrowSize - 12)
-  ctx.lineTo(0, 12)
-  ctx.quadraticCurveTo(0, 0, 12, 0)
-  ctx.closePath()
-  ctx.fill()
-}
-
-function adjustColor(color: string, amount: number): string {
-  const hex = color.replace('#', '')
-  const r = Math.max(0, Math.min(255, parseInt(hex.slice(0, 2), 16) + amount))
-  const g = Math.max(0, Math.min(255, parseInt(hex.slice(2, 4), 16) + amount))
-  const b = Math.max(0, Math.min(255, parseInt(hex.slice(4, 6), 16) + amount))
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-}
-
 /**
  * Generate QR code as data URL
  * Includes decorative frame if set in style
@@ -491,9 +434,7 @@ export async function generateQrDataUrl(
 
     return new Promise((resolve) => {
       qrImage.onload = () => {
-        // Adjust position for banner style
-        const yOffset = frame.style === 'banner' ? 10 : 0
-        ctx.drawImage(qrImage, padding, padding + yOffset, opts.size, opts.size)
+        ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
         resolve(canvas.toDataURL('image/png'))
       }
       qrImage.onerror = () => resolve(null)
@@ -590,8 +531,7 @@ export async function generateQrWithCustomRenderer(
 
     return new Promise((resolve) => {
       qrImage.onload = () => {
-        const yOffset = frame.style === 'banner' ? 10 : 0
-        ctx.drawImage(qrImage, padding, padding + yOffset, opts.size, opts.size)
+        ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
         resolve(canvas.toDataURL('image/png'))
       }
       qrImage.onerror = () => resolve(null)

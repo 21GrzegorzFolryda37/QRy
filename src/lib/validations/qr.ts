@@ -20,7 +20,7 @@ const gradientOptionsSchema = z
 // Schema for decorative frame options
 const frameOptionsSchema = z
   .object({
-    style: z.enum(['none', 'simple', 'rounded', 'fancy', 'ticket', 'balloon', 'badge', 'banner', 'minimal']),
+    style: z.enum(['none', 'simple', 'rounded', 'fancy', 'ticket', 'badge', 'minimal']),
     color: hexColorSchema,
     gradient: gradientOptionsSchema,
     textColor: hexColorSchema,

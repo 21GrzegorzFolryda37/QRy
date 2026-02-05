@@ -139,20 +139,8 @@ export type FrameStyle =
   | 'rounded'
   | 'fancy'
   | 'ticket'
-  | 'balloon'
   | 'badge'
-  | 'banner'
   | 'minimal'
-  | 'arrow'
-  | 'chat'
-  | 'ribbon'
-  | 'stamp'
-  | 'circle'
-  | 'hexagon'
-  | 'shield'
-  | 'tag'
-  | 'heart'
-  | 'phone'
 
 export interface FrameOptions {
   style: FrameStyle
