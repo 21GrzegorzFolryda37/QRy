@@ -288,7 +288,7 @@ export async function renderCustomQRCode(options: CustomQROptions): Promise<HTML
       dotSize
     )
 
-    renderCornerDot(ctx, cornersDotType, dotX, dotY, dotSize, dotColorOrGradient, pos.position)
+    renderCornerDot(ctx, cornersDotType, dotX, dotY, dotSize, dotColorOrGradient)
   }
 
   // Draw logo if provided
