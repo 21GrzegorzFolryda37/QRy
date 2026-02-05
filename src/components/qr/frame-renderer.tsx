@@ -78,7 +78,7 @@ export function FrameRenderer({ children, frame, size, className }: FrameRendere
             textAnchor="middle"
             dominantBaseline="central"
             fill={frame.textColor}
-            fontSize={18}
+            fontSize={22}
             fontWeight="bold"
             fontFamily="system-ui, -apple-system, sans-serif"
           >
