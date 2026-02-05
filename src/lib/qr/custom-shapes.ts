@@ -496,10 +496,10 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
 
   // MixedCorners - 1 sharp corner, 1 arc (quarter circle) opposite, 2 rounded
   mixedCorners: (ctx, x, y, size, color) => {
-    const outerR = size * 0.2
+    const outerR = size * 0.4
     const holeSize = size * HOLE_RATIO
     const holeOffset = size * HOLE_OFFSET_RATIO
-    const innerR = holeSize * 0.2
+    const innerR = holeSize * 0.4
 
     ctx.fillStyle = color
     ctx.beginPath()
