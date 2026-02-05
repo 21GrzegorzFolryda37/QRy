@@ -339,12 +339,13 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
   // ThreeRounded - square with 3 rounded corners and 1 sharp (default: top-left sharp)
   threeRounded: (ctx, x, y, size, color) => {
     const r = size * 0.25
-    const holeSize = size * 0.43
-    const holeOffset = (size - holeSize) / 2
+    const innerSize = size * 0.43
+    const offset = (size - innerSize) / 2
+    const ri = innerSize * 0.25
 
     ctx.fillStyle = color
     ctx.beginPath()
-    // Default: sharp top-left, rounded rest
+    // Outer: sharp top-left, rounded rest
     ctx.moveTo(x, y)
     ctx.lineTo(x + size - r, y)
     ctx.quadraticCurveTo(x + size, y, x + size, y + r)
@@ -355,8 +356,9 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
     ctx.lineTo(x, y)
     ctx.closePath()
 
-    // Inner square hole
-    ctx.rect(x + holeOffset, y + holeOffset, holeSize, holeSize)
+    // Inner hole: same shape (sharp top-left, 3 rounded)
+    const ix = x + offset, iy = y + offset
+    pathRoundedSquareSelective(ctx, ix, iy, innerSize, ri, false, true, true, true)
     ctx.fill("evenodd")
   },
 
@@ -671,8 +673,9 @@ function renderPositionedThreeRounded(
   color: FillColor, position: CornerPosition
 ): void {
   const r = size * 0.25
-  const holeSize = size * 0.43
-  const holeOffset = (size - holeSize) / 2
+  const innerSize = size * 0.43
+  const offset = (size - innerSize) / 2
+  const ri = innerSize * 0.25
 
   // Determine which corner is sharp (points outward from QR)
   let sharpTL = false, sharpTR = false, sharpBR = false, sharpBL = false
@@ -685,49 +688,13 @@ function renderPositionedThreeRounded(
   ctx.fillStyle = color
   ctx.beginPath()
 
-  // Top-left corner
-  if (sharpTL) {
-    ctx.moveTo(x, y)
-  } else {
-    ctx.moveTo(x + r, y)
-  }
+  // Outer shape
+  pathRoundedSquareSelective(ctx, x, y, size, r, !sharpTL, !sharpTR, !sharpBR, !sharpBL)
 
-  // Top edge -> top-right corner
-  if (sharpTR) {
-    ctx.lineTo(x + size, y)
-  } else {
-    ctx.lineTo(x + size - r, y)
-    ctx.quadraticCurveTo(x + size, y, x + size, y + r)
-  }
+  // Inner hole (same sharp corner, matching shape)
+  const ix = x + offset, iy = y + offset
+  pathRoundedSquareSelective(ctx, ix, iy, innerSize, ri, !sharpTL, !sharpTR, !sharpBR, !sharpBL)
 
-  // Right edge -> bottom-right corner
-  if (sharpBR) {
-    ctx.lineTo(x + size, y + size)
-  } else {
-    ctx.lineTo(x + size, y + size - r)
-    ctx.quadraticCurveTo(x + size, y + size, x + size - r, y + size)
-  }
-
-  // Bottom edge -> bottom-left corner
-  if (sharpBL) {
-    ctx.lineTo(x, y + size)
-  } else {
-    ctx.lineTo(x + r, y + size)
-    ctx.quadraticCurveTo(x, y + size, x, y + size - r)
-  }
-
-  // Left edge -> top-left corner
-  if (sharpTL) {
-    ctx.lineTo(x, y)
-  } else {
-    ctx.lineTo(x, y + r)
-    ctx.quadraticCurveTo(x, y, x + r, y)
-  }
-
-  ctx.closePath()
-
-  // Inner square hole
-  ctx.rect(x + holeOffset, y + holeOffset, holeSize, holeSize)
   ctx.fill("evenodd")
 }
 
