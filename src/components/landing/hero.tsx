@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
+import { Gradient } from '@/lib/gradient'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from '@/components/qr/shape-selector'
 import { FrameSelector } from '@/components/qr/frame-selector'
 import { GradientEditor } from '@/components/qr/gradient-editor'
@@ -225,6 +226,15 @@ export function Hero() {
     import('qr-code-styling').then((module) => {
       setQRCodeStyling(() => module.default)
     })
+  }, [])
+
+  // Initialize WebGL mesh gradient background
+  useEffect(() => {
+    const gradient = new Gradient()
+    gradient.initGradient('#gradient-canvas')
+    return () => {
+      gradient.disconnect()
+    }
   }, [])
 
   // Helper to update style
@@ -835,11 +845,12 @@ export function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden bg-white">
-      {/* Noise texture with violet tint */}
-      <div className="absolute inset-0 noise-texture" />
+    <section className="hero-section relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden">
+      {/* WebGL Mesh Gradient Background - Stripe style */}
+      <canvas id="gradient-canvas" data-transition-in />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Content wrapper - above the gradient */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up animate-delay-100">

@@ -91,6 +91,36 @@ body {
 }
 
 /* ========================================
+   WEBGL MESH GRADIENT - Stripe Style
+   ======================================== */
+
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+
+#gradient-canvas {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 200px);
+  z-index: 0;
+  transform: skewY(-12deg);
+  transform-origin: top left;
+  filter: blur(40px);
+  --gradient-color-1: #a78bfa;
+  --gradient-color-2: #c4b5fd;
+  --gradient-color-3: #8b5cf6;
+  --gradient-color-4: #ddd6fe;
+}
+
+#gradient-canvas.isLoaded {
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+/* ========================================
    TYPOGRAPHY
    ======================================== */
 
