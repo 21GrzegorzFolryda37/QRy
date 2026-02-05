@@ -268,8 +268,6 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: '', icon: <CornerSquareIcon /> },
   { id: 'extra-rounded', label: '', icon: <CornerRoundedCircleIcon /> },
   { id: 'dot', label: '', icon: <CornerDotIcon /> },
-  { id: 'classy', label: '', icon: <CornerClassyIcon /> },
-  { id: 'classy-rounded', label: '', icon: <CornerExtraRoundedIcon /> },
   { id: 'inpoint', label: '', icon: <CornerSquareCircleHoleIcon /> },
   { id: 'diagonalRounded', label: '', icon: <CornerDiagonalRoundedIcon /> },
 ]
