@@ -263,6 +263,17 @@ const CornerDiagonalRoundedIcon = () => (
   </svg>
 )
 
+// 8. Kwadrat z 3 zaokrąglonymi rogami i 1 ostrym (lewy-górny ostry)
+const CornerThreeRoundedIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
+    <path
+      d="M2 2 H18 Q22 2 22 6 V18 Q22 22 18 22 H6 Q2 22 2 18 Z
+         M5 5 V17 Q5 19 7 19 H17 Q19 19 19 17 V7 Q19 5 17 5 H5 Z"
+      fillRule="evenodd"
+    />
+  </svg>
+)
+
 // Opcje dla narożników zewnętrznych (wzorowane na qr.io)
 export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'square', label: '', icon: <CornerSquareIcon /> },
@@ -270,6 +281,7 @@ export const cornersSquareTypeOptions: ShapeOption<CornersSquareType>[] = [
   { id: 'dot', label: '', icon: <CornerDotIcon /> },
   { id: 'inpoint', label: '', icon: <CornerSquareCircleHoleIcon /> },
   { id: 'diagonalRounded', label: '', icon: <CornerDiagonalRoundedIcon /> },
+  { id: 'threeRounded', label: '', icon: <CornerThreeRoundedIcon /> },
 ]
 
 // ============================================
