@@ -370,10 +370,10 @@ const cornerSquareShapes: Record<CornersSquareType, ShapeRenderer> = {
 
   // ThreeRounded - square with 3 rounded corners and 1 sharp (default: top-left sharp)
   threeRounded: (ctx, x, y, size, color) => {
-    const r = size * 0.25
+    const r = size * 0.35
     const innerSize = size * HOLE_RATIO
     const innerOffset = size * HOLE_OFFSET_RATIO
-    const ri = innerSize * 0.2
+    const ri = innerSize * 0.3
 
     ctx.fillStyle = color
     ctx.beginPath()
@@ -705,10 +705,10 @@ function renderPositionedThreeRounded(
   x: number, y: number, size: number,
   color: FillColor, position: CornerPosition
 ): void {
-  const outerR = size * 0.25
+  const outerR = size * 0.35
   const innerSize = size * HOLE_RATIO
   const innerOffset = size * HOLE_OFFSET_RATIO
-  const innerR = innerSize * 0.2
+  const innerR = innerSize * 0.3
 
   // Map position to sharp corner
   const sharpCorner: SharpCorner = position === 'top-left' ? 'TL'
