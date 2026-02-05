@@ -315,7 +315,7 @@ function drawFrameOnCanvas(
 
   // Draw text
   if (frame.showText && frame.text && textHeight > 0) {
-    const fontSize = Math.round(textHeight * 0.5)
+    const fontSize = Math.round(textHeight * 0.6)
     ctx.fillStyle = frame.textColor
     ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`
     ctx.textAlign = 'center'
