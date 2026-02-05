@@ -68,10 +68,11 @@ const personalizationTabs: { id: PersonalizationTab; label: string }[] = [
   { id: 'more', label: 'Więcej' },
 ]
 
-// Ready-made QR style templates
+// Ready-made QR style templates - branded social media + generic styles
 interface QrTemplate {
   id: string
   name: string
+  icon?: string // SVG data URL for brand icon
   style: Partial<QrStyle>
   preview: {
     fg: string
@@ -81,6 +82,207 @@ interface QrTemplate {
 }
 
 const qrTemplates: QrTemplate[] = [
+  // === BRANDED TEMPLATES ===
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='ig' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23feda75'/%3E%3Cstop offset='25%25' stop-color='%23fa7e1e'/%3E%3Cstop offset='50%25' stop-color='%23d62976'/%3E%3Cstop offset='75%25' stop-color='%23962fbf'/%3E%3Cstop offset='100%25' stop-color='%234f5bd5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='url(%23ig)'/%3E%3Crect x='3' y='3' width='18' height='18' rx='4' fill='none' stroke='white' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='white' stroke-width='1.5'/%3E%3Ccircle cx='17.5' cy='6.5' r='1.2' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#d62976',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#feda75' },
+          { offset: 0.3, color: '#fa7e1e' },
+          { offset: 0.6, color: '#d62976' },
+          { offset: 1, color: '#962fbf' }
+        ]
+      }
+    },
+    preview: { fg: '#d62976', bg: '#FFFFFF', accent: '#fa7e1e' }
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23000000'/%3E%3Cpath d='M16.5 8.5c1.5 1 3 1.2 4 1v3c-1-.1-2.5-.5-4-1.5v5.5c0 3-2.5 5.5-5.5 5.5S5.5 19.5 5.5 16.5 8 11 11 11v3c-1.5 0-2.5 1-2.5 2.5s1 2.5 2.5 2.5 2.5-1 2.5-2.5V4h3c0 2 1 3.5 2.5 4.5z' fill='white'/%3E%3Cpath d='M16.5 8.5c1.5 1 3 1.2 4 1v3c-1-.1-2.5-.5-4-1.5v5.5c0 3-2.5 5.5-5.5 5.5' stroke='%2325F4EE' stroke-width='0.5' fill='none' transform='translate(-1,-1)'/%3E%3Cpath d='M16.5 8.5c1.5 1 3 1.2 4 1v3c-1-.1-2.5-.5-4-1.5v5.5c0 3-2.5 5.5-5.5 5.5' stroke='%23FE2C55' stroke-width='0.5' fill='none' transform='translate(1,1)'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#000000',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      cornersSquareColor: '#25F4EE',
+      cornersDotColor: '#FE2C55',
+    },
+    preview: { fg: '#000000', bg: '#FFFFFF', accent: '#FE2C55' }
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231877F2'/%3E%3Cpath d='M16.5 12.5h-2.5v8h-3v-8h-2v-2.5h2v-1.5c0-2.5 1-4 3.5-4h2.5v2.5h-1.5c-1 0-1.5.5-1.5 1.5v1.5h3l-.5 2.5z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#1877F2',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#1877F2', bg: '#FFFFFF' }
+  },
+  {
+    id: 'youtube',
+    name: 'YouTube',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23FF0000'/%3E%3Cpath d='M19.5 8.5c-.2-1-1-1.8-2-2-1.8-.5-9-.5-9-.5s-7.2 0-9 .5c-1 .2-1.8 1-2 2-.5 1.8-.5 5.5-.5 5.5s0 3.7.5 5.5c.2 1 1 1.8 2 2 1.8.5 9 .5 9 .5s7.2 0 9-.5c1-.2 1.8-1 2-2 .5-1.8.5-5.5.5-5.5s0-3.7-.5-5.5z' fill='%23FF0000' transform='translate(3,2) scale(0.75)'/%3E%3Cpath d='M10 15l5-3-5-3v6z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#FF0000',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'square',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'square',
+    },
+    preview: { fg: '#FF0000', bg: '#FFFFFF' }
+  },
+  {
+    id: 'whatsapp',
+    name: 'WhatsApp',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2325D366'/%3E%3Cpath d='M12 4c-4.4 0-8 3.6-8 8 0 1.4.4 2.8 1 4l-1 3.7 3.8-1c1.2.6 2.5 1 3.9 1 4.4 0 8-3.6 8-8s-3.6-8-7.7-8zm4.5 11.3c-.2.5-1.1 1-1.5 1.1-.4 0-.9.2-2.9-.6-2.4-1-3.9-3.5-4-3.6-.1-.1-.9-1.2-.9-2.3s.6-1.6.8-1.9c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .5.4.2.5.7 1.6.7 1.7.1.1.1.3 0 .4-.1.2-.1.3-.2.4l-.3.4c-.1.1-.2.2-.1.4.1.2.6 1 1.3 1.6.9.8 1.6 1 1.9 1.1.2.1.4 0 .5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.5.3.1.2.1.6-.1 1z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#25D366',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#25D366', bg: '#FFFFFF' }
+  },
+  {
+    id: 'spotify',
+    name: 'Spotify',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%231DB954'/%3E%3Cpath d='M16.5 16.5c-.2 0-.4-.1-.5-.2-2.5-1.5-5.5-1.8-9-1-.3.1-.6-.1-.7-.4-.1-.3.1-.6.4-.7 3.9-.9 7.3-.5 10.1 1.2.3.2.4.5.2.8-.1.2-.3.3-.5.3zm1.2-2.7c-.2 0-.4-.1-.6-.2-2.8-1.7-7-2.2-10.3-1.2-.4.1-.8-.1-.9-.5-.1-.4.1-.8.5-.9 3.7-1.1 8.3-.6 11.5 1.4.3.2.4.6.2 1-.1.3-.4.4-.7.4h.3zm.1-2.8c-.2 0-.4-.1-.5-.2-3.2-1.9-8.5-2.1-11.5-1.1-.4.1-.9-.1-1-.5-.1-.4.1-.9.5-1 3.5-1.1 9.2-.9 12.9 1.3.4.2.5.7.3 1.1-.2.3-.4.4-.7.4z' fill='%23191414'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#1DB954',
+      backgroundColor: '#191414',
+      dotsType: 'dots',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#1DB954', bg: '#191414' }
+  },
+  {
+    id: 'twitter',
+    name: 'X (Twitter)',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23000000'/%3E%3Cpath d='M13.5 10.5L18 5h-1.5l-4 4.5L9 5H5l5 7-5 7h1.5l4.5-5 3.5 5H19l-5.5-8.5z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#000000',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+    },
+    preview: { fg: '#000000', bg: '#FFFFFF' }
+  },
+  {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230A66C2'/%3E%3Cpath d='M8 18H5V10h3v8zM6.5 8.5c-1 0-1.5-.7-1.5-1.5s.5-1.5 1.5-1.5S8 6 8 7s-.5 1.5-1.5 1.5zM19 18h-3v-4.5c0-1.5-.5-2-1.5-2s-1.5.5-1.5 2V18h-3V10h3v1c.5-1 1.5-1.5 2.5-1.5 2 0 3.5 1.5 3.5 4V18z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#0A66C2',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#0A66C2', bg: '#FFFFFF' }
+  },
+  {
+    id: 'snapchat',
+    name: 'Snapchat',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23FFFC00'/%3E%3Cpath d='M12 4c-2 0-3.5 1-4 3-.2 1 0 3 0 3.5 0 0-.5.2-1 .2-.3 0-.5.3-.5.5s.2.5.5.5c.5 0 1-.2 1-.2 0 .5-.3 1.5-1 2-.5.3-1.2.5-1.5.5 0 0-.2.3 0 .5.2.3.5.3 1 .3.3 0 .7 0 1 .2 0 .5-.3 1-1.5 2-.2.2 0 .5.2.5 1 0 2-.5 3-.5s2 .5 3 .5c.2 0 .4-.3.2-.5-1.2-1-1.5-1.5-1.5-2 .3-.2.7-.2 1-.2.5 0 .8 0 1-.3.2-.2 0-.5 0-.5-.3 0-1-.2-1.5-.5-.7-.5-1-1.5-1-2 0 0 .5.2 1 .2.3 0 .5-.2.5-.5s-.2-.5-.5-.5c-.5 0-1-.2-1-.2s.2-2.5 0-3.5c-.5-2-2-3-4-3z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#000000',
+      backgroundColor: '#FFFC00',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#000000', bg: '#FFFC00' }
+  },
+  {
+    id: 'discord',
+    name: 'Discord',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235865F2'/%3E%3Cpath d='M9.5 12c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5zm5 0c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5zM18 6c-1.5-1-3.5-1.5-5.5-1.5h-.5l-.2.5c1.5.5 3 1.2 4.2 2.2-1.5-1-3.5-1.5-5.5-1.5s-4 .5-5.5 1.5c1.2-1 2.7-1.7 4.2-2.2l-.2-.5h-.5c-2 0-4 .5-5.5 1.5C2 8 1 12 1 15.5c1.5 2 4 2.5 4 2.5l1-1.5c-1-.5-2-1-2.5-2 1 .7 2.5 1.5 5.5 1.5s4.5-.8 5.5-1.5c-.5 1-1.5 1.5-2.5 2l1 1.5s2.5-.5 4-2.5c0-3.5-1-7.5-2.5-9.5z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#5865F2',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#5865F2', bg: '#FFFFFF' }
+  },
+  {
+    id: 'pinterest',
+    name: 'Pinterest',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23E60023'/%3E%3Cpath d='M12 5c-4 0-7 3-7 7 0 2.5 1.5 5 4 6-.1-.5-.1-1.5 0-2l1-4s-.2-.5-.2-1c0-1 .6-1.8 1.4-1.8.6 0 1 .5 1 1 0 .6-.4 1.5-.6 2.3-.2.8.4 1.4 1.1 1.4 1.4 0 2.4-1.5 2.4-3.5 0-1.8-1.3-3.2-3.2-3.2-2.3 0-3.6 1.7-3.6 3.5 0 .7.3 1.4.6 1.8.1.1.1.2 0 .3l-.2.8c0 .2-.2.2-.3.1-1-.5-1.6-1.8-1.6-3 0-2.5 1.8-4.8 5.2-4.8 2.7 0 4.8 2 4.8 4.5 0 2.8-1.7 5-4.2 5-.8 0-1.6-.4-1.8-.9l-.5 2c-.2.7-.7 1.6-1 2.1.8.2 1.6.4 2.4.4 4 0 7-3 7-7s-3-7-7-7z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#E60023',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'dot',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#E60023', bg: '#FFFFFF' }
+  },
+  {
+    id: 'telegram',
+    name: 'Telegram',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%2326A5E4'/%3E%3Cpath d='M17.5 7.5l-2 9.5c-.1.5-.5.6-.8.4l-2.5-2-1.2 1.2c-.1.1-.3.2-.5.2l.2-2.5 5-4.5c.2-.2 0-.3-.3-.1l-6 4-2.5-1c-.5-.2-.5-.5.1-.8l10-4c.5-.1.8.1.7.6z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#26A5E4',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+    },
+    preview: { fg: '#26A5E4', bg: '#FFFFFF' }
+  },
+  {
+    id: 'paypal',
+    name: 'PayPal',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23003087'/%3E%3Cpath d='M15 7c.5 0 1 .1 1.4.3.8.4 1.1 1.2.9 2.2-.3 1.5-1.5 2.5-3.3 2.5h-1l-.5 3H10l1.5-8H15zm-1.5 3.5c.8 0 1.3-.4 1.4-1 .1-.5-.2-.8-.8-.8h-.8l-.3 1.8h.5z' fill='%2300457C'/%3E%3Cpath d='M9 9c.5 0 1 .1 1.4.3.8.4 1.1 1.2.9 2.2-.3 1.5-1.5 2.5-3.3 2.5h-1l-.5 3H4l1.5-8H9zm-1.5 3.5c.8 0 1.3-.4 1.4-1 .1-.5-.2-.8-.8-.8h-.8l-.3 1.8h.5z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#003087',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'rounded',
+      cornersSquareType: 'extra-rounded',
+      cornersDotType: 'dot',
+      cornersSquareColor: '#0070E0',
+      cornersDotColor: '#0070E0',
+    },
+    preview: { fg: '#003087', bg: '#FFFFFF', accent: '#0070E0' }
+  },
+  {
+    id: 'amazon',
+    name: 'Amazon',
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23232F3E'/%3E%3Cpath d='M14 13c-2 1.5-5 2.3-7.5 2.3-3.5 0-6.7-1.3-9.1-3.5-.2-.2 0-.4.2-.3 2.6 1.5 5.8 2.4 9.1 2.4 2.2 0 4.7-.5 7-1.4.3-.2.6.2.3.5z' fill='%23FF9900' transform='translate(3,2) scale(0.8)'/%3E%3Cpath d='M15 12c-.3-.4-1.8-.2-2.5-.1-.2 0-.2-.2-.1-.3.6-.4 1.6-.3 1.7-.2.1.1.1.5-.1.8-.2.3-1 1-1.5 1.2-.1.1-.2 0-.2-.1.2-.4.7-1 .7-1.3z' fill='%23FF9900' transform='translate(3,2) scale(0.8)'/%3E%3Cpath d='M12 6c-1.7 0-3 1-3 2.5 0 2.5 3.5 2 3.5 3.5 0 .5-.5 1-1.5 1s-2-.5-2-1h-1c0 1 1 2 3 2s3-1 3-2.5c0-2.5-3.5-2-3.5-3.5 0-.5.5-1 1.5-1s1.5.5 1.5 1h1c0-1-.5-2-2.5-2z' fill='white'/%3E%3C/svg%3E",
+    style: {
+      foregroundColor: '#232F3E',
+      backgroundColor: '#FFFFFF',
+      dotsType: 'square',
+      cornersSquareType: 'square',
+      cornersDotType: 'square',
+      cornersSquareColor: '#FF9900',
+      cornersDotColor: '#FF9900',
+    },
+    preview: { fg: '#232F3E', bg: '#FFFFFF', accent: '#FF9900' }
+  },
+
+  // === GENERIC STYLE TEMPLATES ===
   {
     id: 'classic',
     name: 'Klasyczny',
@@ -104,118 +306,6 @@ const qrTemplates: QrTemplate[] = [
       cornersDotType: 'dot',
     },
     preview: { fg: '#1a1a1a', bg: '#FFFFFF' }
-  },
-  {
-    id: 'dots',
-    name: 'Kropki',
-    style: {
-      foregroundColor: '#374151',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'dots',
-      cornersSquareType: 'dot',
-      cornersDotType: 'dot',
-    },
-    preview: { fg: '#374151', bg: '#FFFFFF' }
-  },
-  {
-    id: 'purple-gradient',
-    name: 'Fioletowy',
-    style: {
-      foregroundColor: '#7c3aed',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'rounded',
-      cornersSquareType: 'extra-rounded',
-      cornersDotType: 'dot',
-      dotsGradient: {
-        type: 'linear',
-        rotation: 45,
-        colorStops: [
-          { offset: 0, color: '#7c3aed' },
-          { offset: 1, color: '#c026d3' }
-        ]
-      }
-    },
-    preview: { fg: '#7c3aed', bg: '#FFFFFF', accent: '#c026d3' }
-  },
-  {
-    id: 'ocean',
-    name: 'Ocean',
-    style: {
-      foregroundColor: '#0891b2',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'rounded',
-      cornersSquareType: 'extra-rounded',
-      cornersDotType: 'dot',
-      dotsGradient: {
-        type: 'linear',
-        rotation: 135,
-        colorStops: [
-          { offset: 0, color: '#0891b2' },
-          { offset: 1, color: '#0ea5e9' }
-        ]
-      }
-    },
-    preview: { fg: '#0891b2', bg: '#FFFFFF', accent: '#0ea5e9' }
-  },
-  {
-    id: 'sunset',
-    name: 'Zachód słońca',
-    style: {
-      foregroundColor: '#ea580c',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'extra-rounded',
-      cornersSquareType: 'extra-rounded',
-      cornersDotType: 'dot',
-      dotsGradient: {
-        type: 'linear',
-        rotation: 45,
-        colorStops: [
-          { offset: 0, color: '#ea580c' },
-          { offset: 1, color: '#facc15' }
-        ]
-      }
-    },
-    preview: { fg: '#ea580c', bg: '#FFFFFF', accent: '#facc15' }
-  },
-  {
-    id: 'forest',
-    name: 'Las',
-    style: {
-      foregroundColor: '#16a34a',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'classy-rounded',
-      cornersSquareType: 'extra-rounded',
-      cornersDotType: 'dot',
-      dotsGradient: {
-        type: 'linear',
-        rotation: 180,
-        colorStops: [
-          { offset: 0, color: '#16a34a' },
-          { offset: 1, color: '#22d3ee' }
-        ]
-      }
-    },
-    preview: { fg: '#16a34a', bg: '#FFFFFF', accent: '#22d3ee' }
-  },
-  {
-    id: 'rose',
-    name: 'Róża',
-    style: {
-      foregroundColor: '#e11d48',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'rounded',
-      cornersSquareType: 'dot',
-      cornersDotType: 'dot',
-      dotsGradient: {
-        type: 'radial',
-        rotation: 0,
-        colorStops: [
-          { offset: 0, color: '#f43f5e' },
-          { offset: 1, color: '#e11d48' }
-        ]
-      }
-    },
-    preview: { fg: '#e11d48', bg: '#FFFFFF', accent: '#f43f5e' }
   },
   {
     id: 'dark',
@@ -249,34 +339,6 @@ const qrTemplates: QrTemplate[] = [
       }
     },
     preview: { fg: '#22d3ee', bg: '#18181b', accent: '#a855f7' }
-  },
-  {
-    id: 'corporate',
-    name: 'Biznesowy',
-    style: {
-      foregroundColor: '#1e40af',
-      backgroundColor: '#FFFFFF',
-      dotsType: 'square',
-      cornersSquareType: 'square',
-      cornersDotType: 'square',
-      cornersSquareColor: '#1e3a8a',
-      cornersDotColor: '#1e3a8a',
-    },
-    preview: { fg: '#1e40af', bg: '#FFFFFF', accent: '#1e3a8a' }
-  },
-  {
-    id: 'elegant',
-    name: 'Elegancki',
-    style: {
-      foregroundColor: '#78716c',
-      backgroundColor: '#fafaf9',
-      dotsType: 'classy',
-      cornersSquareType: 'extra-rounded',
-      cornersDotType: 'dot',
-      cornersSquareColor: '#292524',
-      cornersDotColor: '#292524',
-    },
-    preview: { fg: '#78716c', bg: '#fafaf9', accent: '#292524' }
   },
 ]
 
@@ -635,49 +697,48 @@ export function Hero() {
         return (
           <div className="space-y-3">
             <p className="text-sm text-gray-500 mb-2">Wybierz gotowy szablon</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {qrTemplates.map((template) => (
                 <button
                   key={template.id}
                   onClick={() => applyTemplate(template)}
-                  className="group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all"
+                  className="group relative flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all"
                 >
-                  {/* Mini QR preview */}
+                  {/* Brand icon or QR preview */}
                   <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center relative overflow-hidden"
-                    style={{ backgroundColor: template.preview.bg }}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden"
+                    style={{ backgroundColor: template.icon ? 'transparent' : template.preview.bg }}
                   >
-                    {/* Simplified QR pattern */}
-                    <svg viewBox="0 0 24 24" className="w-10 h-10">
-                      {/* Corner patterns */}
-                      <rect x="1" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
-                      <rect x="2.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
-                      <rect x="3.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
-
-                      <rect x="16" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
-                      <rect x="17.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
-                      <rect x="18.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
-
-                      <rect x="1" y="16" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
-                      <rect x="2.5" y="17.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
-                      <rect x="3.5" y="18.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
-
-                      {/* Data modules */}
-                      <rect x="10" y="2" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="13" y="3" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="2" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="5" y="11" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="10" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="13" y="11" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="17" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="20" y="13" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="10" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="13" y="19" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="17" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                      <rect x="20" y="20" width="2" height="2" rx="0.5" fill={template.preview.fg} />
-                    </svg>
+                    {template.icon ? (
+                      // Show brand icon
+                      <img src={template.icon} alt={template.name} className="w-10 h-10 object-contain" />
+                    ) : (
+                      // Show simplified QR pattern for generic templates
+                      <div
+                        className="w-full h-full rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: template.preview.bg }}
+                      >
+                        <svg viewBox="0 0 24 24" className="w-8 h-8">
+                          <rect x="1" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="2.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                          <rect x="3.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="16" y="1" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="17.5" y="2.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                          <rect x="18.5" y="3.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="1" y="16" width="7" height="7" rx="1" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="2.5" y="17.5" width="4" height="4" rx="0.5" fill={template.preview.bg} />
+                          <rect x="3.5" y="18.5" width="2" height="2" rx="0.3" fill={template.preview.accent || template.preview.fg} />
+                          <rect x="10" y="2" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                          <rect x="10" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                          <rect x="17" y="10" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                          <rect x="10" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                          <rect x="17" y="17" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                          <rect x="20" y="20" width="2" height="2" rx="0.5" fill={template.preview.fg} />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                  <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900">{template.name}</span>
+                  <span className="text-[10px] font-medium text-gray-700 group-hover:text-gray-900 truncate w-full text-center">{template.name}</span>
                 </button>
               ))}
             </div>
