@@ -52,7 +52,7 @@ export function HowItWorks() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative flex items-center py-20 sm:py-24 overflow-hidden bg-white">
+    <section ref={sectionRef} className="relative flex items-center py-28 sm:py-32 overflow-hidden bg-white">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
