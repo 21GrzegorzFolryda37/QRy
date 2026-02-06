@@ -94,7 +94,7 @@ body {
 
 .hero-section {
   position: relative;
-  overflow: hidden;
+  height: 100vh;
 }
 
 @keyframes particle-flow {
@@ -104,13 +104,13 @@ body {
   100% { transform: translateX(calc(100vw + 40px)); opacity: 0; }
 }
 
-/* Hero to white section transition */
+/* Hero to white section transition - extends below hero */
 .hero-fade-overlay {
   position: absolute;
-  bottom: 0;
+  bottom: -120px;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 280px;
   background: linear-gradient(
     to bottom,
     transparent 0%,

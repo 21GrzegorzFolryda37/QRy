@@ -882,7 +882,7 @@ export function Hero() {
   }
 
   return (
-    <section className="hero-section relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden">
+    <section className="hero-section relative h-screen flex flex-col justify-center pt-24 pb-16 overflow-visible">
       {/* Dark gradient background */}
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%)' }} />
 
