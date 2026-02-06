@@ -130,7 +130,7 @@ export function QRComparison() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(109,40,217,0.25),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(15,23,42,0.6),transparent_50%)]" />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div
           className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
@@ -147,34 +147,41 @@ export function QRComparison() {
 
         {/* Phone Comparison */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center justify-items-center">
-          {/* Phone with Boring QR */}
+          {/* Left: oval boxes + phone */}
           <div
-            className={`relative transition-all duration-700 ${
+            className={`relative flex items-center gap-5 transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
-            <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
-              Zwykły QR
-            </h3>
+            {/* 3 oval boxes — left of phone, desktop only */}
+            <div className="hidden lg:flex flex-col gap-4">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`w-32 h-11 rounded-full bg-white/[0.06] border border-white/[0.1] transition-all duration-700 ${
+                    visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 120}ms`, transitionTimingFunction: 'var(--ease-smooth)' }}
+                />
+              ))}
+            </div>
 
-            <div className="relative">
+            <div>
+              <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
+                Zwykły QR
+              </h3>
               <PhoneMockup className="w-[260px]">
                 <div className="w-full h-full bg-gray-50 flex flex-col">
-                  {/* Spacer for status bar */}
                   <div className="h-14" />
-
-                  {/* Scanner content */}
                   <div className="flex-1 flex flex-col items-center justify-center px-6">
                     <p className="text-xs text-[#6d28d9] mb-4 font-medium">Zeskanuj kod QR</p>
-
                     <div className="relative p-3 bg-white rounded-xl shadow-sm border border-gray-100">
                       <div ref={basicQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                       </div>
                     </div>
                   </div>
-
                   <div className="h-8" />
                 </div>
               </PhoneMockup>
@@ -196,53 +203,62 @@ export function QRComparison() {
             </div>
           </div>
 
-          {/* Phone with QRapple QR */}
+          {/* Right: phone + white oval boxes */}
           <div
-            className={`relative transition-all duration-700 delay-150 ${
+            className={`relative flex items-center gap-5 transition-all duration-700 delay-150 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
-            <h3 className="text-lg font-medium text-violet-300 text-center mb-6">
-              Kod QRapple
-            </h3>
-
-            <PhoneMockup className="w-[260px]" variant="highlighted" statusBarColor="#000000">
-              <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">
-                {/* Spacer for status bar */}
-                <div className="h-14" />
-
-                {/* Scanner content */}
-                <div className="flex-1 flex flex-col items-center justify-center px-4">
-                  <p className="text-xs text-[#6d28d9] mb-4 font-semibold">Zeskanuj kod QR</p>
-
-                  <FrameRenderer
-                    frame={{
-                      style: 'rounded',
-                      color: '#6d28d9',
-                      gradient: {
-                        type: 'linear',
-                        rotation: 135,
-                        colorStops: [
-                          { offset: 0, color: '#7c3aed' },
-                          { offset: 1, color: '#0891b2' },
-                        ],
-                      },
-                      textColor: '#ffffff',
-                      text: 'Zeskanuj',
-                      showText: true,
-                    }}
-                    size={180}
-                  >
-                    <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
-                    </div>
-                  </FrameRenderer>
+            <div>
+              <h3 className="text-lg font-medium text-violet-300 text-center mb-6">
+                Kod QRapple
+              </h3>
+              <PhoneMockup className="w-[260px]" variant="highlighted" statusBarColor="#000000">
+                <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">
+                  <div className="h-14" />
+                  <div className="flex-1 flex flex-col items-center justify-center px-4">
+                    <p className="text-xs text-[#6d28d9] mb-4 font-semibold">Zeskanuj kod QR</p>
+                    <FrameRenderer
+                      frame={{
+                        style: 'rounded',
+                        color: '#6d28d9',
+                        gradient: {
+                          type: 'linear',
+                          rotation: 135,
+                          colorStops: [
+                            { offset: 0, color: '#7c3aed' },
+                            { offset: 1, color: '#0891b2' },
+                          ],
+                        },
+                        textColor: '#ffffff',
+                        text: 'Zeskanuj',
+                        showText: true,
+                      }}
+                      size={180}
+                    >
+                      <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
+                        <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
+                      </div>
+                    </FrameRenderer>
+                  </div>
+                  <div className="h-8" />
                 </div>
+              </PhoneMockup>
+            </div>
 
-                <div className="h-8" />
-              </div>
-            </PhoneMockup>
+            {/* 3 white oval boxes — right of phone, desktop only */}
+            <div className="hidden lg:flex flex-col gap-4">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`w-32 h-11 rounded-full bg-white transition-all duration-700 ${
+                    visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
+                  }`}
+                  style={{ transitionDelay: `${400 + i * 120}ms`, transitionTimingFunction: 'var(--ease-smooth)' }}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
