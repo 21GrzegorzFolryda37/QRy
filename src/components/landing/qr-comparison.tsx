@@ -42,8 +42,8 @@ export function QRComparison() {
       if (basicQrRef.current) {
         basicQrRef.current.innerHTML = ''
         const basicQR = new QRCodeStyling({
-          width: 140,
-          height: 140,
+          width: 180,
+          height: 180,
           data: QR_URL,
           dotsOptions: {
             color: '#000000',
@@ -64,22 +64,24 @@ export function QRComparison() {
         basicQR.append(basicQrRef.current)
       }
 
-      // Custom QR code
+      // Custom QR code - vibrant gradient
       if (customQrRef.current) {
         customQrRef.current.innerHTML = ''
         const customQR = new QRCodeStyling({
-          width: 140,
-          height: 140,
+          width: 180,
+          height: 180,
           data: QR_URL,
           image: '/logo.webp',
           dotsOptions: {
-            type: 'rounded',
+            type: 'dots',
             gradient: {
               type: 'linear',
-              rotation: 45,
+              rotation: 225,
               colorStops: [
-                { offset: 0, color: '#7c3aed' },
-                { offset: 1, color: '#0891b2' },
+                { offset: 0, color: '#f77737' },
+                { offset: 0.35, color: '#fd1d1d' },
+                { offset: 0.65, color: '#c13584' },
+                { offset: 1, color: '#7c3aed' },
               ],
             },
           },
@@ -87,10 +89,10 @@ export function QRComparison() {
             type: 'extra-rounded',
             gradient: {
               type: 'linear',
-              rotation: 45,
+              rotation: 225,
               colorStops: [
-                { offset: 0, color: '#7c3aed' },
-                { offset: 1, color: '#0891b2' },
+                { offset: 0, color: '#fd1d1d' },
+                { offset: 1, color: '#7c3aed' },
               ],
             },
           },
@@ -98,10 +100,10 @@ export function QRComparison() {
             type: 'dot',
             gradient: {
               type: 'linear',
-              rotation: 45,
+              rotation: 225,
               colorStops: [
-                { offset: 0, color: '#7c3aed' },
-                { offset: 1, color: '#0891b2' },
+                { offset: 0, color: '#f77737' },
+                { offset: 1, color: '#c13584' },
               ],
             },
           },
@@ -110,8 +112,8 @@ export function QRComparison() {
           },
           imageOptions: {
             crossOrigin: 'anonymous',
-            margin: 4,
-            imageSize: 0.4,
+            margin: 5,
+            imageSize: 0.35,
           },
         })
         customQR.append(customQrRef.current)
@@ -167,7 +169,7 @@ export function QRComparison() {
                     <p className="text-xs text-[#6d28d9] mb-4 font-medium">Zeskanuj kod QR</p>
 
                     <div className="relative p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-                      <div ref={basicQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
+                      <div ref={basicQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
                       </div>
                     </div>
@@ -221,7 +223,7 @@ export function QRComparison() {
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg" />
 
                     <div className="p-3 bg-white rounded-xl shadow-lg shadow-[#6d28d9]/10 border border-[#6d28d9]/20">
-                      <div ref={customQrRef} className="w-[140px] h-[140px] flex items-center justify-center">
+                      <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
                       </div>
                     </div>
