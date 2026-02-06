@@ -1106,8 +1106,6 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Smooth transition to white */}
-      <div className="hero-fade-overlay" />
     </section>
   )
 }
