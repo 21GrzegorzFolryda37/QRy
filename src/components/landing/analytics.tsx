@@ -4,47 +4,29 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui'
 
-const analyticsFeatures = [
-  {
-    name: 'Statystyki skanowania',
-    description: 'Śledź liczbę skanów w czasie rzeczywistym. Zobacz dokładnie ile osób zeskanowało Twój kod QR każdego dnia, tygodnia czy miesiąca.',
-    icon: ChartBarIcon,
-    color: 'primary',
-  },
-  {
-    name: 'Lokalizacja użytkowników',
-    description: 'Dowiedz się skąd pochodzą Twoi odbiorcy. Mapa świata pokazuje kraje i miasta, z których skanowano Twoje kody.',
-    icon: MapIcon,
-    color: 'secondary',
-  },
-  {
-    name: 'Urządzenia i przeglądarki',
-    description: 'Sprawdź na jakich urządzeniach i systemach operacyjnych skanowane są Twoje kody - smartfony, tablety czy komputery.',
-    icon: DeviceIcon,
-    color: 'accent',
-  },
-  {
-    name: 'Analiza czasowa',
-    description: 'Odkryj kiedy Twoje kody są najczęściej skanowane. Godziny szczytu i dni tygodnia pomogą Ci zoptymalizować kampanie.',
-    icon: ClockIcon,
-    color: 'primary',
-  },
-  {
-    name: 'Porównanie kodów',
-    description: 'Porównuj wyniki różnych kodów QR obok siebie. Analizuj, które kampanie osiągają najlepsze rezultaty.',
-    icon: LinkIcon,
-    color: 'secondary',
-  },
-  {
-    name: 'Wygodny eksport raportów',
-    description: 'Pobieraj szczegółowe raporty w formacie PDF. Udostępniaj statystyki zespołowi lub klientom jednym kliknięciem.',
-    icon: DocumentIcon,
-    color: 'accent',
-  },
+const stats = [
+  { label: 'Całkowite skany', value: '12,847', change: '↑ 34%' },
+  { label: 'Unikalni użytkownicy', value: '8,432', change: '↑ 28%' },
+  { label: 'Aktywne kody', value: '47', change: '↑ 12%' },
+  { label: 'Conversion rate', value: '23.4%', change: '↑ 5.2%' },
+]
+
+const barHeights = [45, 62, 38, 75, 55, 88, 92, 68, 78, 95]
+
+const heatmapData = [
+  [0.3, 0.5, 0.8, 1, 0.7, 0.4, 0.3],
+  [0.4, 0.6, 0.9, 0.8, 0.6, 0.5, 0.3],
+]
+
+const rankingItems = [
+  { rank: 1, label: 'Wizytówka VIP', width: 95 },
+  { rank: 2, label: 'Menu restauracji', width: 72 },
+  { rank: 3, label: 'Landing promo', width: 58 },
 ]
 
 export function Analytics() {
-  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const [visible, setVisible] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -52,16 +34,12 @@ export function Analytics() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            analyticsFeatures.forEach((_, index) => {
-              setTimeout(() => {
-                setVisibleCards((prev) => [...prev, index])
-              }, index * 100)
-            })
+            setVisible(true)
             observer.disconnect()
           }
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     )
 
     if (sectionRef.current) {
@@ -73,109 +51,259 @@ export function Analytics() {
 
   return (
     <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Background - light gray */}
-      <div className="absolute inset-0 bg-[#f8fafc]" />
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#f8f9fa] to-[#e9ecef]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
+        <div
+          className={`text-center mb-20 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
+        >
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl font-display">
-            <span className="text-[var(--foreground)]">Poznaj swoich </span>
-            <span className="text-[#6d28d9]">odbiorców</span>
+            <span className="text-[var(--foreground)]">Każdy skan to </span>
+            <span className="text-[#6d28d9]">historia</span>
           </h2>
-
-          <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
-            Każdy skan to cenna informacja. Nasze narzędzia analityczne pomogą Ci zrozumieć
-            kto, kiedy i gdzie korzysta z Twoich kodów QR.
+          <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed max-w-2xl mx-auto">
+            Śledź skuteczność swoich kodów QR w czasie rzeczywistym i podejmuj lepsze decyzje marketingowe
           </p>
         </div>
 
-        {/* Features grid */}
-        <div className="mx-auto max-w-2xl lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-3">
-            {analyticsFeatures.map((feature, index) => (
-              <div
-                key={feature.name}
-                className={`group relative flex flex-col p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-[0_10px_40px_-10px_rgba(109,40,217,0.3)] transition-all duration-500 hover:-translate-y-1 ${
-                  visibleCards.includes(index)
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-8'
-                }`}
-              >
-                <dt className="relative flex items-center gap-x-4 text-base font-semibold leading-7 text-[var(--foreground)]">
-                  <div className="flex-shrink-0 p-3 rounded-xl bg-[#6d28d9] shadow-md shadow-[#6d28d9]/20">
-                    <feature.icon
-                      className="h-5 w-5 text-white"
-                      aria-hidden="true"
-                    />
+        {/* Laptop + floating cards */}
+        <div className="relative mx-auto max-w-4xl mb-24">
+          {/* Laptop mockup */}
+          <div
+            className={`transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+            style={{ perspective: '1500px', transitionDelay: '200ms' }}
+          >
+            <div
+              className="transition-transform duration-700 ease-out"
+              style={{
+                transform: hovered
+                  ? 'rotateX(0deg) rotateY(0deg) scale(1.02)'
+                  : 'rotateX(5deg) rotateY(-5deg)',
+              }}
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+            >
+              {/* Screen bezel */}
+              <div className="bg-[#2d2d3d] rounded-t-2xl p-3 shadow-2xl">
+                <div className="w-2 h-2 rounded-full bg-[#3a3a4a] mx-auto mb-2" />
+
+                {/* Screen */}
+                <div className="bg-[#1a1a2e] rounded-lg overflow-hidden">
+                  {/* Dashboard header */}
+                  <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-white/5">
+                    <span className="text-white/90 text-sm font-semibold">Twój Dashboard</span>
+                    <span className="text-white/40 text-xs">Ostatnie 30 dni</span>
                   </div>
-                  {feature.name}
-                </dt>
-                <dd className="relative mt-4 flex flex-auto flex-col text-sm leading-relaxed text-[var(--foreground-muted)]">
-                  <p className="flex-auto">{feature.description}</p>
-                </dd>
+
+                  {/* Stats grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4">
+                    {stats.map((stat) => (
+                      <div key={stat.label} className="bg-white/5 rounded-lg p-2.5 sm:p-3">
+                        <p className="text-white/40 text-[9px] sm:text-[10px] uppercase tracking-wider truncate">{stat.label}</p>
+                        <p className="text-white text-base sm:text-lg font-bold mt-1">{stat.value}</p>
+                        <span className="text-emerald-400 text-[10px] sm:text-xs">{stat.change}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bar chart */}
+                  <div className="px-4 sm:px-6 pb-5 sm:pb-6 pt-2">
+                    <div className="flex items-end gap-1.5 sm:gap-2 h-24 sm:h-32">
+                      {barHeights.map((height, i) => (
+                        <div key={i} className="flex-1 flex items-end h-full">
+                          <div
+                            className="w-full rounded-t-sm sm:rounded-t-md transition-all ease-out"
+                            style={{
+                              height: visible ? `${height}%` : '0%',
+                              background: 'linear-gradient(to top, #278575, #667eea)',
+                              transitionDuration: '1000ms',
+                              transitionDelay: `${600 + i * 100}ms`,
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Laptop base */}
+              <div
+                className="mx-auto h-3 rounded-b-xl"
+                style={{ width: '105%', marginLeft: '-2.5%', background: 'linear-gradient(to bottom, #c5c5ca, #a8a8ad)' }}
+              />
+              <div
+                className="mx-auto h-1 rounded-b-lg"
+                style={{ width: '30%', background: 'linear-gradient(to bottom, #b0b0b5, #999)' }}
+              />
+            </div>
+          </div>
+
+          {/* Floating card 1 — top-left: Skąd skanują */}
+          <div
+            className={`absolute hidden lg:block z-10 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ top: '10%', left: '-5%', transitionDelay: '400ms' }}
+          >
+            <div className="w-56 p-4 rounded-2xl bg-white/95 backdrop-blur-[20px] border border-gray-200/50 shadow-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">🗺️</span>
+                <span className="text-sm font-semibold text-gray-900">Skąd skanują</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Dowiedz się z jakich miast i krajów przychodzą Twoi odbiorcy</p>
+              <div className="relative w-full h-16 rounded-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+                {[
+                  { top: '20%', left: '15%' },
+                  { top: '45%', left: '55%' },
+                  { top: '65%', left: '30%' },
+                  { top: '25%', left: '75%' },
+                  { top: '70%', left: '65%' },
+                ].map((pos, i) => (
+                  <div key={i} className="absolute w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.8)]" style={pos} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Floating card 2 — top-right: Kiedy skanują */}
+          <div
+            className={`absolute hidden lg:block z-10 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ top: '30%', right: '-5%', transitionDelay: '600ms' }}
+          >
+            <div className="w-56 p-4 rounded-2xl bg-white/95 backdrop-blur-[20px] border border-gray-200/50 shadow-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">📊</span>
+                <span className="text-sm font-semibold text-gray-900">Kiedy skanują</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Znajdź szczytowe godziny i dni — planuj kampanie w idealnym momencie</p>
+              <div className="grid grid-cols-7 gap-1">
+                {heatmapData.flat().map((opacity, i) => (
+                  <div
+                    key={i}
+                    className="h-4 rounded-sm"
+                    style={{ backgroundColor: `rgba(39, 133, 117, ${opacity})` }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Floating card 3 — bottom-left: Czego używają */}
+          <div
+            className={`absolute hidden lg:block z-10 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ bottom: '25%', left: '-8%', transitionDelay: '800ms' }}
+          >
+            <div className="w-56 p-4 rounded-2xl bg-white/95 backdrop-blur-[20px] border border-gray-200/50 shadow-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">📱</span>
+                <span className="text-sm font-semibold text-gray-900">Czego używają</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Poznaj urządzenia i przeglądarki swoich odbiorców</p>
+              <div className="flex items-end justify-center gap-4 py-2">
+                <span className="text-3xl">📱</span>
+                <span className="text-2xl opacity-60">💻</span>
+                <span className="text-lg opacity-40">⌚</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating card 4 — bottom-right: Co działa najlepiej */}
+          <div
+            className={`absolute hidden lg:block z-10 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ bottom: '10%', right: '-8%', transitionDelay: '1000ms' }}
+          >
+            <div className="w-56 p-4 rounded-2xl bg-white/95 backdrop-blur-[20px] border border-gray-200/50 shadow-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">🏆</span>
+                <span className="text-sm font-semibold text-gray-900">Co działa najlepiej</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Zobacz które kody performują najlepiej i dlaczego</p>
+              <div className="space-y-2">
+                {rankingItems.map((item) => (
+                  <div key={item.rank} className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#278575] text-white text-[10px] font-bold flex items-center justify-center shrink-0">{item.rank}</span>
+                    <div className="flex-1">
+                      <p className="text-[10px] text-gray-600 mb-0.5">{item.label}</p>
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${item.width}%`, background: 'linear-gradient(to right, #278575, #51cf66)' }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile cards — grid below laptop */}
+          <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10">
+            {[
+              { icon: '🗺️', title: 'Skąd skanują', desc: 'Miasta i kraje Twoich odbiorców' },
+              { icon: '📊', title: 'Kiedy skanują', desc: 'Szczytowe godziny i dni' },
+              { icon: '📱', title: 'Czego używają', desc: 'Urządzenia i przeglądarki' },
+              { icon: '🏆', title: 'Co działa najlepiej', desc: 'Ranking Twoich kodów QR' },
+            ].map((card, i) => (
+              <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <span className="text-2xl">{card.icon}</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{card.title}</p>
+                  <p className="text-xs text-gray-500">{card.desc}</p>
+                </div>
               </div>
             ))}
-          </dl>
+          </div>
+        </div>
+
+        {/* Storytelling flow */}
+        <div
+          className={`flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-20 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          style={{ transitionDelay: '600ms', transitionTimingFunction: 'var(--ease-smooth)' }}
+        >
+          {[
+            { icon: '✨', label: 'Stwórz kod' },
+            { icon: '🚀', label: 'Udostępnij' },
+            { icon: '📈', label: 'Analizuj wyniki' },
+          ].map((step, i, arr) => (
+            <div key={i} className="flex items-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}
+                >
+                  {step.icon}
+                </div>
+                <span className="text-sm font-semibold text-gray-700">{step.label}</span>
+              </div>
+              {i < arr.length - 1 && (
+                <span className="text-[#278575] text-xl font-bold hidden sm:block">→</span>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
+        <div
+          className={`text-center rounded-2xl py-12 px-6 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          style={{
+            background: 'linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05))',
+            border: '1px solid rgba(102,126,234,0.2)',
+            transitionDelay: '800ms',
+            transitionTimingFunction: 'var(--ease-smooth)',
+          }}
+        >
           <Link href="/register">
-            <Button variant="gradient" size="lg" className="shadow-lg shadow-[#6d28d9]/25">
-              Zacznij śledzić za darmo
+            <Button
+              size="lg"
+              className="text-white shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}
+            >
+              Stwórz swój pierwszy kod QR
             </Button>
           </Link>
+          <p className="mt-4 text-sm text-gray-500">Pełna analityka już w darmowym planie</p>
         </div>
       </div>
     </section>
-  )
-}
-
-function ChartBarIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-    </svg>
-  )
-}
-
-function MapIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-    </svg>
-  )
-}
-
-function DeviceIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-    </svg>
-  )
-}
-
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-    </svg>
-  )
-}
-
-function LinkIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-    </svg>
-  )
-}
-
-function DocumentIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-    </svg>
   )
 }
