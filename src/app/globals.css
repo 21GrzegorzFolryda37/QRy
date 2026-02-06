@@ -1,11 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
 /* ========================================
    CLEAN LIGHT THEME - Modern QR Generator
    ======================================== */
-
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* Light Backgrounds */
@@ -110,10 +108,10 @@ body {
   transform-origin: top left;
   filter: blur(60px);
   opacity: 0.65;
-  --gradient-color-1: #c4b5fd;
-  --gradient-color-2: #ddd6fe;
-  --gradient-color-3: #a78bfa;
-  --gradient-color-4: #ede9fe;
+  --gradient-color-1: #7c3aed;
+  --gradient-color-2: #a855f7;
+  --gradient-color-3: #581c87;
+  --gradient-color-4: #c084fc;
 }
 
 #gradient-canvas.isLoaded {
@@ -207,6 +205,21 @@ body {
   50% { transform: translateY(-5px); }
 }
 
+/* Blob animation for floating elements */
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(20px, -30px) scale(1.1); }
+  50% { transform: translate(-20px, 20px) scale(1); }
+  75% { transform: translate(15px, 10px) scale(0.95); }
+}
+
+/* Gradient shift for animated backgrounds */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Subtle slide animations for variety */
 @keyframes slide-in-left {
   from {
@@ -251,6 +264,7 @@ body {
 .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
 .animate-scale-in { animation: scale-in 0.4s ease-out forwards; }
 .animate-bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+.animate-blob { animation: blob 7s infinite; }
 
 /* Animation delays */
 .animate-delay-100 { animation-delay: 100ms; }
