@@ -161,7 +161,7 @@ export function QRComparison() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center justify-items-center">
           {/* Left: oval boxes + phone */}
           <div
-            className={`relative flex items-center gap-12 transition-all duration-700 ${
+            className={`relative flex items-center gap-48 transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
@@ -220,7 +220,7 @@ export function QRComparison() {
 
           {/* Right: phone + white oval boxes */}
           <div
-            className={`relative flex items-center gap-12 transition-all duration-700 delay-150 ${
+            className={`relative flex items-center gap-48 transition-all duration-700 delay-150 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
