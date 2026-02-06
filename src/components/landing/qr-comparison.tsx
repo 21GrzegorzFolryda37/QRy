@@ -149,17 +149,17 @@ export function QRComparison() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center justify-items-center">
           {/* Left: oval boxes + phone */}
           <div
-            className={`relative flex items-center gap-5 transition-all duration-700 ${
+            className={`relative flex items-center gap-8 transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
             {/* 3 oval boxes — left of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-4">
+            <div className="hidden lg:flex flex-col gap-6">
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
-                  className={`w-32 h-11 rounded-full bg-white/[0.06] border border-white/[0.1] transition-all duration-700 ${
+                  className={`w-32 h-11 rounded-full bg-white transition-all duration-700 ${
                     visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
                   }`}
                   style={{ transitionDelay: `${400 + i * 120}ms`, transitionTimingFunction: 'var(--ease-smooth)' }}
@@ -205,7 +205,7 @@ export function QRComparison() {
 
           {/* Right: phone + white oval boxes */}
           <div
-            className={`relative flex items-center gap-5 transition-all duration-700 delay-150 ${
+            className={`relative flex items-center gap-8 transition-all duration-700 delay-150 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
@@ -248,7 +248,7 @@ export function QRComparison() {
             </div>
 
             {/* 3 white oval boxes — right of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-4">
+            <div className="hidden lg:flex flex-col gap-6">
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
