@@ -65,7 +65,7 @@ export function QRComparison() {
         basicQR.append(basicQrRef.current)
       }
 
-      // Custom QR code - vibrant gradient
+      // Custom QR code - violet/cyan brand gradient
       if (customQrRef.current) {
         customQrRef.current.innerHTML = ''
         const customQR = new QRCodeStyling({
@@ -77,12 +77,11 @@ export function QRComparison() {
             type: 'dots',
             gradient: {
               type: 'linear',
-              rotation: 225,
+              rotation: 135,
               colorStops: [
-                { offset: 0, color: '#f77737' },
-                { offset: 0.35, color: '#fd1d1d' },
-                { offset: 0.65, color: '#c13584' },
-                { offset: 1, color: '#7c3aed' },
+                { offset: 0, color: '#7c3aed' },
+                { offset: 0.5, color: '#6d28d9' },
+                { offset: 1, color: '#0891b2' },
               ],
             },
           },
@@ -90,10 +89,10 @@ export function QRComparison() {
             type: 'extra-rounded',
             gradient: {
               type: 'linear',
-              rotation: 225,
+              rotation: 135,
               colorStops: [
-                { offset: 0, color: '#fd1d1d' },
-                { offset: 1, color: '#7c3aed' },
+                { offset: 0, color: '#5b21b6' },
+                { offset: 1, color: '#0e7490' },
               ],
             },
           },
@@ -101,10 +100,10 @@ export function QRComparison() {
             type: 'dot',
             gradient: {
               type: 'linear',
-              rotation: 225,
+              rotation: 135,
               colorStops: [
-                { offset: 0, color: '#f77737' },
-                { offset: 1, color: '#c13584' },
+                { offset: 0, color: '#7c3aed' },
+                { offset: 1, color: '#06b6d4' },
               ],
             },
           },
@@ -221,7 +220,14 @@ export function QRComparison() {
                     frame={{
                       style: 'rounded',
                       color: '#6d28d9',
-                      gradient: null,
+                      gradient: {
+                        type: 'linear',
+                        rotation: 135,
+                        colorStops: [
+                          { offset: 0, color: '#7c3aed' },
+                          { offset: 1, color: '#0891b2' },
+                        ],
+                      },
                       textColor: '#ffffff',
                       text: 'Zeskanuj',
                       showText: true,
