@@ -7,17 +7,6 @@ import { FrameRenderer } from '@/components/qr/frame-renderer'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
 
-const leftPoints = [
-  { title: 'Generyczny', desc: 'Czarno-biały kod, który wygląda jak każdy inny' },
-  { title: 'Bez logo', desc: 'Zero rozpoznawalności Twojej marki' },
-  { title: 'Ignorowany', desc: 'Nie przyciąga uwagi na materiałach' },
-]
-
-const rightPoints = [
-  { title: 'Twoja marka', desc: 'Kolory i styl dopasowane do identyfikacji wizualnej' },
-  { title: 'Twoje logo', desc: 'Logo w centrum kodu buduje zaufanie' },
-  { title: 'Więcej skanów', desc: 'Profesjonalny wygląd zachęca do interakcji' },
-]
 
 export function QRComparison() {
   const [visible, setVisible] = useState(false)
@@ -142,7 +131,7 @@ export function QRComparison() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(109,40,217,0.25),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(15,23,42,0.6),transparent_50%)]" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div
           className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
@@ -166,22 +155,6 @@ export function QRComparison() {
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
-            {/* 3 oval boxes — left of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-6 mr-12">
-              {leftPoints.map((point, i) => (
-                <div
-                  key={i}
-                  className={`w-52 px-6 py-5 rounded-3xl bg-white text-center transition-all duration-700 ${
-                    visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
-                  }`}
-                  style={{ transitionDelay: `${400 + i * 120}ms`, transitionTimingFunction: 'var(--ease-smooth)' }}
-                >
-                  <p className="text-sm font-semibold text-gray-900">{point.title}</p>
-                  <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{point.desc}</p>
-                </div>
-              ))}
-            </div>
-
             <div>
               <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
                 Zwykły QR
@@ -262,21 +235,6 @@ export function QRComparison() {
               </PhoneMockup>
             </div>
 
-            {/* 3 white oval boxes — right of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-6 ml-12">
-              {rightPoints.map((point, i) => (
-                <div
-                  key={i}
-                  className={`w-52 px-6 py-5 rounded-3xl bg-white text-center transition-all duration-700 ${
-                    visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6'
-                  }`}
-                  style={{ transitionDelay: `${400 + i * 120}ms`, transitionTimingFunction: 'var(--ease-smooth)' }}
-                >
-                  <p className="text-sm font-semibold text-gray-900">{point.title}</p>
-                  <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{point.desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
