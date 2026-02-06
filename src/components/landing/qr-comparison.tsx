@@ -161,13 +161,13 @@ export function QRComparison() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center justify-items-center">
           {/* Left: oval boxes + phone */}
           <div
-            className={`relative flex items-center gap-48 transition-all duration-700 ${
+            className={`relative flex items-center transition-all duration-700 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
             {/* 3 oval boxes — left of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-6">
+            <div className="hidden lg:flex flex-col gap-6 mr-12">
               {leftPoints.map((point, i) => (
                 <div
                   key={i}
@@ -220,7 +220,7 @@ export function QRComparison() {
 
           {/* Right: phone + white oval boxes */}
           <div
-            className={`relative flex items-center gap-48 transition-all duration-700 delay-150 ${
+            className={`relative flex items-center transition-all duration-700 delay-150 ${
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
@@ -263,7 +263,7 @@ export function QRComparison() {
             </div>
 
             {/* 3 white oval boxes — right of phone, desktop only */}
-            <div className="hidden lg:flex flex-col gap-6">
+            <div className="hidden lg:flex flex-col gap-6 ml-12">
               {rightPoints.map((point, i) => (
                 <div
                   key={i}
