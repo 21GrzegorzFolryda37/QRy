@@ -54,7 +54,7 @@ export function HowItWorks() {
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center py-24 sm:py-32 overflow-hidden bg-white">
       {/* Smooth transition from dark hero */}
-      <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#1a0b2e] via-[#1a0b2e]/40 to-transparent pointer-events-none z-10" />
+      <div className="absolute top-0 left-0 right-0 h-72 pointer-events-none z-10" style={{ background: 'linear-gradient(to bottom, #1a0b2e 0%, rgba(26,11,46,0.7) 25%, rgba(26,11,46,0.35) 50%, rgba(26,11,46,0.1) 75%, transparent 100%)' }} />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
