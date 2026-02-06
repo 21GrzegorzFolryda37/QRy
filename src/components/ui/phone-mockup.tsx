@@ -155,7 +155,7 @@ export function PhoneMockup({
               <span
                 className="absolute"
                 style={{
-                  left: '13px',
+                  left: '18px',
                   top: '18.5px',
                   transform: 'translateY(-50%)',
                   fontFamily: '-apple-system, "SF Pro Text", "Helvetica Neue", sans-serif',
@@ -173,7 +173,7 @@ export function PhoneMockup({
               <div
                 className="absolute flex items-center"
                 style={{
-                  right: '13px',
+                  right: '18px',
                   top: '18.5px',
                   transform: 'translateY(-50%)',
                   gap: '3px'
