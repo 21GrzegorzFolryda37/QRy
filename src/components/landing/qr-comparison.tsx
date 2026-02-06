@@ -205,7 +205,7 @@ export function QRComparison() {
               Kod QRapple
             </h3>
 
-            <PhoneMockup className="w-[260px]" variant="highlighted" statusBarColor="#6d28d9">
+            <PhoneMockup className="w-[260px]" variant="highlighted" statusBarColor="#000000">
               <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">
                 {/* Spacer for status bar */}
                 <div className="h-14" />
