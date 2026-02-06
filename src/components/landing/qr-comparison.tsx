@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { PhoneMockup, Button } from '@/components/ui'
+import { FrameRenderer } from '@/components/qr/frame-renderer'
 
 const QR_URL = 'https://pl.wikipedia.org/wiki/Kod_QR'
 
@@ -213,26 +214,24 @@ export function QRComparison() {
                 <div className="h-14" />
 
                 {/* Scanner content */}
-                <div className="flex-1 flex flex-col items-center justify-center px-6">
+                <div className="flex-1 flex flex-col items-center justify-center px-4">
                   <p className="text-xs text-[#6d28d9] mb-4 font-semibold">Zeskanuj kod QR</p>
 
-                  <div className="relative">
-                    <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#6d28d9] rounded-tl-lg" />
-                    <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#6d28d9] rounded-tr-lg" />
-                    <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#6d28d9] rounded-bl-lg" />
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#6d28d9] rounded-br-lg" />
-
-                    <div className="p-3 bg-white rounded-xl shadow-lg shadow-[#6d28d9]/10 border border-[#6d28d9]/20">
-                      <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
-                      </div>
-
-                      {/* Frame label */}
-                      <div className="mt-2 py-1.5 rounded-lg bg-[#6d28d9] text-center">
-                        <span className="text-white text-xs font-semibold tracking-wide">Zeskanuj</span>
-                      </div>
+                  <FrameRenderer
+                    frame={{
+                      style: 'rounded',
+                      color: '#6d28d9',
+                      gradient: null,
+                      textColor: '#ffffff',
+                      text: 'Zeskanuj',
+                      showText: true,
+                    }}
+                    size={180}
+                  >
+                    <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
                     </div>
-                  </div>
+                  </FrameRenderer>
                 </div>
 
                 <div className="h-8" />
