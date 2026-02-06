@@ -155,11 +155,11 @@ export function PhoneMockup({
               <span
                 className="absolute"
                 style={{
-                  left: '28px',
+                  left: '33px',
                   top: '18.5px',
                   transform: 'translateY(-50%)',
                   fontFamily: '-apple-system, "SF Pro Text", "Helvetica Neue", sans-serif',
-                  fontSize: '10px',
+                  fontSize: '12px',
                   fontWeight: 600,
                   lineHeight: 1,
                   color: statusBarColor,
