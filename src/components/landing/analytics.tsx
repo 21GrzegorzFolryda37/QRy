@@ -18,15 +18,16 @@ const tabs: Tab[] = [
   { id: 'rankings', icon: '🏆', title: 'Ranking kodów', description: 'Twoje najlepsze kody QR' },
 ]
 
-const mapPins = [
-  { top: '25%', left: '48%', delay: '0s' },
-  { top: '35%', left: '52%', delay: '0.3s' },
-  { top: '30%', left: '25%', delay: '0.6s' },
-  { top: '45%', left: '70%', delay: '0.9s' },
-  { top: '55%', left: '30%', delay: '1.2s' },
-  { top: '40%', left: '80%', delay: '0.4s' },
-  { top: '60%', left: '55%', delay: '0.7s' },
-  { top: '20%', left: '65%', delay: '1.0s' },
+// German cities positioned on the Europe SVG viewBox (800x600)
+const germanCities = [
+  { cx: 430, cy: 230, label: 'Berlin', scans: '2,847', delay: '0s' },
+  { cx: 395, cy: 275, label: 'Monachium', scans: '1,923', delay: '0.3s' },
+  { cx: 370, cy: 250, label: 'Frankfurt', scans: '1,456', delay: '0.6s' },
+  { cx: 355, cy: 230, label: 'Kolonia', scans: '1,102', delay: '0.9s' },
+  { cx: 410, cy: 240, label: 'Lipsk', scans: '876', delay: '0.4s' },
+  { cx: 380, cy: 215, label: 'Hamburg', scans: '1,634', delay: '0.7s' },
+  { cx: 400, cy: 260, label: 'Stuttgart', scans: '943', delay: '1.0s' },
+  { cx: 345, cy: 245, label: 'Düsseldorf', scans: '712', delay: '1.2s' },
 ]
 
 // Deterministic pseudo-random to avoid SSR/client hydration mismatch
@@ -222,63 +223,227 @@ export function Analytics() {
                 pointerEvents: activeTab === 'locations' ? 'auto' : 'none',
               }}
             >
-              {/* Map */}
+              {/* Europe SVG Map */}
               <div
                 className="relative rounded-2xl overflow-hidden"
                 style={{
-                  height: 400,
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}
               >
                 {/* Grid overlay */}
                 <div className="absolute inset-0" style={{
-                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
+                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
                   backgroundSize: '40px 40px',
                 }} />
 
-                {/* Continent-like shapes */}
-                <div className="absolute inset-0 opacity-20" style={{
-                  background: `
-                    radial-gradient(ellipse 120px 80px at 25% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
-                    radial-gradient(ellipse 80px 100px at 50% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
-                    radial-gradient(ellipse 60px 50px at 70% 50%, rgba(255,255,255,0.35) 0%, transparent 100%),
-                    radial-gradient(ellipse 100px 60px at 80% 35%, rgba(255,255,255,0.3) 0%, transparent 100%),
-                    radial-gradient(ellipse 50px 70px at 30% 60%, rgba(255,255,255,0.25) 0%, transparent 100%),
-                    radial-gradient(ellipse 70px 40px at 55% 65%, rgba(255,255,255,0.2) 0%, transparent 100%)
-                  `
-                }} />
+                <svg
+                  viewBox="0 0 800 600"
+                  className="w-full"
+                  style={{ height: 'auto', minHeight: 300, maxHeight: 440 }}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <radialGradient id="pinGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                    </radialGradient>
+                    <linearGradient id="germanyFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.15)" />
+                    </linearGradient>
+                  </defs>
 
-                {/* Pulsing pins */}
-                {mapPins.map((pin, i) => (
-                  <div
-                    key={i}
-                    className="absolute"
-                    style={{ top: pin.top, left: pin.left }}
-                  >
-                    <div
-                      className="relative"
-                      style={{
-                        animation: `pulse-soft 2s ease-in-out infinite`,
-                        animationDelay: pin.delay,
-                      }}
-                    >
-                      <div className="w-3 h-3 bg-white rounded-full shadow-lg" />
-                      <div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                          background: 'rgba(255,255,255,0.4)',
-                          animation: 'pulse-soft 2s ease-in-out infinite',
-                          animationDelay: pin.delay,
-                          transform: 'scale(2)',
-                        }}
+                  {/* === EUROPE COUNTRY OUTLINES === */}
+                  <g fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8">
+
+                    {/* Iceland */}
+                    <path d="M165,68 L175,62 L190,60 L200,65 L205,72 L198,80 L185,82 L172,78 L165,72 Z" />
+
+                    {/* Norway */}
+                    <path d="M350,30 L360,28 L375,35 L385,50 L390,70 L385,90 L380,110 L370,130 L365,150 L358,165 L350,175 L345,170 L340,155 L335,140 L330,120 L332,100 L340,80 L345,60 L348,40 Z" />
+
+                    {/* Sweden */}
+                    <path d="M380,55 L390,50 L400,55 L408,70 L412,90 L415,110 L412,130 L408,150 L400,170 L395,180 L388,185 L380,175 L375,160 L370,140 L368,120 L370,100 L375,80 L378,65 Z" />
+
+                    {/* Finland */}
+                    <path d="M420,50 L432,45 L445,50 L452,65 L455,85 L452,105 L448,125 L442,140 L435,150 L428,155 L420,148 L415,135 L412,115 L415,95 L418,75 L420,60 Z" />
+
+                    {/* UK */}
+                    <path d="M280,145 L290,138 L298,140 L305,148 L308,160 L310,175 L308,190 L302,200 L295,208 L288,210 L282,205 L278,195 L275,180 L278,165 L280,150 Z" />
+                    {/* Ireland */}
+                    <path d="M255,160 L265,155 L272,160 L275,172 L272,185 L265,192 L258,190 L252,180 L253,168 Z" />
+
+                    {/* Scotland */}
+                    <path d="M285,120 L295,115 L305,118 L310,128 L305,138 L295,140 L288,138 L283,130 Z" />
+
+                    {/* France */}
+                    <path d="M290,225 L305,218 L320,215 L335,218 L350,222 L358,230 L360,242 L358,258 L355,272 L348,285 L338,292 L325,295 L312,292 L300,285 L292,275 L288,260 L286,245 Z" />
+
+                    {/* Spain */}
+                    <path d="M260,290 L278,282 L298,278 L318,280 L335,285 L340,295 L338,310 L332,325 L320,338 L305,345 L288,345 L272,340 L260,330 L255,318 L255,305 Z" />
+
+                    {/* Portugal */}
+                    <path d="M240,295 L252,290 L258,298 L258,315 L255,330 L248,340 L240,338 L235,325 L235,310 Z" />
+
+                    {/* Italy */}
+                    <path d="M370,265 L378,258 L385,260 L390,268 L392,280 L395,295 L398,310 L395,325 L388,335 L380,340 L375,332 L370,318 L368,300 L367,282 Z" />
+                    {/* Sicily */}
+                    <path d="M380,345 L390,342 L395,348 L392,355 L385,358 L378,352 Z" />
+                    {/* Sardinia */}
+                    <path d="M355,305 L362,300 L366,308 L364,318 L358,322 L352,315 Z" />
+
+                    {/* Poland */}
+                    <path d="M405,195 L420,190 L438,192 L452,198 L458,208 L455,220 L448,232 L438,238 L425,240 L412,238 L402,232 L398,220 L400,208 Z" />
+
+                    {/* Czech Republic */}
+                    <path d="M388,228 L400,224 L412,226 L420,232 L418,240 L410,246 L398,248 L390,244 L386,236 Z" />
+
+                    {/* Austria */}
+                    <path d="M378,248 L392,244 L408,246 L420,248 L425,255 L420,262 L408,265 L395,266 L382,262 L376,255 Z" />
+
+                    {/* Switzerland */}
+                    <path d="M345,250 L358,246 L368,248 L372,255 L368,262 L358,265 L348,262 L342,256 Z" />
+
+                    {/* Belgium */}
+                    <path d="M325,210 L338,208 L345,212 L344,220 L338,224 L328,222 L322,216 Z" />
+
+                    {/* Netherlands */}
+                    <path d="M330,195 L342,192 L350,198 L348,208 L340,210 L332,208 L328,202 Z" />
+
+                    {/* Denmark */}
+                    <path d="M365,175 L375,172 L382,178 L380,188 L375,195 L368,192 L362,185 Z" />
+
+                    {/* Hungary */}
+                    <path d="M418,252 L432,248 L445,250 L452,258 L448,268 L440,274 L428,275 L418,270 L415,262 Z" />
+
+                    {/* Romania */}
+                    <path d="M448,248 L462,244 L478,248 L488,258 L485,270 L478,280 L465,282 L452,278 L445,268 L445,258 Z" />
+
+                    {/* Bulgaria */}
+                    <path d="M465,285 L478,282 L490,285 L495,295 L490,305 L480,308 L468,305 L462,296 Z" />
+
+                    {/* Greece */}
+                    <path d="M455,310 L465,305 L478,308 L485,318 L482,332 L475,342 L465,345 L455,340 L450,328 L452,318 Z" />
+
+                    {/* Croatia/Bosnia */}
+                    <path d="M408,268 L418,264 L428,268 L432,278 L428,288 L418,292 L410,288 L405,278 Z" />
+
+                    {/* Serbia */}
+                    <path d="M438,275 L448,270 L458,275 L462,285 L458,295 L448,298 L440,294 L435,285 Z" />
+
+                    {/* Ukraine */}
+                    <path d="M465,195 L485,188 L510,190 L530,195 L545,205 L548,220 L542,235 L530,245 L515,248 L498,245 L482,240 L470,232 L462,220 L462,208 Z" />
+
+                    {/* Belarus */}
+                    <path d="M448,178 L462,172 L478,175 L488,185 L485,198 L478,205 L465,208 L455,202 L448,192 Z" />
+
+                    {/* Baltic states */}
+                    <path d="M425,155 L435,150 L445,152 L450,162 L448,172 L440,178 L430,175 L425,165 Z" />
+
+                    {/* Russia (western part) */}
+                    <path d="M490,60 L530,50 L570,55 L600,70 L620,95 L630,125 L625,160 L615,190 L598,210 L575,220 L555,215 L538,205 L525,190 L518,170 L515,148 L510,125 L505,105 L498,85 Z" />
+
+                    {/* Turkey (European part) */}
+                    <path d="M498,305 L512,300 L525,305 L530,315 L525,325 L515,328 L505,325 L498,315 Z" />
+                  </g>
+
+                  {/* === GERMANY — highlighted === */}
+                  <path
+                    d="M355,195 L365,188 L378,185 L392,188 L405,192 L415,200 L420,212 L418,225 L412,235 L405,242 L395,248 L382,250 L370,248 L360,242 L352,232 L348,220 L350,208 Z"
+                    fill="url(#germanyFill)"
+                    stroke="rgba(255,255,255,0.6)"
+                    strokeWidth="1.5"
+                  />
+                  {/* Germany glow */}
+                  <path
+                    d="M355,195 L365,188 L378,185 L392,188 L405,192 L415,200 L420,212 L418,225 L412,235 L405,242 L395,248 L382,250 L370,248 L360,242 L352,232 L348,220 L350,208 Z"
+                    fill="rgba(255,255,255,0.06)"
+                    stroke="none"
+                    filter="url(#glow)"
+                  />
+
+                  {/* === GERMAN CITY PINS === */}
+                  {germanCities.map((city, i) => (
+                    <g key={i}>
+                      {/* Pulse ring */}
+                      <circle
+                        cx={city.cx}
+                        cy={city.cy}
+                        r="10"
+                        fill="url(#pinGlow)"
+                        opacity="0.6"
+                      >
+                        <animate
+                          attributeName="r"
+                          values="6;14;6"
+                          dur="2.5s"
+                          begin={city.delay}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.6;0.1;0.6"
+                          dur="2.5s"
+                          begin={city.delay}
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                      {/* Pin dot */}
+                      <circle
+                        cx={city.cx}
+                        cy={city.cy}
+                        r="4"
+                        fill="white"
+                        filter="url(#glow)"
                       />
-                    </div>
-                  </div>
-                ))}
+                      {/* City label */}
+                      <text
+                        x={city.cx + 8}
+                        y={city.cy - 8}
+                        fill="rgba(255,255,255,0.9)"
+                        fontSize="9"
+                        fontFamily="Outfit, sans-serif"
+                        fontWeight="600"
+                      >
+                        {city.label}
+                      </text>
+                      <text
+                        x={city.cx + 8}
+                        y={city.cy + 2}
+                        fill="rgba(255,255,255,0.55)"
+                        fontSize="7"
+                        fontFamily="JetBrains Mono, monospace"
+                      >
+                        {city.scans}
+                      </text>
+                    </g>
+                  ))}
+
+                  {/* Connection lines between cities */}
+                  <g stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="3 3">
+                    <line x1="380" y1="215" x2="430" y2="230" />
+                    <line x1="430" y1="230" x2="410" y2="240" />
+                    <line x1="380" y1="215" x2="355" y2="230" />
+                    <line x1="370" y1="250" x2="395" y2="275" />
+                    <line x1="355" y1="230" x2="345" y2="245" />
+                    <line x1="410" y1="240" x2="400" y2="260" />
+                  </g>
+                </svg>
 
                 {/* Map label */}
                 <div className="absolute bottom-4 left-4 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm font-medium">
-                  🌍 Mapa skanowań na żywo
+                  🇩🇪 Niemcy — 8 miast aktywnych
+                </div>
+                <div className="absolute top-4 right-4 bg-white/15 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white/80 text-xs font-mono">
+                  LIVE
+                  <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-full ml-1.5 animate-pulse-soft" />
                 </div>
               </div>
 
