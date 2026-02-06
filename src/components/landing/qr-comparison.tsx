@@ -155,6 +155,8 @@ export function QRComparison() {
             }`}
             style={{ transitionTimingFunction: 'var(--ease-smooth)' }}
           >
+            <span className="hidden lg:block text-white text-2xl font-bold font-display mr-10">Problem</span>
+
             <div>
               <h3 className="text-lg font-medium text-violet-300/70 text-center mb-6">
                 Zwykły QR
