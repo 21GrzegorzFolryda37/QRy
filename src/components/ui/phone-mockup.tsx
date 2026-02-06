@@ -151,12 +151,13 @@ export function PhoneMockup({
               className="absolute top-0 left-0 right-0 z-20 pointer-events-none"
               style={{ height: '34px' }}
             >
-              {/* Time - left */}
+              {/* Time - left, vertically centered with Dynamic Island (center at 18.5px) */}
               <span
                 className="absolute"
                 style={{
                   left: '13px',
-                  top: '11px',
+                  top: '18.5px',
+                  transform: 'translateY(-50%)',
                   fontFamily: '-apple-system, "SF Pro Text", "Helvetica Neue", sans-serif',
                   fontSize: '10px',
                   fontWeight: 600,
@@ -168,12 +169,13 @@ export function PhoneMockup({
                 9:41
               </span>
 
-              {/* Icons - right */}
+              {/* Icons - right, vertically centered with Dynamic Island */}
               <div
                 className="absolute flex items-center"
                 style={{
                   right: '13px',
-                  top: '11px',
+                  top: '18.5px',
+                  transform: 'translateY(-50%)',
                   gap: '3px'
                 }}
               >
