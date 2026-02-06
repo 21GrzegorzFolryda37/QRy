@@ -226,6 +226,11 @@ export function QRComparison() {
                       <div ref={customQrRef} className="w-[180px] h-[180px] flex items-center justify-center">
                         <div className="w-6 h-6 border-2 border-[#6d28d9]/30 border-t-[#6d28d9] rounded-full animate-spin" />
                       </div>
+
+                      {/* Frame label */}
+                      <div className="mt-2 py-1.5 rounded-lg bg-[#6d28d9] text-center">
+                        <span className="text-white text-xs font-semibold tracking-wide">Zeskanuj</span>
+                      </div>
                     </div>
                   </div>
                 </div>
