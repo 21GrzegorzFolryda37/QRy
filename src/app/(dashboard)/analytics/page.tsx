@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
-import { ScansChart, DeviceChart, CityChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard } from '@/components/analytics'
+import { ScansChart, DeviceChart, CityChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard, ComparisonView } from '@/components/analytics'
 import {
   useOverviewStats,
   useScansOverTime,
@@ -17,11 +17,31 @@ import {
 import { useScansRealtime } from '@/hooks/use-scans-realtime'
 import { useUser } from '@/hooks/use-user'
 import { DateRange } from '@/types/analytics'
+import { getQrCodes } from '@/actions/qr'
 import Link from 'next/link'
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState<DateRange>('30d')
+  const [compareMode, setCompareMode] = useState(false)
+  const [qrCodeOptions, setQrCodeOptions] = useState<{ id: string; name: string; scanCount: number }[]>([])
   const { user } = useUser()
+
+  // Fetch QR codes list for comparison selector
+  useEffect(() => {
+    async function fetchQrCodes() {
+      const result = await getQrCodes()
+      if (result.data) {
+        setQrCodeOptions(
+          result.data.map((qr: { id: string; name: string; scan_count: number }) => ({
+            id: qr.id,
+            name: qr.name,
+            scanCount: qr.scan_count || 0,
+          }))
+        )
+      }
+    }
+    fetchQrCodes()
+  }, [])
 
   const { stats, loading: statsLoading, refetch: refetchStats } = useOverviewStats()
   const { data: scansData, loading: scansLoading, refetch: refetchScans } = useScansOverTime(dateRange)
@@ -32,16 +52,21 @@ export default function AnalyticsPage() {
   const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange)
   const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange)
 
-  // Handler for new scans - refetch all analytics data
+  // Handler for new scans - debounced refetch of all analytics data
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const handleNewScan = useCallback(() => {
-    refetchStats()
-    refetchScans()
-    refetchDevices()
-    refetchCity()
-    refetchGeo()
-    refetchTop()
-    refetchLocations()
-    refetchTimePatterns()
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      refetchStats()
+      refetchScans()
+      refetchDevices()
+      refetchCity()
+      refetchGeo()
+      refetchTop()
+      refetchLocations()
+      refetchTimePatterns()
+    }, 2000)
   }, [refetchStats, refetchScans, refetchDevices, refetchCity, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns])
 
   // Subscribe to realtime scan updates
@@ -50,6 +75,17 @@ export default function AnalyticsPage() {
     onNewScan: handleNewScan,
     enabled: !!user?.id,
   })
+
+  if (compareMode) {
+    return (
+      <ComparisonView
+        qrCodes={qrCodeOptions}
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        onBack={() => setCompareMode(false)}
+      />
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -84,6 +120,15 @@ export default function AnalyticsPage() {
               Offline
             </span>
           )}
+          <button
+            onClick={() => setCompareMode(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm font-medium text-[var(--foreground-muted)] transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+            </svg>
+            Porównaj
+          </button>
           <DateRangeSelect value={dateRange} onChange={setDateRange} />
           <ExportButtons
             stats={stats}

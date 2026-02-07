@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useActionState } from 'react'
 import {
   Card,
@@ -19,7 +19,6 @@ import {
 import { useToast } from '@/components/ui/toast'
 import { Profile } from '@/types/database'
 import { updateProfile, deleteAccount, type ProfileActionResponse } from '@/actions/profile'
-import { useEffect } from 'react'
 
 interface SettingsClientProps {
   profile: Profile | null
@@ -33,6 +32,9 @@ export function SettingsClient({ profile, userId }: SettingsClientProps) {
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Track previous state to detect changes
+  const prevUpdateStateRef = useRef<ProfileActionResponse | null>(null)
+
   // Profile update form state
   const [updateState, updateAction, isUpdating] = useActionState<ProfileActionResponse | null, FormData>(
     async (prevState, formData) => {
@@ -42,15 +44,16 @@ export function SettingsClient({ profile, userId }: SettingsClientProps) {
     null
   )
 
-  // Handle update result
-  useEffect(() => {
-    if (updateState?.success) {
+  // Handle update result - compare with previous to avoid re-firing
+  if (updateState && updateState !== prevUpdateStateRef.current) {
+    prevUpdateStateRef.current = updateState
+    if (updateState.success) {
       success('Profil zostal zaktualizowany')
       setIsEditing(false)
-    } else if (updateState?.error) {
+    } else if (updateState.error) {
       error(updateState.error)
     }
-  }, [updateState, success, error])
+  }
 
   // Handle delete account
   async function handleDeleteAccount() {

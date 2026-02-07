@@ -49,43 +49,38 @@ export async function getOverviewStats(): Promise<{ error?: string; data?: Overv
     return { error: 'Unauthorized' }
   }
 
-  // Get profile with limits
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('qr_limit, monthly_scan_limit, current_month_scans')
-    .eq('id', user.id)
-    .single()
-
-  const profileData = profile as { qr_limit: number; monthly_scan_limit: number; current_month_scans: number } | null
-
-  // Get total QR codes count
-  const { count: totalQrCodes } = await supabase
-    .from('qr_codes')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-
-  // Get total scans count
-  const { count: totalScans } = await supabase
-    .from('scans')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-
-  // Get scans this month
   const startOfMonth = new Date()
   startOfMonth.setDate(1)
   startOfMonth.setHours(0, 0, 0, 0)
 
-  const { count: scansThisMonth } = await supabase
-    .from('scans')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-    .gte('scanned_at', startOfMonth.toISOString())
+  const [profileResult, qrCountResult, scanCountResult, monthScanResult] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('qr_limit, monthly_scan_limit, current_month_scans')
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('qr_codes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('scans')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('scans')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .gte('scanned_at', startOfMonth.toISOString()),
+  ])
+
+  const profileData = profileResult.data as { qr_limit: number; monthly_scan_limit: number; current_month_scans: number } | null
 
   return {
     data: {
-      totalQrCodes: totalQrCodes || 0,
-      totalScans: totalScans || 0,
-      scansThisMonth: scansThisMonth || 0,
+      totalQrCodes: qrCountResult.count || 0,
+      totalScans: scanCountResult.count || 0,
+      scansThisMonth: monthScanResult.count || 0,
       qrLimit: profileData?.qr_limit || 5,
       scanLimit: profileData?.monthly_scan_limit || 1000,
       currentMonthScans: profileData?.current_month_scans || 0,

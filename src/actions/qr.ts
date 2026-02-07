@@ -52,6 +52,9 @@ export async function reserveShortCode(): Promise<ReserveShortCodeResponse> {
  */
 function dataUrlToBuffer(dataUrl: string): Buffer {
   const base64Data = dataUrl.split(',')[1]
+  if (!base64Data) {
+    throw new Error('Invalid data URL format')
+  }
   return Buffer.from(base64Data, 'base64')
 }
 
@@ -92,7 +95,12 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
 
   // Parse and validate input
   const rawStyle = formData.get('style')
-  const style = rawStyle ? JSON.parse(rawStyle as string) : undefined
+  let style: unknown
+  try {
+    style = rawStyle ? JSON.parse(rawStyle as string) : undefined
+  } catch {
+    return { error: 'Invalid style data' }
+  }
 
   const validatedFields = createQrSchema.safeParse({
     name: formData.get('name'),
@@ -112,9 +120,12 @@ export async function createQrCode(formData: FormData): Promise<QrActionResponse
 
   // Parse content data for linkpage/survey types
   const rawContentData = formData.get('contentData')
-  const contentData: LinkPageData | SurveyData | null = rawContentData
-    ? JSON.parse(rawContentData as string)
-    : null
+  let contentData: LinkPageData | SurveyData | null = null
+  try {
+    contentData = rawContentData ? JSON.parse(rawContentData as string) : null
+  } catch {
+    return { error: 'Invalid content data' }
+  }
 
   // Check QR limit
   const { data: profile } = await supabase
@@ -207,7 +218,12 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
 
   // Parse and validate input
   const rawStyle = formData.get('style')
-  const style = rawStyle ? JSON.parse(rawStyle as string) : undefined
+  let style: unknown
+  try {
+    style = rawStyle ? JSON.parse(rawStyle as string) : undefined
+  } catch {
+    return { error: 'Invalid style data' }
+  }
 
   const validatedFields = updateQrSchema.safeParse({
     name: formData.get('name') || undefined,
@@ -229,9 +245,16 @@ export async function updateQrCode(id: string, formData: FormData): Promise<QrAc
 
   // Parse content data for linkpage/survey types
   const rawContentData = formData.get('contentData')
-  const contentData: LinkPageData | SurveyData | null = rawContentData
-    ? JSON.parse(rawContentData as string)
-    : existingQr.content_data || null
+  let contentData: LinkPageData | SurveyData | null = null
+  if (rawContentData) {
+    try {
+      contentData = JSON.parse(rawContentData as string)
+    } catch {
+      return { error: 'Invalid content data' }
+    }
+  } else {
+    contentData = existingQr.content_data || null
+  }
   const contentType = (formData.get('contentType') as QrCodeContentType) || existingQr.content_type || 'website'
 
   // Check if client sent a new QR image

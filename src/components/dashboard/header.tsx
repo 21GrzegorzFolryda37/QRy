@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Profile } from '@/types/database'
 import { Badge } from '@/components/ui'
 import { MobileSidebarToggle } from './sidebar'
@@ -31,6 +32,13 @@ export function Header({ profile }: HeaderProps) {
             <span className="text-sm text-[var(--foreground-muted)] truncate max-w-[150px] sm:max-w-none">
               {profile.full_name || profile.email}
             </span>
+            <Image
+              src="/logo.webp"
+              alt="QRapple"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover"
+            />
           </>
         )}
       </div>

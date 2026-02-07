@@ -164,7 +164,7 @@ function generateRedirectPage(destinationUrl: string): string {
   </div>
   <script>
     setTimeout(function() {
-      window.location.replace("${destinationUrl.replace(/"/g, '\\"')}");
+      window.location.replace("${safeUrl}");
     }, 400);
   </script>
 </body>

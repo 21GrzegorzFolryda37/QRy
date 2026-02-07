@@ -140,8 +140,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send confirmation to user
-    await resend.emails.send({
+    // Send confirmation to user (non-critical, don't fail the request)
+    resend.emails.send({
       from: 'QRapple <noreply@engageqr.com>',
       to: [email],
       subject: 'Potwierdzenie otrzymania wiadomosci - QRapple',
@@ -179,6 +179,8 @@ export async function POST(request: NextRequest) {
           </p>
         </div>
       `,
+    }).catch((confirmError: unknown) => {
+      console.error('Confirmation email failed:', confirmError)
     })
 
     return NextResponse.json(

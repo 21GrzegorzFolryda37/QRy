@@ -81,15 +81,10 @@ function ScanItem({ scan, isNew }: { scan: RecentScan; isNew: boolean }) {
 
 export function RealtimeCard({ userId }: RealtimeCardProps) {
   const { data: initialScans, loading, refetch } = useRecentScans(30)
-  const [scans, setScans] = useState<RecentScan[]>([])
   const [newScanIds, setNewScanIds] = useState<Set<string>>(new Set())
 
-  // Initialize scans from initial data
-  useEffect(() => {
-    if (initialScans.length > 0) {
-      setScans(initialScans)
-    }
-  }, [initialScans])
+  // Use initialScans directly as the source of truth
+  const scans = initialScans
 
   // Handle new scan from realtime
   const handleNewScan = useCallback((newScan: { id: string }) => {
@@ -113,13 +108,6 @@ export function RealtimeCard({ userId }: RealtimeCardProps) {
     onNewScan: handleNewScan,
     enabled: !!userId,
   })
-
-  // Update scans when initialScans change (after refetch)
-  useEffect(() => {
-    if (!loading && initialScans.length > 0) {
-      setScans(initialScans)
-    }
-  }, [initialScans, loading])
 
   const activeUsersCount = scans.length
 

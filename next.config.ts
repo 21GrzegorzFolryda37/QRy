@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: ['recharts', 'date-fns'],
+  },
   // Exclude native/WASM modules from Turbopack bundling
   serverExternalPackages: [
     '@qr-platform/qr-code.js',
