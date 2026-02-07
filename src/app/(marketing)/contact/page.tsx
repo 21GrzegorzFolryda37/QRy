@@ -97,8 +97,8 @@ export default function ContactPage() {
               <div>
                 <dt className="text-sm font-medium text-[var(--foreground-muted)]">Email</dt>
                 <dd className="mt-1 text-[var(--foreground)]">
-                  <a href="mailto:contact@engageqr.com" className="hover:underline hover:text-[var(--primary)]">
-                    contact@engageqr.com
+                  <a href="mailto:contact@qrenixy.com" className="hover:underline hover:text-[var(--primary)]">
+                    contact@qrenixy.com
                   </a>
                 </dd>
               </div>

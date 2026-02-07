@@ -64,7 +64,7 @@ export function Header() {
         {/* Desktop navigation */}
         <div className="hidden lg:flex lg:gap-x-1">
           {[
-            { href: '/pricing', label: 'Cennik' },
+            { href: '/#pricing', label: 'Cennik' },
             { href: '/contact', label: 'Kontakt' },
           ].map((item) => (
             <Link
@@ -152,7 +152,7 @@ export function Header() {
 
           <div className="p-4 space-y-2">
             {[
-              { href: '/pricing', label: 'Cennik', icon: '💎' },
+              { href: '/#pricing', label: 'Cennik', icon: '💎' },
               { href: '/contact', label: 'Kontakt', icon: '📬' },
             ].map((item) => (
               <Link

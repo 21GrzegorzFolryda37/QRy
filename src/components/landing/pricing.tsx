@@ -127,7 +127,7 @@ export function Pricing() {
   }
 
   return (
-    <section ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
+    <section id="pricing" ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-white" />
 

@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 const navigation = {
   product: [
-    { name: 'Cennik', href: '/pricing' },
+    { name: 'Cennik', href: '/#pricing' },
   ],
   support: [
     { name: 'Kontakt', href: '/contact' },
@@ -141,11 +141,6 @@ export function Footer() {
             <p className="text-sm text-[var(--foreground-subtle)]">
               &copy; {new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzeżone.
             </p>
-            <div className="flex items-center gap-2 text-sm text-[var(--foreground-subtle)]">
-              <span>Made with</span>
-              <span className="text-[var(--accent)] animate-pulse">♥</span>
-              <span>in Poland</span>
-            </div>
           </div>
         </div>
       </div>

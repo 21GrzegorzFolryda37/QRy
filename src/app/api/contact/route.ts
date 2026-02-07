@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send email via Resend
-    const supportEmail = process.env.SUPPORT_EMAIL || 'contact@engageqr.com'
+    const supportEmail = process.env.SUPPORT_EMAIL || 'contact@qrenixy.com'
 
     const { error: sendError } = await resend.emails.send({
       from: 'QRenixy Contact <noreply@engageqr.com>',
