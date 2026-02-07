@@ -1,5 +1,4 @@
 export { Hero } from './hero'
-export { Features } from './features'
 export { Analytics } from './analytics'
 export { Pricing } from './pricing'
 export { FAQ } from './faq'

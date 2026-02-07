@@ -3,11 +3,9 @@ import Image from 'next/image'
 
 const navigation = {
   product: [
-    { name: 'Funkcje', href: '/features' },
     { name: 'Cennik', href: '/pricing' },
   ],
   support: [
-    { name: 'Dokumentacja', href: '#' },
     { name: 'Kontakt', href: '/contact' },
   ],
   legal: [
@@ -39,7 +37,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-white border-t border-[var(--border)]">
+    <footer className="relative border-t border-[var(--border)]" style={{ backgroundColor: '#f0f0fd' }}>
       {/* Gradient accent line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-50" />
 
