@@ -16,6 +16,7 @@ import {
 } from './badge-pattern'
 import { requiresCustomRenderer } from './custom-shapes'
 import { renderCustomQRCodeToDataURL, type CustomQROptions } from './custom-renderer'
+import { frameShapePaths } from '@/components/qr/frame-shapes'
 
 /**
  * Convert gradient options for qr-code-styling
@@ -412,6 +413,50 @@ function drawTicketFrame(ctx: CanvasRenderingContext2D, fillStyle: string | Canv
 }
 
 /**
+ * Clip canvas context to a frameShape SVG path
+ */
+function clipToFrameShape(
+  ctx: CanvasRenderingContext2D,
+  frameShape: string,
+  x: number,
+  y: number,
+  size: number
+) {
+  if (frameShape === 'square' || !frameShapePaths[frameShape as keyof typeof frameShapePaths]) return
+
+  const svgPath = new Path2D(frameShapePaths[frameShape as keyof typeof frameShapePaths])
+  const transform = new DOMMatrix()
+    .translateSelf(x, y)
+    .scaleSelf(size / 100, size / 100)
+  const scaledPath = new Path2D()
+  scaledPath.addPath(svgPath, transform)
+  ctx.clip(scaledPath)
+}
+
+/**
+ * Draw background fill in the frameShape path
+ */
+function drawFrameShapeBackground(
+  ctx: CanvasRenderingContext2D,
+  frameShape: string,
+  backgroundColor: string,
+  x: number,
+  y: number,
+  size: number
+) {
+  if (frameShape === 'square' || !frameShapePaths[frameShape as keyof typeof frameShapePaths]) return
+
+  const svgPath = new Path2D(frameShapePaths[frameShape as keyof typeof frameShapePaths])
+  const transform = new DOMMatrix()
+    .translateSelf(x, y)
+    .scaleSelf(size / 100, size / 100)
+  const scaledPath = new Path2D()
+  scaledPath.addPath(svgPath, transform)
+  ctx.fillStyle = backgroundColor
+  ctx.fill(scaledPath)
+}
+
+/**
  * Generate QR code as data URL
  * Includes decorative frame if set in style
  */
@@ -447,9 +492,37 @@ export async function generateQrDataUrl(
       reader.readAsDataURL(blob)
     })
 
-    // If no decorative frame, return QR code directly
+    const frameShape = finalStyle.frameShape || 'square'
+
+    // If no decorative frame, return QR code directly (with shape clipping if needed)
     if (!frame || frame.style === 'none') {
-      return qrDataUrl
+      if (frameShape === 'square') {
+        return qrDataUrl
+      }
+
+      // Create canvas for shape clipping
+      const shapeCanvas = document.createElement('canvas')
+      shapeCanvas.width = opts.size
+      shapeCanvas.height = opts.size
+      const shapeCtx = shapeCanvas.getContext('2d')
+      if (!shapeCtx) return null
+
+      // Draw background in shape
+      drawFrameShapeBackground(shapeCtx, frameShape, finalStyle.backgroundColor, 0, 0, opts.size)
+
+      // Clip and draw QR
+      const qrImg = new Image()
+      return new Promise<string | null>((resolve) => {
+        qrImg.onload = () => {
+          shapeCtx.save()
+          clipToFrameShape(shapeCtx, frameShape, 0, 0, opts.size)
+          shapeCtx.drawImage(qrImg, 0, 0, opts.size, opts.size)
+          shapeCtx.restore()
+          resolve(shapeCanvas.toDataURL('image/png'))
+        }
+        qrImg.onerror = () => resolve(null)
+        qrImg.src = qrDataUrl
+      })
     }
 
     // Create canvas with frame
@@ -461,8 +534,8 @@ export async function generateQrDataUrl(
 
     if (!ctx) return null
 
-    // Draw white background for non-minimal frames
-    if (frame.style !== 'minimal') {
+    // Draw white background for non-minimal/non-badge frames
+    if (frame.style !== 'minimal' && frame.style !== 'badge') {
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, width, height)
     }
@@ -475,7 +548,17 @@ export async function generateQrDataUrl(
 
     return new Promise((resolve) => {
       qrImage.onload = () => {
-        ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+        if (frameShape !== 'square') {
+          // Draw shape background
+          drawFrameShapeBackground(ctx, frameShape, finalStyle.backgroundColor, padding, padding, opts.size)
+          // Clip QR to shape
+          ctx.save()
+          clipToFrameShape(ctx, frameShape, padding, padding, opts.size)
+          ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+          ctx.restore()
+        } else {
+          ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+        }
         resolve(canvas.toDataURL('image/png'))
       }
       qrImage.onerror = () => resolve(null)
@@ -543,10 +626,37 @@ export async function generateQrWithCustomRenderer(
 
     // Generate QR code with custom renderer
     const qrDataUrl = await renderCustomQRCodeToDataURL(customOptions)
+    const frameShape = finalStyle.frameShape || 'square'
 
-    // If no decorative frame, return QR code directly
+    // If no decorative frame, return QR code directly (with shape clipping if needed)
     if (!frame || frame.style === 'none') {
-      return qrDataUrl
+      if (frameShape === 'square') {
+        return qrDataUrl
+      }
+
+      // Create canvas for shape clipping
+      const shapeCanvas = document.createElement('canvas')
+      shapeCanvas.width = opts.size
+      shapeCanvas.height = opts.size
+      const shapeCtx = shapeCanvas.getContext('2d')
+      if (!shapeCtx) return null
+
+      // Draw background in shape
+      drawFrameShapeBackground(shapeCtx, frameShape, finalStyle.backgroundColor, 0, 0, opts.size)
+
+      // Clip and draw QR
+      const qrImg = new Image()
+      return new Promise<string | null>((resolve) => {
+        qrImg.onload = () => {
+          shapeCtx.save()
+          clipToFrameShape(shapeCtx, frameShape, 0, 0, opts.size)
+          shapeCtx.drawImage(qrImg, 0, 0, opts.size, opts.size)
+          shapeCtx.restore()
+          resolve(shapeCanvas.toDataURL('image/png'))
+        }
+        qrImg.onerror = () => resolve(null)
+        qrImg.src = qrDataUrl
+      })
     }
 
     // Create canvas with frame
@@ -558,8 +668,8 @@ export async function generateQrWithCustomRenderer(
 
     if (!ctx) return null
 
-    // Draw white background for non-minimal frames
-    if (frame.style !== 'minimal') {
+    // Draw white background for non-minimal/non-badge frames
+    if (frame.style !== 'minimal' && frame.style !== 'badge') {
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, width, height)
     }
@@ -572,7 +682,17 @@ export async function generateQrWithCustomRenderer(
 
     return new Promise((resolve) => {
       qrImage.onload = () => {
-        ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+        if (frameShape !== 'square') {
+          // Draw shape background
+          drawFrameShapeBackground(ctx, frameShape, finalStyle.backgroundColor, padding, padding, opts.size)
+          // Clip QR to shape
+          ctx.save()
+          clipToFrameShape(ctx, frameShape, padding, padding, opts.size)
+          ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+          ctx.restore()
+        } else {
+          ctx.drawImage(qrImage, padding, padding, opts.size, opts.size)
+        }
         resolve(canvas.toDataURL('image/png'))
       }
       qrImage.onerror = () => resolve(null)
