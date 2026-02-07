@@ -16,7 +16,7 @@ export function Header({ profile }: HeaderProps) {
       <div className="flex items-center gap-4">
         <MobileSidebarToggle />
         {/* Mobile logo */}
-        <span className="lg:hidden text-lg font-bold gradient-text">QRapple</span>
+        <span className="lg:hidden text-lg font-bold gradient-text">QRenixy</span>
       </div>
 
       {/* User info */}
@@ -34,7 +34,7 @@ export function Header({ profile }: HeaderProps) {
             </span>
             <Image
               src="/logo.webp"
-              alt="QRapple"
+              alt="QRenixy"
               width={32}
               height={32}
               className="h-8 w-8 rounded-full object-cover"

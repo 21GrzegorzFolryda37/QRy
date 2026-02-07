@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Regulamin - QRapple',
-  description: 'Regulamin korzystania z serwisu QRapple.',
+  title: 'Regulamin - QRenixy',
+  description: 'Regulamin korzystania z serwisu QRenixy.',
 }
 
 export default function TermsPage() {
@@ -20,7 +20,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-gray-900">1. Postanowienia ogolne</h2>
             <p className="mt-4">
-              Niniejszy regulamin okresla zasady korzystania z serwisu QRapple, dostepnego pod
+              Niniejszy regulamin okresla zasady korzystania z serwisu QRenixy, dostepnego pod
               adresem engageqr.com. Korzystajac z serwisu, akceptujesz ponizsze warunki.
             </p>
           </section>
@@ -29,7 +29,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-gray-900">2. Definicje</h2>
             <ul className="mt-4 list-disc pl-6 space-y-2">
               <li>
-                <strong>Serwis</strong> - platforma QRapple dostepna pod adresem engageqr.com
+                <strong>Serwis</strong> - platforma QRenixy dostepna pod adresem engageqr.com
               </li>
               <li>
                 <strong>Uzytkownik</strong> - osoba korzystajaca z Serwisu

@@ -52,13 +52,13 @@ export function Footer() {
                 <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity" />
                 <Image
                   src="/logo.webp"
-                  alt="QRapple logo"
+                  alt="QRenixy logo"
                   width={40}
                   height={40}
                   className="relative w-10 h-10 rounded-xl"
                 />
               </div>
-              <span className="text-xl font-bold font-display gradient-text-static">QRapple</span>
+              <span className="text-xl font-bold font-display gradient-text-static">QRenixy</span>
             </Link>
             <p className="mt-4 text-sm text-[var(--foreground-muted)] leading-relaxed max-w-xs">
               Dynamiczne kody QR z zaawansowaną analityką dla nowoczesnego marketingu.
@@ -141,7 +141,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-[var(--border)]">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-[var(--foreground-subtle)]">
-              &copy; {new Date().getFullYear()} QRapple. Wszelkie prawa zastrzeżone.
+              &copy; {new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzeżone.
             </p>
             <div className="flex items-center gap-2 text-sm text-[var(--foreground-subtle)]">
               <span>Made with</span>

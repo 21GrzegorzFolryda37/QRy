@@ -63,7 +63,7 @@ export function Sidebar() {
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-6">
         <Link href="/dashboard" className="text-xl font-bold gradient-text" onClick={() => setIsOpen(false)}>
-          QRapple
+          QRenixy
         </Link>
         {/* Close button - mobile only */}
         <button

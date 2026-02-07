@@ -38,12 +38,12 @@ export function Header() {
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-3">
             <Image
               src="/logo.webp"
-              alt="QRapple logo"
+              alt="QRenixy logo"
               width={44}
               height={44}
               className="w-11 h-11 rounded-xl"
             />
-            <span className="text-xl font-bold font-display gradient-text-static">QRapple</span>
+            <span className="text-xl font-bold font-display gradient-text-static">QRenixy</span>
           </Link>
         </div>
 
@@ -136,8 +136,8 @@ export function Header() {
               className="flex items-center gap-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Image src="/logo.webp" alt="QRapple logo" width={40} height={40} className="w-10 h-10 rounded-xl" />
-              <span className="text-lg font-bold font-display gradient-text-static">QRapple</span>
+              <Image src="/logo.webp" alt="QRenixy logo" width={40} height={40} className="w-10 h-10 rounded-xl" />
+              <span className="text-lg font-bold font-display gradient-text-static">QRenixy</span>
             </Link>
             <button
               type="button"

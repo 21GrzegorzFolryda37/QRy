@@ -44,7 +44,7 @@ export function CTA() {
               {/* Description */}
               <p className="text-lg text-[var(--foreground-muted)] leading-relaxed mb-10 max-w-xl mx-auto">
                 Stwórz swój pierwszy kod QR w kilka sekund. Karta kredytowa nie jest wymagana.
-                Dołącz do tysięcy firm, które już korzystają z QRapple.
+                Dołącz do tysięcy firm, które już korzystają z QRenixy.
               </p>
 
               {/* CTA buttons */}

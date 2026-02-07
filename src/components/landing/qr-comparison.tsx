@@ -200,7 +200,7 @@ export function QRComparison() {
           >
             <div>
               <h3 className="text-lg font-medium text-violet-300 text-center mb-6">
-                Kod QRapple
+                Kod QRenixy
               </h3>
               <PhoneMockup className="w-[260px]" variant="highlighted" statusBarColor="#000000">
                 <div className="w-full h-full bg-gradient-to-b from-violet-50 to-white flex flex-col">

@@ -108,7 +108,7 @@ export function SurveyView({ data, qrCodeId }: SurveyViewProps) {
             className="inline-block text-sm opacity-50 hover:opacity-80 transition-opacity"
             style={{ color: textColor }}
           >
-            Powered by QRapple
+            Powered by QRenixy
           </a>
         </div>
       </div>
@@ -171,7 +171,7 @@ export function SurveyView({ data, qrCodeId }: SurveyViewProps) {
             className="text-xs opacity-50 hover:opacity-80 transition-opacity"
             style={{ color: textColor }}
           >
-            Powered by QRapple
+            Powered by QRenixy
           </a>
         </div>
       </div>
