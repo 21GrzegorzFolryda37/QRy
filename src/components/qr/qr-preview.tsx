@@ -36,6 +36,10 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   // Calculate total dimensions including frame
   const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
 
+  // Scale preview down when frame makes it too wide for the container
+  const PREVIEW_MAX_WIDTH = 360
+  const previewScale = Math.min(1, PREVIEW_MAX_WIDTH / dimensions.width)
+
   // Reset QR code instance when frameShape or frame changes (affects background transparency)
   const prevFrameShapeRef = useRef(frameShape)
   const prevHasLogoRef = useRef(!!logoUrl)
@@ -167,50 +171,62 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
 
   return (
     <div className="flex justify-center">
-      <FrameRenderer frame={frame} size={qrSize} className="relative">
-        {hasCustomShape ? (
-          <div className="relative" style={{ width: qrSize, height: qrSize }}>
-            <svg
-              width={qrSize}
-              height={qrSize}
-              viewBox="0 0 100 100"
-              className="absolute inset-0 pointer-events-none"
-              style={{ zIndex: 1 }}
-            >
-              <defs>
-                <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
-                  <path d={frameShapePaths[frameShape]} />
-                </clipPath>
-              </defs>
-            </svg>
+      <div style={{
+        width: dimensions.width * previewScale,
+        height: dimensions.height * previewScale,
+      }}>
+        <div style={{
+          width: dimensions.width,
+          height: dimensions.height,
+          transform: previewScale < 1 ? `scale(${previewScale})` : undefined,
+          transformOrigin: 'top left',
+        }}>
+          <FrameRenderer frame={frame} size={qrSize} className="relative">
+            {hasCustomShape ? (
+              <div className="relative" style={{ width: qrSize, height: qrSize }}>
+                <svg
+                  width={qrSize}
+                  height={qrSize}
+                  viewBox="0 0 100 100"
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ zIndex: 1 }}
+                >
+                  <defs>
+                    <clipPath id={clipId} clipPathUnits="objectBoundingBox" transform="scale(0.01)">
+                      <path d={frameShapePaths[frameShape]} />
+                    </clipPath>
+                  </defs>
+                </svg>
 
-            <svg
-              width={qrSize}
-              height={qrSize}
-              viewBox="0 0 100 100"
-              className="absolute inset-0"
-              style={{ zIndex: 0 }}
-            >
-              <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
-            </svg>
+                <svg
+                  width={qrSize}
+                  height={qrSize}
+                  viewBox="0 0 100 100"
+                  className="absolute inset-0"
+                  style={{ zIndex: 0 }}
+                >
+                  <path d={frameShapePaths[frameShape]} fill={finalStyle.backgroundColor} />
+                </svg>
 
-            <div
-              className="absolute inset-0"
-              style={{
-                clipPath: `url(#${clipId})`,
-                WebkitClipPath: `url(#${clipId})`,
-                zIndex: 2,
-              }}
-            >
-              {renderQrContent()}
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-lg overflow-hidden">
-            {renderQrContent()}
-          </div>
-        )}
-      </FrameRenderer>
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    clipPath: `url(#${clipId})`,
+                    WebkitClipPath: `url(#${clipId})`,
+                    zIndex: 2,
+                  }}
+                >
+                  {renderQrContent()}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg overflow-hidden">
+                {renderQrContent()}
+              </div>
+            )}
+          </FrameRenderer>
+        </div>
+      </div>
     </div>
   )
 }
