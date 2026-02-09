@@ -935,14 +935,32 @@ export function Hero() {
           </p>
         </div>
 
-        {/* QR Type Selector - Scrollable on mobile, hidden on mobile when not step 1 */}
-        <div className={`mb-8 -mx-4 sm:mx-0 animate-fade-in-up animate-delay-300 ${mobileStep !== 1 ? 'hidden lg:block' : ''}`}>
-          <div className="flex gap-2 overflow-x-auto px-4 sm:px-0 pb-2 sm:pb-0 sm:flex-wrap sm:justify-center scrollbar-hide">
+        {/* QR Type Selector - Grid on mobile, horizontal wrap on desktop */}
+        <div className={`mb-8 animate-fade-in-up animate-delay-300 ${mobileStep !== 1 ? 'hidden lg:block' : ''}`}>
+          {/* Mobile: compact grid */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 px-1 lg:hidden">
             {qrTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  selectedType === type.id
+                    ? 'bg-[#6d28d9] text-white shadow-md'
+                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
+                }`}
+              >
+                <TypeIcon type={type.icon} className="w-4 h-4" />
+                {type.label}
+              </button>
+            ))}
+          </div>
+          {/* Desktop: horizontal wrap */}
+          <div className="hidden lg:flex gap-2 flex-wrap justify-center">
+            {qrTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                   selectedType === type.id
                     ? 'bg-[#6d28d9] text-white shadow-md'
                     : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 hover:text-[var(--foreground)] shadow-sm'
