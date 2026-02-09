@@ -29,24 +29,50 @@ export function heroQRStarted() {
   trackEvent('hero_qr_started')
 }
 
-export function heroQRUrlEntered(url: string) {
+export function heroQRUrlEntered(url: string, selectedTemplate?: string) {
   trackEvent('hero_qr_url_entered', {
     url_domain: extractDomain(url),
+    selected_template: selectedTemplate || 'none',
   })
 }
 
-export function heroQREmailSubmitted(email: string, timeSpent: number) {
+export function heroQREmailSubmitted(email: string, timeSpent: number, customization: {
+  hasFrame: boolean
+  hasLogo: boolean
+  qrColor: string
+  bgColor: string
+  frameStyle: string
+}) {
   trackEvent('hero_qr_email_submitted', {
     email_domain: email.split('@')[1] || 'unknown',
     time_spent_seconds: Math.round(timeSpent / 1000),
+    has_frame: customization.hasFrame,
+    has_logo: customization.hasLogo,
+    qr_color: customization.qrColor,
+    bg_color: customization.bgColor,
+    frame_style: customization.frameStyle,
   })
 }
 
-export function heroQRSent(email: string, qrId: string, totalTime: number) {
+export function heroQRSent(email: string, qrId: string, totalTime: number, customization: {
+  selectedTemplate: string
+  hasFrame: boolean
+  hasLogo: boolean
+  qrColor: string
+  bgColor: string
+  frameStyle: string
+}, totalCustomizationClicks: number) {
   trackEvent('hero_qr_sent', {
     email_domain: email.split('@')[1] || 'unknown',
     qr_id: qrId,
     total_time_seconds: Math.round(totalTime / 1000),
+    selected_template: customization.selectedTemplate,
+    has_frame: customization.hasFrame,
+    has_logo: customization.hasLogo,
+    qr_color: customization.qrColor,
+    bg_color: customization.bgColor,
+    frame_style: customization.frameStyle,
+    total_customization_clicks: totalCustomizationClicks,
   })
 }
 

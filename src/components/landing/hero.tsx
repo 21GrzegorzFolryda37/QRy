@@ -236,6 +236,19 @@ export function Hero() {
   const [startTime, setStartTime] = useState<number | null>(null)
   const hasTrackedStart = useRef(false)
 
+  // Personalization tracking
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('none')
+  const [customizationClicks, setCustomizationClicks] = useState(0)
+
+  const getCustomizationData = () => ({
+    selectedTemplate,
+    hasFrame: !!style.frame,
+    hasLogo: !!logoUrl,
+    qrColor: style.foregroundColor,
+    bgColor: style.backgroundColor,
+    frameStyle: style.frame?.style || 'none',
+  })
+
   const trackStart = useCallback(() => {
     if (!hasTrackedStart.current) {
       hasTrackedStart.current = true
@@ -301,6 +314,7 @@ export function Hero() {
   // Helper to update style
   const updateStyle = (updates: Partial<QrStyle>) => {
     setStyle(prev => ({ ...prev, ...updates }))
+    setCustomizationClicks(prev => prev + 1)
   }
 
   // Generate QR data based on selected type
@@ -350,7 +364,7 @@ export function Hero() {
     }
 
     const emailSubmitTime = startTime ? Date.now() - startTime : 0
-    heroQREmailSubmitted(userEmail, emailSubmitTime)
+    heroQREmailSubmitted(userEmail, emailSubmitTime, getCustomizationData())
 
     setIsSending(true)
     setSendStatus('idle')
@@ -377,7 +391,7 @@ export function Hero() {
 
         if (response.ok) {
           const totalTime = startTime ? Date.now() - startTime : 0
-          heroQRSent(userEmail, 'hero-qr', totalTime)
+          heroQRSent(userEmail, 'hero-qr', totalTime, getCustomizationData(), customizationClicks)
           setSendStatus('success')
           setUserEmail('')
         } else {
@@ -432,7 +446,7 @@ export function Hero() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres URL strony</label>
-              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) heroQRUrlEntered(e.target.value) }} placeholder="https://twoja-strona.pl" className={inputClass} />
+              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) heroQRUrlEntered(e.target.value, selectedTemplate) }} placeholder="https://twoja-strona.pl" className={inputClass} />
             </div>
           </div>
         )
@@ -637,6 +651,8 @@ export function Hero() {
     const brandLogo = brandLogos.find(b => b.id === template.logoId)
     setStyle({ ...DEFAULT_QR_STYLE, ...template.style })
     setLogoUrl(brandLogo?.svg || '')
+    setSelectedTemplate(template.id)
+    setCustomizationClicks(prev => prev + 1)
   }
 
   const renderPersonalizationContent = () => {
@@ -831,8 +847,8 @@ export function Hero() {
           <div className="space-y-4">
             <LogoUploader
               value={logoUrl || ''}
-              onChange={(url) => setLogoUrl(url)}
-              onClear={() => setLogoUrl(null)}
+              onChange={(url) => { setLogoUrl(url); setCustomizationClicks(prev => prev + 1) }}
+              onClear={() => { setLogoUrl(null); setCustomizationClicks(prev => prev + 1) }}
             />
 
             {logoUrl && (
