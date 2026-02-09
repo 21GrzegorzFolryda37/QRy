@@ -43,7 +43,13 @@ export async function login(
 
   const redirectTo = formData.get('redirectTo') as string
   revalidatePath('/', 'layout')
-  redirect(redirectTo || '/dashboard')
+
+  if (redirectTo) {
+    const separator = redirectTo.includes('?') ? '&' : '?'
+    redirect(`${redirectTo}${separator}login=success`)
+  } else {
+    redirect('/dashboard?login=success')
+  }
 }
 
 export async function register(
@@ -64,7 +70,7 @@ export async function register(
 
   const { email, password, fullName } = validatedFields.data
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -79,7 +85,7 @@ export async function register(
   }
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  redirect(`/dashboard?signup=success&uid=${data.user?.id || ''}`)
 }
 
 export async function logout(): Promise<void> {

@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, Button, Badge } from '@/compo
 import { PricingCard } from '@/components/billing'
 import { createPortalSession, createCheckoutSession } from '@/actions/billing'
 import { PLANS, PlanId } from '@/lib/stripe'
+import { purchase } from '@/lib/analytics'
 
 interface BillingClientProps {
   initialPlan: PlanId
@@ -25,6 +26,19 @@ export function BillingClient({
   const [subscriptionStatus] = useState<string | null>(initialSubscriptionStatus)
   const [portalLoading, setPortalLoading] = useState(false)
   const checkoutInitiated = useRef(false)
+
+  // Track purchase on successful return from Stripe
+  useEffect(() => {
+    if (success && initialPlan !== 'free') {
+      purchase({
+        userId: '',
+        plan: PLANS[initialPlan].name,
+        billingCycle: 'monthly',
+        value: PLANS[initialPlan].price,
+        transactionId: `stripe_${Date.now()}`,
+      })
+    }
+  }, [success, initialPlan])
 
   // Auto-start checkout if redirected from landing page
   useEffect(() => {

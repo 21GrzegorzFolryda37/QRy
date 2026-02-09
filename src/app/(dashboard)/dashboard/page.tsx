@@ -1,6 +1,9 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { StatsCard } from '@/components/dashboard'
+import { SignupTracker } from '@/components/dashboard/signup-tracker'
+import { LoginTracker } from '@/components/dashboard/login-tracker'
 import { Button, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { getOverviewStats, getTopQrCodes } from '@/actions/analytics'
 
@@ -25,6 +28,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <Suspense><SignupTracker /></Suspense>
+      <Suspense><LoginTracker /></Suspense>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Panel główny</h1>

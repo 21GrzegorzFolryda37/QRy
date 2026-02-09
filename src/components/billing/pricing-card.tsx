@@ -18,6 +18,7 @@ import {
 import { useToast } from '@/components/ui/toast'
 import { PLANS, PlanId } from '@/lib/stripe/plans'
 import { createCheckoutSession, getDowngradeInfo, downgradePlan, DowngradeInfo } from '@/actions/billing'
+import { checkoutStarted } from '@/lib/analytics'
 
 interface PricingCardProps {
   planId: PlanId
@@ -40,6 +41,12 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
   const canDowngradeToFree = !isCurrentPlan && isFreePlan && currentPlan !== 'free'
 
   async function handleUpgrade() {
+    checkoutStarted({
+      userId: '',
+      plan: plan.name,
+      billingCycle: 'monthly',
+      value: plan.price,
+    })
     setIsLoading(true)
     const result = await createCheckoutSession(planId)
     setIsLoading(false)

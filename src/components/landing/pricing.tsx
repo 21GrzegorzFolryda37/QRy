@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui'
 import { PLANS } from '@/lib/stripe/plans'
 import { createClient } from '@/lib/supabase/client'
+import { pricingViewed, checkoutStarted } from '@/lib/analytics'
 
 const tiers = [
   {
@@ -75,6 +76,7 @@ export function Pricing() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            pricingViewed(null, 'homepage')
             tiers.forEach((_, index) => {
               setTimeout(() => {
                 setVisibleCards((prev) => [...prev, index])
@@ -99,6 +101,16 @@ export function Pricing() {
     if (planId === 'free') {
       router.push('/register')
       return
+    }
+
+    const plan = PLANS[planId as keyof typeof PLANS]
+    if (plan) {
+      checkoutStarted({
+        userId: '',
+        plan: plan.name,
+        billingCycle: 'monthly',
+        value: plan.price,
+      })
     }
 
     setLoadingPlan(planId)
