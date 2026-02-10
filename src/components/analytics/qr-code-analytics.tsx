@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
 import { ScansChart, DeviceChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap } from '@/components/analytics'
+import { UpgradeOverlay } from '@/components/analytics/upgrade-overlay'
 import {
   useScansOverTime,
   useDeviceBreakdown,
@@ -12,21 +13,26 @@ import {
   useTimePatterns,
 } from '@/hooks/use-analytics'
 import { useScansRealtime } from '@/hooks/use-scans-realtime'
+import { canAccessFeature } from '@/lib/plans/analytics-access'
 import { DateRange } from '@/types/analytics'
+import type { Plan } from '@/types/database'
 
 interface QrCodeAnalyticsProps {
   qrCodeId: string
   userId?: string
+  userPlan?: Plan
 }
 
-export function QrCodeAnalytics({ qrCodeId, userId }: QrCodeAnalyticsProps) {
+export function QrCodeAnalytics({ qrCodeId, userId, userPlan = 'free' }: QrCodeAnalyticsProps) {
   const [dateRange, setDateRange] = useState<DateRange>('30d')
+
+  const hasProAccess = canAccessFeature(userPlan, 'scan_map')
 
   const { data: scansData, loading: scansLoading, refetch: refetchScans } = useScansOverTime(dateRange, qrCodeId)
   const { devices, browsers, os, loading: devicesLoading, refetch: refetchDevices } = useDeviceBreakdown(dateRange, qrCodeId)
   const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange, qrCodeId)
-  const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange, qrCodeId)
-  const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange, qrCodeId)
+  const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange, qrCodeId, hasProAccess)
+  const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange, qrCodeId, hasProAccess)
 
   // Calculate totals from scans data
   const totalScans = scansData.reduce((acc, d) => acc + d.scans, 0)
@@ -38,16 +44,18 @@ export function QrCodeAnalytics({ qrCodeId, userId }: QrCodeAnalyticsProps) {
     refetchScans()
     refetchDevices()
     refetchGeo()
-    refetchLocations()
-    refetchTimePatterns()
-  }, [refetchScans, refetchDevices, refetchGeo, refetchLocations, refetchTimePatterns])
+    if (hasProAccess) {
+      refetchLocations()
+      refetchTimePatterns()
+    }
+  }, [refetchScans, refetchDevices, refetchGeo, refetchLocations, refetchTimePatterns, hasProAccess])
 
   // Subscribe to realtime scan updates for this QR code
   const { connectionStatus } = useScansRealtime({
     userId,
     qrCodeId,
     onNewScan: handleNewScan,
-    enabled: !!userId,
+    enabled: !!userId && hasProAccess,
   })
 
   return (
@@ -55,7 +63,7 @@ export function QrCodeAnalytics({ qrCodeId, userId }: QrCodeAnalyticsProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-semibold text-gray-900">Analityka</h2>
-          {connectionStatus === 'connected' && (
+          {hasProAccess && connectionStatus === 'connected' && (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               Na żywo
@@ -98,35 +106,61 @@ export function QrCodeAnalytics({ qrCodeId, userId }: QrCodeAnalyticsProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lokalizacje skanów</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {locationsLoading ? (
-            <div className="flex h-[400px] items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <ScanMap data={scanLocations} />
-          )}
-        </CardContent>
-      </Card>
+      {hasProAccess ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Lokalizacje skanów</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {locationsLoading ? (
+              <div className="flex h-[400px] items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <ScanMap data={scanLocations} />
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradeOverlay feature="scan_map">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lokalizacje skanów</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]" />
+            </CardContent>
+          </Card>
+        </UpgradeOverlay>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Wzorce czasowe</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {timePatternsLoading ? (
-            <div className="flex h-[300px] items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <TimeHeatmap data={timePatterns} />
-          )}
-        </CardContent>
-      </Card>
+      {hasProAccess ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Wzorce czasowe</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {timePatternsLoading ? (
+              <div className="flex h-[300px] items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <TimeHeatmap data={timePatterns} />
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradeOverlay feature="time_heatmap">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wzorce czasowe</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" />
+            </CardContent>
+          </Card>
+        </UpgradeOverlay>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

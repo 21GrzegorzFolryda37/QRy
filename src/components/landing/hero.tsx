@@ -11,7 +11,7 @@ import { LogoUploader, brandLogos } from '@/components/qr/logo-uploader'
 import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { generateQrCodeImage } from '@/lib/qr/options'
-import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent } from '@/lib/analytics'
+import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion } from '@/lib/analytics'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
@@ -392,6 +392,7 @@ export function Hero() {
         if (response.ok) {
           const totalTime = startTime ? Date.now() - startTime : 0
           heroQRSent(userEmail, 'hero-qr', totalTime, getCustomizationData(), customizationClicks)
+          gtagReportConversion()
           setSendStatus('success')
           setUserEmail('')
         } else {

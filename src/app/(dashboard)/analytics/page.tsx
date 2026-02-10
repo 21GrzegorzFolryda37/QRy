@@ -4,6 +4,8 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { StatsCard } from '@/components/dashboard'
 import { ScansChart, DeviceChart, CityChart, GeoChart, DateRangeSelect, ScanMap, TimeHeatmap, ExportButtons, RealtimeCard, ComparisonView } from '@/components/analytics'
+import { UpgradeOverlay } from '@/components/analytics/upgrade-overlay'
+import { AnalyticsUpgradePrompt } from '@/components/analytics/analytics-upgrade-prompt'
 import {
   useOverviewStats,
   useScansOverTime,
@@ -16,6 +18,7 @@ import {
 } from '@/hooks/use-analytics'
 import { useScansRealtime } from '@/hooks/use-scans-realtime'
 import { useUser } from '@/hooks/use-user'
+import { canAccessAnalytics, canAccessFeature } from '@/lib/plans/analytics-access'
 import { DateRange } from '@/types/analytics'
 import { getQrCodes } from '@/actions/qr'
 import Link from 'next/link'
@@ -24,10 +27,15 @@ export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState<DateRange>('30d')
   const [compareMode, setCompareMode] = useState(false)
   const [qrCodeOptions, setQrCodeOptions] = useState<{ id: string; name: string; scanCount: number }[]>([])
-  const { user } = useUser()
+  const { user, profile, loading: userLoading } = useUser()
+
+  const userPlan = profile?.plan || 'free'
+  const hasAnalyticsAccess = canAccessAnalytics(userPlan)
+  const hasProAccess = canAccessFeature(userPlan, 'scan_map')
 
   // Fetch QR codes list for comparison selector
   useEffect(() => {
+    if (!hasAnalyticsAccess) return
     async function fetchQrCodes() {
       const result = await getQrCodes()
       if (result.data) {
@@ -41,7 +49,7 @@ export default function AnalyticsPage() {
       }
     }
     fetchQrCodes()
-  }, [])
+  }, [hasAnalyticsAccess])
 
   const { stats, loading: statsLoading, refetch: refetchStats } = useOverviewStats()
   const { data: scansData, loading: scansLoading, refetch: refetchScans } = useScansOverTime(dateRange)
@@ -49,8 +57,8 @@ export default function AnalyticsPage() {
   const { data: cityData, loading: cityLoading, refetch: refetchCity } = useCityBreakdown(dateRange)
   const { data: geoData, loading: geoLoading, refetch: refetchGeo } = useGeographicData(dateRange)
   const { data: topQrCodes, loading: topLoading, refetch: refetchTop } = useTopQrCodes(dateRange)
-  const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange)
-  const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange)
+  const { data: scanLocations, loading: locationsLoading, refetch: refetchLocations } = useScanLocations(dateRange, undefined, hasProAccess)
+  const { data: timePatterns, loading: timePatternsLoading, refetch: refetchTimePatterns } = useTimePatterns(dateRange, undefined, hasProAccess)
 
   // Handler for new scans - debounced refetch of all analytics data
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -64,19 +72,35 @@ export default function AnalyticsPage() {
       refetchCity()
       refetchGeo()
       refetchTop()
-      refetchLocations()
-      refetchTimePatterns()
+      if (hasProAccess) {
+        refetchLocations()
+        refetchTimePatterns()
+      }
     }, 2000)
-  }, [refetchStats, refetchScans, refetchDevices, refetchCity, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns])
+  }, [refetchStats, refetchScans, refetchDevices, refetchCity, refetchGeo, refetchTop, refetchLocations, refetchTimePatterns, hasProAccess])
 
   // Subscribe to realtime scan updates
   const { connectionStatus } = useScansRealtime({
     userId: user?.id,
     onNewScan: handleNewScan,
-    enabled: !!user?.id,
+    enabled: !!user?.id && hasProAccess,
   })
 
-  if (compareMode) {
+  // Show loading spinner while user data loads to prevent flash of upgrade prompt
+  if (userLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  // FREE users see upgrade prompt instead of analytics
+  if (!hasAnalyticsAccess) {
+    return <AnalyticsUpgradePrompt />
+  }
+
+  if (compareMode && hasProAccess) {
     return (
       <ComparisonView
         qrCodes={qrCodeOptions}
@@ -96,39 +120,43 @@ export default function AnalyticsPage() {
           <p className="text-[var(--foreground-muted)]">Śledź wydajność swoich kodów QR</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-          {connectionStatus === 'connected' && (
-            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
-              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              Na żywo
-            </span>
+          {hasProAccess && (
+            <>
+              {connectionStatus === 'connected' && (
+                <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  Na żywo
+                </span>
+              )}
+              {connectionStatus === 'connecting' && (
+                <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
+                  <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+                  Łączenie...
+                </span>
+              )}
+              {connectionStatus === 'error' && (
+                <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
+                  <span className="h-2 w-2 rounded-full bg-red-500" />
+                  Błąd
+                </span>
+              )}
+              {connectionStatus === 'disconnected' && (
+                <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
+                  <span className="h-2 w-2 rounded-full bg-gray-400" />
+                  Offline
+                </span>
+              )}
+              <button
+                onClick={() => setCompareMode(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm font-medium text-[var(--foreground-muted)] transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                </svg>
+                Porównaj
+              </button>
+            </>
           )}
-          {connectionStatus === 'connecting' && (
-            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
-              <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
-              Łączenie...
-            </span>
-          )}
-          {connectionStatus === 'error' && (
-            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
-              <span className="h-2 w-2 rounded-full bg-red-500" />
-              Błąd
-            </span>
-          )}
-          {connectionStatus === 'disconnected' && (
-            <span className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)]">
-              <span className="h-2 w-2 rounded-full bg-gray-400" />
-              Offline
-            </span>
-          )}
-          <button
-            onClick={() => setCompareMode(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm font-medium text-[var(--foreground-muted)] transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-            </svg>
-            Porównaj
-          </button>
           <DateRangeSelect value={dateRange} onChange={setDateRange} />
           <ExportButtons
             stats={stats}
@@ -144,17 +172,33 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <Card className="border-[var(--secondary)]/30 bg-[var(--secondary)]/5">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[var(--secondary)] animate-pulse" />
-            <CardTitle className="text-lg">W czasie rzeczywistym</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <RealtimeCard userId={user?.id} />
-        </CardContent>
-      </Card>
+      {hasProAccess ? (
+        <Card className="border-[var(--secondary)]/30 bg-[var(--secondary)]/5">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[var(--secondary)] animate-pulse" />
+              <CardTitle className="text-lg">W czasie rzeczywistym</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <RealtimeCard userId={user?.id} />
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradeOverlay feature="realtime_card">
+          <Card className="border-[var(--secondary)]/30 bg-[var(--secondary)]/5">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[var(--secondary)] animate-pulse" />
+                <CardTitle className="text-lg">W czasie rzeczywistym</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[120px]" />
+            </CardContent>
+          </Card>
+        </UpgradeOverlay>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
@@ -194,35 +238,61 @@ export default function AnalyticsPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lokalizacje skanów</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {locationsLoading ? (
-            <div className="flex h-[400px] items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <ScanMap data={scanLocations} />
-          )}
-        </CardContent>
-      </Card>
+      {hasProAccess ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Lokalizacje skanów</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {locationsLoading ? (
+              <div className="flex h-[400px] items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <ScanMap data={scanLocations} />
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradeOverlay feature="scan_map">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lokalizacje skanów</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]" />
+            </CardContent>
+          </Card>
+        </UpgradeOverlay>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Wzorce czasowe</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {timePatternsLoading ? (
-            <div className="flex h-[300px] items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <TimeHeatmap data={timePatterns} />
-          )}
-        </CardContent>
-      </Card>
+      {hasProAccess ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Wzorce czasowe</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {timePatternsLoading ? (
+              <div className="flex h-[300px] items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <TimeHeatmap data={timePatterns} />
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradeOverlay feature="time_heatmap">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wzorce czasowe</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" />
+            </CardContent>
+          </Card>
+        </UpgradeOverlay>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card>

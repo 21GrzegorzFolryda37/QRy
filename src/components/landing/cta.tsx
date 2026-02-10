@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui'
+import { gtagReportConversion } from '@/lib/analytics'
 
 export function CTA() {
   return (
@@ -49,7 +50,7 @@ export function CTA() {
 
               {/* CTA buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/register">
+                <Link href="/register?source=cta" onClick={() => gtagReportConversion()}>
                   <Button
                     variant="gradient"
                     size="lg"

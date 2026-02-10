@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui'
 import { PLANS } from '@/lib/stripe/plans'
 import { createClient } from '@/lib/supabase/client'
-import { pricingViewed, checkoutStarted } from '@/lib/analytics'
+import { pricingViewed, checkoutStarted, gtagReportConversion } from '@/lib/analytics'
 
 const tiers = [
   {
@@ -97,6 +97,8 @@ export function Pricing() {
   }, [])
 
   async function handlePlanClick(planId: string) {
+    gtagReportConversion()
+
     // Free plan - go to register
     if (planId === 'free') {
       router.push('/register')

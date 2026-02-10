@@ -79,7 +79,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="bg-[var(--background)] py-16 sm:py-24">
+    <div className="bg-[#f0f0fd] py-16 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">

@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui'
+import { gtagReportConversion } from '@/lib/analytics'
 
 const features = [
   {
@@ -120,7 +123,7 @@ export default function FeaturesPage() {
             Stwórz swój pierwszy kod QR w kilka sekund. Nie wymagamy karty kredytowej.
           </p>
           <div className="mt-8 flex items-center justify-center gap-x-4">
-            <Link href="/register">
+            <Link href="/register?source=features" onClick={() => gtagReportConversion()}>
               <Button size="lg">Zacznij za darmo</Button>
             </Link>
             <Link href="/pricing">

@@ -169,12 +169,13 @@ export function useTopQrCodes(dateRange: DateRange, limit = 5) {
   return { data, loading, error, refetch }
 }
 
-export function useScanLocations(dateRange: DateRange, qrCodeId?: string) {
+export function useScanLocations(dateRange: DateRange, qrCodeId?: string, enabled = true) {
   const [data, setData] = useState<ScanLocation[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [error, setError] = useState<string | null>(null)
 
   const refetch = useCallback(async () => {
+    if (!enabled) return
     setLoading(true)
     const result = await getScanLocations(dateRange, qrCodeId)
     if (result.error) {
@@ -183,21 +184,24 @@ export function useScanLocations(dateRange: DateRange, qrCodeId?: string) {
       setData(result.data || [])
     }
     setLoading(false)
-  }, [dateRange, qrCodeId])
+  }, [dateRange, qrCodeId, enabled])
 
   useEffect(() => {
-    refetch()
-  }, [refetch])
+    if (enabled) {
+      refetch()
+    }
+  }, [refetch, enabled])
 
   return { data, loading, error, refetch }
 }
 
-export function useTimePatterns(dateRange: DateRange, qrCodeId?: string) {
+export function useTimePatterns(dateRange: DateRange, qrCodeId?: string, enabled = true) {
   const [data, setData] = useState<TimePatternData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [error, setError] = useState<string | null>(null)
 
   const refetch = useCallback(async () => {
+    if (!enabled) return
     setLoading(true)
     const result = await getTimePatterns(dateRange, qrCodeId)
     if (result.error) {
@@ -206,11 +210,13 @@ export function useTimePatterns(dateRange: DateRange, qrCodeId?: string) {
       setData(result.data || null)
     }
     setLoading(false)
-  }, [dateRange, qrCodeId])
+  }, [dateRange, qrCodeId, enabled])
 
   useEffect(() => {
-    refetch()
-  }, [refetch])
+    if (enabled) {
+      refetch()
+    }
+  }, [refetch, enabled])
 
   return { data, loading, error, refetch }
 }

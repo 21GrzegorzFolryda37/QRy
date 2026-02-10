@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
+import { gtagReportConversion } from '@/lib/analytics'
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -65,6 +66,7 @@ export function Header() {
         <div className="hidden lg:flex lg:gap-x-1">
           {[
             { href: '/#pricing', label: 'Cennik' },
+            { href: '/blog', label: 'Blog' },
             { href: '/contact', label: 'Kontakt' },
           ].map((item) => (
             <Link
@@ -100,7 +102,7 @@ export function Header() {
                 >
                   Zaloguj się
                 </Link>
-                <Link href="/register">
+                <Link href="/register?source=navbar" onClick={() => gtagReportConversion()}>
                   <Button variant="gradient" className="shadow-lg shadow-[var(--primary)]/25">
                     Rozpocznij za darmo
                   </Button>
@@ -153,6 +155,7 @@ export function Header() {
           <div className="p-4 space-y-2">
             {[
               { href: '/#pricing', label: 'Cennik', icon: '💎' },
+              { href: '/blog', label: 'Blog', icon: '📝' },
               { href: '/contact', label: 'Kontakt', icon: '📬' },
             ].map((item) => (
               <Link
@@ -176,7 +179,7 @@ export function Header() {
               </Link>
             ) : (
               <div className="space-y-3">
-                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/register" onClick={() => { gtagReportConversion(); setMobileMenuOpen(false) }}>
                   <Button variant="gradient" className="w-full">
                     Rozpocznij za darmo
                   </Button>

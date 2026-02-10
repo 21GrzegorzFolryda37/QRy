@@ -240,7 +240,7 @@ export function QRComparison() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <Link href="/register">
+          <Link href="/register?source=comparison">
             <Button className="bg-white text-[#6d28d9] hover:bg-gray-50 shadow-lg">
               Stwórz swój pierwszy kod QR
             </Button>

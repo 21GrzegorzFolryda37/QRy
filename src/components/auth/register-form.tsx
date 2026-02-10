@@ -1,15 +1,25 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { register } from '@/actions/auth'
 import { Button, Input } from '@/components/ui'
+import { signupStarted } from '@/lib/analytics'
 import Link from 'next/link'
 
 export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(register, null)
+  const searchParams = useSearchParams()
+  const source = searchParams.get('source') || 'direct'
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form
+      action={(formData) => {
+        signupStarted('email', source)
+        formAction(formData)
+      }}
+      className="space-y-4"
+    >
       <Input
         name="fullName"
         type="text"

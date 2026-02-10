@@ -7,6 +7,7 @@
 declare global {
   interface Window {
     dataLayer: Record<string, any>[]
+    gtag: (...args: any[]) => void
   }
 }
 
@@ -163,6 +164,27 @@ export function purchase(params: {
     currency: 'PLN',
     transaction_id: params.transactionId,
   })
+}
+
+// ---------- Google Ads Conversion ----------
+
+export function gtagReportConversion(url?: string) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+
+  const callback = () => {
+    if (url) {
+      window.location.href = url
+    }
+  }
+
+  window.gtag('event', 'conversion', {
+    send_to: 'AW-11001323592/-o38CJXx590ZEMjA6_0o',
+    event_callback: callback,
+  })
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('📊 [Google Ads] conversion reported', { url })
+  }
 }
 
 // ---------- Helpers ----------

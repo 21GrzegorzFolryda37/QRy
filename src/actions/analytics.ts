@@ -16,6 +16,8 @@ import {
   DateRange,
   RecentScan,
 } from '@/types/analytics'
+import type { Plan } from '@/types/database'
+import { canAccessFeature } from '@/lib/plans/analytics-access'
 import { getDay, getHours } from 'date-fns'
 
 function getDateRangeFilter(dateRange: DateRange): { start: Date; end: Date } {
@@ -433,6 +435,12 @@ export async function getScanLocations(
     return { error: 'Unauthorized' }
   }
 
+  const { data: profileData } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+  const userPlan = (profileData as { plan: Plan } | null)?.plan || 'free'
+  if (!canAccessFeature(userPlan, 'scan_map')) {
+    return { data: [] }
+  }
+
   const { start, end } = getDateRangeFilter(dateRange)
 
   // Get scans with location data
@@ -510,6 +518,12 @@ export async function getTimePatterns(
 
   if (!user) {
     return { error: 'Unauthorized' }
+  }
+
+  const { data: profileData } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+  const userPlan = (profileData as { plan: Plan } | null)?.plan || 'free'
+  if (!canAccessFeature(userPlan, 'time_heatmap')) {
+    return { data: undefined }
   }
 
   const { start, end } = getDateRangeFilter(dateRange)
@@ -598,6 +612,12 @@ export async function getRecentScans(minutes = 30): Promise<{ error?: string; da
 
   if (!user) {
     return { error: 'Unauthorized' }
+  }
+
+  const { data: profileData } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+  const userPlan = (profileData as { plan: Plan } | null)?.plan || 'free'
+  if (!canAccessFeature(userPlan, 'realtime_card')) {
+    return { data: [] }
   }
 
   const cutoff = new Date(Date.now() - minutes * 60 * 1000).toISOString()

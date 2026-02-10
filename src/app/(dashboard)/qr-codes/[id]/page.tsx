@@ -6,6 +6,7 @@ import { getQrCode } from '@/actions/qr'
 import { getRedirectUrl } from '@/lib/utils'
 import { QrCodeAnalytics } from '@/components/analytics'
 import { createClient } from '@/lib/supabase/server'
+import type { Plan } from '@/types/database'
 
 interface QrCodeDetailPageProps {
   params: Promise<{ id: string }>
@@ -19,9 +20,15 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
     notFound()
   }
 
-  // Get user for realtime updates
+  // Get user and plan for realtime updates and access control
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  let userPlan: Plan = 'free'
+  if (user) {
+    const { data: profileData } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+    userPlan = (profileData as { plan: Plan } | null)?.plan || 'free'
+  }
 
   const redirectUrl = getRedirectUrl(qrCode.short_code)
 
@@ -133,7 +140,7 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
       </Card>
 
       {/* Full Analytics Section */}
-      <QrCodeAnalytics qrCodeId={qrCode.id} userId={user?.id} />
+      <QrCodeAnalytics qrCodeId={qrCode.id} userId={user?.id} userPlan={userPlan} />
     </div>
   )
 }
