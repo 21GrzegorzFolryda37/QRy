@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, Button, Badge } from '@/compo
 import { PricingCard } from '@/components/billing'
 import { createPortalSession, createCheckoutSession } from '@/actions/billing'
 import { PLANS, PlanId } from '@/lib/stripe'
-import { purchase } from '@/lib/analytics'
+import { purchase, gtagReportConversion } from '@/lib/analytics'
 
 interface BillingClientProps {
   initialPlan: PlanId
@@ -30,13 +30,33 @@ export function BillingClient({
   // Track purchase on successful return from Stripe
   useEffect(() => {
     if (success && initialPlan !== 'free') {
-      purchase({
-        userId: '',
-        plan: PLANS[initialPlan].name,
-        billingCycle: 'monthly',
-        value: PLANS[initialPlan].price,
-        transactionId: `stripe_${Date.now()}`,
-      })
+      const hasTracked = sessionStorage.getItem('purchase_tracked')
+
+      if (!hasTracked) {
+        setTimeout(() => {
+          const transactionId = `stripe_${Date.now()}`
+
+          // 1. Purchase event to GA4
+          purchase({
+            userId: '',
+            plan: PLANS[initialPlan].name,
+            billingCycle: 'monthly',
+            value: PLANS[initialPlan].price,
+            transactionId,
+          })
+
+          // 2. Google Ads Conversion
+          gtagReportConversion()
+
+          // 3. Mark as tracked
+          sessionStorage.setItem('purchase_tracked', 'true')
+
+          // 4. Clean URL parameter
+          const url = new URL(window.location.href)
+          url.searchParams.delete('success')
+          window.history.replaceState({}, '', url.toString())
+        }, 1000)
+      }
     }
   }, [success, initialPlan])
 
