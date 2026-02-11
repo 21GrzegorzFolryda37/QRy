@@ -31,7 +31,6 @@ const tiers = [
       `${PLANS.starter.scanLimit.toLocaleString()} skanów/miesiąc`,
       'Własne kolory i logo',
       'Pełna analityka',
-      'Priorytetowe wsparcie',
     ],
     featured: true,
   },
