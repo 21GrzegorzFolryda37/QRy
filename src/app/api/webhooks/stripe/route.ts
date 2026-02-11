@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
             await (supabase.from('profiles') as any)
               .update({
                 plan,
-                subscription_status: 'active',
+                subscription_status: subscription.status,
                 stripe_subscription_id: subscriptionId,
                 qr_limit: limits.qrLimit,
                 monthly_scan_limit: limits.scanLimit,

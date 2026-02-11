@@ -65,6 +65,12 @@ export async function POST(request: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=true`,
       subscription_data: {
+        trial_period_days: 7,
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: 'cancel',
+          },
+        },
         metadata: {
           supabase_user_id: user.id,
         },
