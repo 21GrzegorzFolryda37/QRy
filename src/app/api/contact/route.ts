@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     const supportEmail = process.env.SUPPORT_EMAIL || 'contact@qrenixy.com'
 
     const { error: sendError } = await resend.emails.send({
-      from: 'QRenixy Contact <noreply@engageqr.com>',
+      from: 'QRenixy Contact <noreply@qrenixy.com>',
       to: [supportEmail],
       replyTo: email,
       subject: `[Kontakt] ${subject}`,
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation to user (non-critical, don't fail the request)
     resend.emails.send({
-      from: 'QRenixy <noreply@engageqr.com>',
+      from: 'QRenixy <noreply@qrenixy.com>',
       to: [email],
       subject: 'Potwierdzenie otrzymania wiadomosci - QRenixy',
       html: `
