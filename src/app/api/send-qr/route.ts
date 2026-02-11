@@ -20,6 +20,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Email logged (no RESEND_API_KEY configured)' })
     }
 
+    const registerUrl = signupToken
+      ? `https://qrenixy.com/register?token=${signupToken}`
+      : 'https://qrenixy.com/register'
+
     const { error: sendError } = await resend.emails.send({
       from: 'QRenixy <hello@qrenixy.com>',
       to: [email],
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest) {
             </p>
 
             <div style="text-align: center;">
-              <a href="https://qrenixy.com/register${signupToken ? `?token=${signupToken}` : ''}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px;">
+              <a href="${registerUrl}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px;">
                 Stwórz darmowe konto
               </a>
             </div>
