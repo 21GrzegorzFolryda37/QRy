@@ -46,7 +46,6 @@ const tiers = [
       'Własne kolory i logo',
       'Pełna analityka',
       'Priorytetowe wsparcie',
-      'Dostęp do API',
     ],
   },
 ]
