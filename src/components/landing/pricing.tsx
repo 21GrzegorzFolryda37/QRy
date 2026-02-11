@@ -160,7 +160,7 @@ export function Pricing() {
           </h2>
 
           <p className="mt-6 text-lg text-[var(--foreground-muted)] leading-relaxed">
-            Zacznij za darmo i skaluj w miarę rozwoju. Wszystkie plany zawierają 14-dniowy okres próbny.
+            Zacznij za darmo i skaluj w miarę rozwoju. Wszystkie płatne plany zawierają 7-dniowy bezpłatny okres próbny.
           </p>
         </div>
 
@@ -202,6 +202,9 @@ export function Pricing() {
                 <span className="text-5xl font-bold text-[var(--foreground)] font-display">{tier.price}</span>
                 <span className="text-lg text-[var(--foreground-muted)]"> PLN</span>
                 {tier.price > 0 && <span className="text-[var(--foreground-subtle)]">/miesiąc</span>}
+                {tier.price > 0 && (
+                  <p className="mt-2 text-sm font-medium text-[#6d28d9]">7 dni za darmo</p>
+                )}
               </div>
 
               {/* Features */}

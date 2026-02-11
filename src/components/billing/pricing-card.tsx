@@ -114,6 +114,9 @@ export function PricingCard({ planId, currentPlan, onUpgrade }: PricingCardProps
           <div>
             <span className="text-4xl font-bold text-[var(--foreground)]">{plan.price} PLN</span>
             {plan.price > 0 && <span className="text-[var(--foreground-muted)]">/miesiac</span>}
+            {plan.price > 0 && !isCurrentPlan && (
+              <p className="mt-2 text-sm font-medium text-[var(--primary)]">7 dni za darmo</p>
+            )}
           </div>
 
           <ul className="space-y-3">
