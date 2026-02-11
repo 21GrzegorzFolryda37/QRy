@@ -29,8 +29,8 @@ const tiers = [
     features: [
       `${PLANS.starter.qrLimit} kodów QR`,
       `${PLANS.starter.scanLimit.toLocaleString()} skanów/miesiąc`,
-      'Własne kolory i logo',
-      'Pełna analityka',
+      'Pełna customizacja',
+      'Rozbudowana analityka',
     ],
     featured: true,
   },
@@ -42,7 +42,7 @@ const tiers = [
     features: [
       `${PLANS.pro.qrLimit} kodów QR`,
       `${PLANS.pro.scanLimit.toLocaleString()} skanów/miesiąc`,
-      'Własne kolory i logo',
+      'Pełna customizacja',
       'Pełna analityka',
       'Priorytetowe wsparcie',
     ],
