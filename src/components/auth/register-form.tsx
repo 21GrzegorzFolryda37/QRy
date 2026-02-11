@@ -11,6 +11,7 @@ export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(register, null)
   const searchParams = useSearchParams()
   const source = searchParams.get('source') || 'direct'
+  const signupToken = searchParams.get('token') || ''
 
   return (
     <form
@@ -20,6 +21,8 @@ export function RegisterForm() {
       }}
       className="space-y-4"
     >
+      {signupToken && <input type="hidden" name="signupToken" value={signupToken} />}
+
       <Input
         name="fullName"
         type="text"

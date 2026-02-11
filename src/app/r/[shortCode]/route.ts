@@ -53,25 +53,33 @@ export async function GET(
   // Fetch QR code with caching
   const qrCode = await getQrCodeCached(shortCode, supabase)
 
-  // If not found or inactive, redirect to not found
-  if (!qrCode || !qrCode.is_active) {
-    return NextResponse.redirect(new URL('/not-found', request.url))
+  if (qrCode && qrCode.is_active) {
+    // Found in qr_codes — redirect with tracking
+    const requestUrl = new URL(request.url)
+    const utmParams = extractUtmParams(requestUrl)
+    const destinationUrl = appendUtmParams(qrCode.destination_url, utmParams)
+
+    after(async () => {
+      await trackScan(request, qrCode, supabase)
+    })
+
+    return NextResponse.redirect(destinationUrl, 302)
   }
 
-  // Get UTM params from request
-  const requestUrl = new URL(request.url)
-  const utmParams = extractUtmParams(requestUrl)
+  // Fallback: check pending_qr_codes (no cache, no tracking)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: pendingQr } = await (supabase.from('pending_qr_codes') as any)
+    .select('destination_url, expires_at')
+    .eq('short_code', shortCode)
+    .gt('expires_at', new Date().toISOString())
+    .single()
 
-  // Append UTM params to destination URL
-  const destinationUrl = appendUtmParams(qrCode.destination_url, utmParams)
+  if (pendingQr) {
+    return NextResponse.redirect(pendingQr.destination_url, 302)
+  }
 
-  // Track scan after response is sent (Vercel waits for this to complete)
-  after(async () => {
-    await trackScan(request, qrCode, supabase)
-  })
-
-  // Instant 302 redirect - no loading page
-  return NextResponse.redirect(destinationUrl, 302)
+  // Nothing found — 404
+  return NextResponse.redirect(new URL('/not-found', request.url))
 }
 
 // Fast geo lookup with timeout

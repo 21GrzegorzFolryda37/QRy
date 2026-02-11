@@ -357,7 +357,10 @@ export function Hero() {
     }
   }
 
-  // Send email handler
+  // Send email handler — two-step flow:
+  // 1. Create pending QR (gets shortCode + signupToken)
+  // 2. Generate QR image encoding /r/[shortCode] (trackable redirect)
+  // 3. Send email with QR image + registration link with token
   const handleSendEmail = async () => {
     if (!userEmail || !userEmail.includes('@')) {
       return
@@ -370,8 +373,30 @@ export function Hero() {
     setSendStatus('idle')
 
     try {
+      // Step 1: Create pending QR code
+      const pendingRes = await fetch('/api/pending-qr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destinationUrl: getQRData(),
+          qrType: selectedType,
+          style,
+          logoUrl: logoUrl || null,
+          logoSize,
+          email: userEmail,
+        }),
+      })
+
+      if (!pendingRes.ok) {
+        setSendStatus('error')
+        return
+      }
+
+      const { redirectUrl, signupToken } = await pendingRes.json()
+
+      // Step 2: Generate QR image that encodes the /r/[shortCode] redirect URL
       const dataUrl = await generateQrCodeImage(QRCodeStyling, {
-        url: getQRData(),
+        url: redirectUrl,
         style,
         size: style.width,
         logoUrl: logoUrl || undefined,
@@ -379,6 +404,7 @@ export function Hero() {
       })
 
       if (dataUrl) {
+        // Step 3: Send email with signupToken for registration link
         const response = await fetch('/api/send-qr', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -386,6 +412,7 @@ export function Hero() {
             email: userEmail,
             qrCodeBase64: dataUrl,
             url: getQRData(),
+            signupToken,
           }),
         })
 

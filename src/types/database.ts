@@ -196,6 +196,24 @@ export interface QrStyle {
   frame: FrameOptions | null
 }
 
+export interface PendingQrCode {
+  id: string
+  signup_token: string
+  short_code: string
+  destination_url: string
+  qr_type: string
+  style: QrStyle | Record<string, never>
+  logo_url: string | null
+  logo_size: number | null
+  qr_image_url: string | null
+  email: string | null
+  ip_address: string | null
+  claimed: boolean
+  claimed_by: string | null
+  expires_at: string
+  created_at: string
+}
+
 export interface Scan {
   id: string
   qr_code_id: string
@@ -238,6 +256,11 @@ export interface Database {
         Row: Scan
         Insert: Omit<Scan, 'id'>
         Update: never
+      }
+      pending_qr_codes: {
+        Row: PendingQrCode
+        Insert: Omit<PendingQrCode, 'id' | 'signup_token' | 'claimed' | 'claimed_by' | 'expires_at' | 'created_at'>
+        Update: Partial<Pick<PendingQrCode, 'claimed' | 'claimed_by'>>
       }
     }
   }

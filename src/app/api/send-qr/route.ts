@@ -5,7 +5,7 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, qrCodeBase64, url } = await request.json()
+    const { email, qrCodeBase64, url, signupToken } = await request.json()
 
     if (!email || !qrCodeBase64) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
             </p>
 
             <div style="text-align: center;">
-              <a href="https://qrenixy.com/register" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px;">
+              <a href="https://qrenixy.com/register${signupToken ? `?token=${signupToken}` : ''}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px;">
                 Stwórz darmowe konto
               </a>
             </div>
