@@ -1,4 +1,4 @@
--- EngageQR Database Schema
+-- QRenixy Database Schema
 -- Run this in Supabase SQL Editor to set up your database
 
 -- Enable UUID extension

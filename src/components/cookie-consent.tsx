@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui'
 import Link from 'next/link'
 
-const COOKIE_CONSENT_KEY = 'engageqr-cookie-consent'
+const COOKIE_CONSENT_KEY = 'qrenixy-cookie-consent'
 
 type ConsentStatus = 'pending' | 'accepted' | 'rejected'
 

@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://engageqr.com/sitemap.xml
+Sitemap: https://qrenixy.com/sitemap.xml
 
 # Disallow private areas
 Disallow: /api/
