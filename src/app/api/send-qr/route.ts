@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
@@ -84,6 +85,29 @@ export async function POST(request: NextRequest) {
     if (sendError) {
       console.error('Resend error:', sendError)
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    }
+
+    // Upload QR image to storage and save URL in pending record
+    if (signupToken) {
+      try {
+        const supabase = createAdminClient()
+        const fileName = `pending-qr-${signupToken}-${Date.now()}.png`
+        const imageBuffer = Buffer.from(base64Data, 'base64')
+
+        const { error: uploadError } = await supabase.storage
+          .from('qr-images')
+          .upload(fileName, imageBuffer, { contentType: 'image/png', upsert: true })
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('qr-images').getPublicUrl(fileName)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (supabase.from('pending_qr_codes') as any)
+            .update({ qr_image_url: urlData.publicUrl })
+            .eq('signup_token', signupToken)
+        }
+      } catch (uploadErr) {
+        console.error('Failed to upload pending QR image (non-blocking):', uploadErr)
+      }
     }
 
     return NextResponse.json({ success: true })
