@@ -44,9 +44,7 @@ export async function POST(request: NextRequest) {
               <table style="width: 100%;">
                 <tr>
                   <td style="width: 50px; vertical-align: middle;">
-                    <div style="width: 44px; height: 44px; background: #6d28d9; border-radius: 10px; line-height: 44px; text-align: center;">
-                      <span style="color: white; font-size: 20px; font-weight: 700;">QR</span>
-                    </div>
+                    <img src="https://qrenixy.com/logo.png" alt="QRenixy" width="44" height="44" style="display: block; border-radius: 10px;" />
                   </td>
                   <td style="vertical-align: middle; text-align: center;">
                     <h1 style="color: #6d28d9; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
