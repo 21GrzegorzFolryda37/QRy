@@ -40,76 +40,59 @@ export async function POST(request: NextRequest) {
           <div style="max-width: 600px; margin: 0 auto; background: white;">
 
             <!-- Header -->
-            <div style="background: #667eea; padding: 40px 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">
-                Twój kod QR jest gotowy!
-              </h1>
+            <div style="background: white; padding: 30px 40px; border-bottom: 1px solid #e5e7eb;">
+              <table style="width: 100%;">
+                <tr>
+                  <td style="width: 50px; vertical-align: middle;">
+                    <div style="width: 44px; height: 44px; background: #6d28d9; border-radius: 10px; line-height: 44px; text-align: center;">
+                      <span style="color: white; font-size: 20px; font-weight: 700;">QR</span>
+                    </div>
+                  </td>
+                  <td style="vertical-align: middle; text-align: center;">
+                    <h1 style="color: #6d28d9; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
+                      Twoj kod QR jest gotowy!
+                    </h1>
+                  </td>
+                  <td style="width: 50px;"></td>
+                </tr>
+              </table>
             </div>
 
             <!-- QR Code -->
             <div style="padding: 40px 20px; text-align: center;">
-              <img src="cid:qrcode" alt="Twój QR kod" style="max-width: 300px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+              <img src="cid:qrcode" alt="Twoj QR kod" style="max-width: 300px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);" />
 
               <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
-                Zakodowany link: <span style="color: #667eea; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                Zakodowany link: <span style="color: #6d28d9; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
               </p>
             </div>
 
-            <!-- CTA Section z wartością -->
-            <div style="background: #667eea; padding: 40px 30px; margin: 0 20px 40px 20px; border-radius: 16px; color: white;">
-
-              <h2 style="margin-top: 0; color: white; font-size: 24px; text-align: center; font-weight: 700;">
-                Chcesz wiedzieć kto skanuje ten kod?
-              </h2>
-
-              <p style="font-size: 16px; text-align: center; margin: 20px 0; line-height: 1.6;">
-                Twój kod już działa i śledzi skany! <br/>
-                Utwórz darmowe konto i zobacz:
-              </p>
-
-              <div style="background: rgba(255,255,255,0.1); padding: 24px; border-radius: 12px; margin: 24px 0;">
-                <table style="width: 100%; color: white;">
-                  <tr>
-                    <td style="padding: 8px 0; font-size: 15px;">
-                      Liczbę skanów w czasie rzeczywistym
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; font-size: 15px;">
-                      Lokalizację użytkowników na mapie
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; font-size: 15px;">
-                      Urządzenia (telefon/komputer/tablet)
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; font-size: 15px;">
-                      Godziny największego ruchu
-                    </td>
-                  </tr>
-                </table>
-              </div>
-
-              <div style="text-align: center; margin-top: 32px;">
-                <a href="${registerUrl}" style="display: inline-block; background: white; color: #667eea; padding: 18px 48px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
-                  Stwórz konto i śledź skany
+            <!-- CTA Section -->
+            <div style="background: #6d28d9; padding: 35px 40px; color: white;">
+              <div style="text-align: center; margin-bottom: 28px;">
+                <a href="${registerUrl}" style="display: inline-block; background: white; color: #6d28d9; padding: 18px 48px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                  Stworz darmowe konto i zobacz:
                 </a>
               </div>
 
-              <p style="text-align: center; margin-top: 24px; font-size: 14px; opacity: 0.9;">
-                Darmowe konto ·Bez karty kredytowej ·Gotowe w 30 sekund
+              <table style="width: 100%; color: white; margin-bottom: 20px;">
+                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Ile razy zeskanowano twoj kod</td></tr>
+                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Lokalizacje uzytkownikow na mapie</td></tr>
+                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Urzadzenia (telefon/komputer/tablet)</td></tr>
+              </table>
+
+              <p style="text-align: center; margin: 20px 0 0 0; font-size: 14px; opacity: 0.9;">
+                Darmowe konto · Bez karty kredytowej · Gotowe w 30 sekund
               </p>
             </div>
 
             <!-- Footer -->
             <div style="padding: 30px 20px; text-align: center; color: #9ca3af; font-size: 14px; border-top: 1px solid #e5e7eb;">
               <p style="margin: 0 0 8px 0;">
-                Masz pytania? Napisz do nas: <a href="mailto:contact@qrenixy.com" style="color: #667eea; text-decoration: none;">contact@qrenixy.com</a>
+                Masz pytania? Napisz do nas: <a href="mailto:contact@qrenixy.com" style="color: #6d28d9; text-decoration: none;">contact@qrenixy.com</a>
               </p>
               <p style="margin: 8px 0 0 0; font-size: 12px;">
-                &copy; ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzeżone.
+                &copy; ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzezone.
               </p>
             </div>
 
