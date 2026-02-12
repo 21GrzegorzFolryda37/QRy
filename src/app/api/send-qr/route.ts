@@ -36,40 +36,84 @@ export async function POST(request: NextRequest) {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; padding: 40px 20px;">
-          <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            <h1 style="color: #1e293b; font-size: 24px; margin: 0 0 16px 0; text-align: center;">
-              Twój kod QR jest gotowy!
-            </h1>
-            <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0; text-align: center;">
-              Dziękujemy za skorzystanie z naszego generatora. Poniżej znajdziesz swój spersonalizowany kod QR.
-            </p>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
+          <div style="max-width: 600px; margin: 0 auto; background: white;">
 
-            <div style="text-align: center; margin: 32px 0;">
-              <img src="cid:qrcode" alt="Kod QR" style="max-width: 250px; border-radius: 12px; border: 1px solid #e2e8f0;" />
+            <!-- Header -->
+            <div style="background: #667eea; padding: 40px 20px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">
+                Twój kod QR jest gotowy!
+              </h1>
             </div>
 
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0 0 8px 0;">
-              Zakodowany link:
-            </p>
-            <p style="color: #8b5cf6; font-size: 14px; text-align: center; word-break: break-all; margin: 0 0 32px 0;">
-              ${url}
-            </p>
+            <!-- QR Code -->
+            <div style="padding: 40px 20px; text-align: center;">
+              <img src="cid:qrcode" alt="Twój QR kod" style="max-width: 300px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
 
-            <div style="text-align: center;">
-              <a href="${registerUrl}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px;">
-                Stwórz darmowe konto
-              </a>
+              <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
+                Zakodowany link: <span style="color: #667eea; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+              </p>
             </div>
 
-            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 32px 0 0 0;">
-              Załóż konto, aby śledzić skany i edytować swoje kody QR w dowolnym momencie.
-            </p>
+            <!-- CTA Section z wartością -->
+            <div style="background: #667eea; padding: 40px 30px; margin: 0 20px 40px 20px; border-radius: 16px; color: white;">
+
+              <h2 style="margin-top: 0; color: white; font-size: 24px; text-align: center; font-weight: 700;">
+                Chcesz wiedzieć kto skanuje ten kod?
+              </h2>
+
+              <p style="font-size: 16px; text-align: center; margin: 20px 0; line-height: 1.6;">
+                Twój kod już działa i śledzi skany! <br/>
+                Utwórz darmowe konto i zobacz:
+              </p>
+
+              <div style="background: rgba(255,255,255,0.1); padding: 24px; border-radius: 12px; margin: 24px 0;">
+                <table style="width: 100%; color: white;">
+                  <tr>
+                    <td style="padding: 8px 0; font-size: 15px;">
+                      Liczbę skanów w czasie rzeczywistym
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-size: 15px;">
+                      Lokalizację użytkowników na mapie
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-size: 15px;">
+                      Urządzenia (telefon/komputer/tablet)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-size: 15px;">
+                      Godziny największego ruchu
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <div style="text-align: center; margin-top: 32px;">
+                <a href="${registerUrl}" style="display: inline-block; background: white; color: #667eea; padding: 18px 48px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
+                  Stwórz konto i śledź skany
+                </a>
+              </div>
+
+              <p style="text-align: center; margin-top: 24px; font-size: 14px; opacity: 0.9;">
+                Darmowe konto ·Bez karty kredytowej ·Gotowe w 30 sekund
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="padding: 30px 20px; text-align: center; color: #9ca3af; font-size: 14px; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 8px 0;">
+                Masz pytania? Napisz do nas: <a href="mailto:contact@qrenixy.com" style="color: #667eea; text-decoration: none;">contact@qrenixy.com</a>
+              </p>
+              <p style="margin: 8px 0 0 0; font-size: 12px;">
+                &copy; ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzeżone.
+              </p>
+            </div>
+
           </div>
-
-          <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 24px 0 0 0;">
-            © ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzeżone.
-          </p>
         </body>
         </html>
       `,
