@@ -14,9 +14,10 @@ interface QrPreviewProps {
   style?: Partial<QrStyle>
   logoUrl?: string
   logoSize?: number
+  maxWidth?: number
 }
 
-export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
+export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
@@ -37,7 +38,7 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
 
   // Scale preview down when frame makes it too wide for the container
-  const PREVIEW_MAX_WIDTH = 360
+  const PREVIEW_MAX_WIDTH = maxWidth ?? 360
   const previewScale = Math.min(1, PREVIEW_MAX_WIDTH / dimensions.width)
 
   // Reset QR code instance when frameShape or frame changes (affects background transparency)
@@ -170,10 +171,12 @@ export function QrPreview({ url, style, logoUrl, logoSize }: QrPreviewProps) {
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center" style={{ maxWidth: '100%' }}>
       <div style={{
         width: dimensions.width * previewScale,
         height: dimensions.height * previewScale,
+        maxWidth: '100%',
+        overflow: 'hidden',
       }}>
         <div style={{
           width: dimensions.width,
