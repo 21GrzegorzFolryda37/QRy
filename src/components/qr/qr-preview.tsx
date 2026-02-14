@@ -19,9 +19,11 @@ interface QrPreviewProps {
 
 export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const qrCodeRef = useRef<QRCodeStylingType | null>(null)
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
   const [customQrDataUrl, setCustomQrDataUrl] = useState<string | null>(null)
+  const [availableWidth, setAvailableWidth] = useState<number>(280)
   const clipId = useId()
 
   // Create stable style string for comparison
@@ -37,8 +39,22 @@ export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreview
   // Calculate total dimensions including frame
   const dimensions = useMemo(() => getFrameDimensions(qrSize, frame), [qrSize, frame])
 
+  // Measure available container width via ResizeObserver
+  useEffect(() => {
+    if (!wrapperRef.current) return
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0].contentRect.width
+      if (w > 0) setAvailableWidth(w)
+    })
+    observer.observe(wrapperRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   // Scale preview down when frame makes it too wide for the container
-  const PREVIEW_MAX_WIDTH = maxWidth ?? 360
+  const effectiveMaxWidth = maxWidth ?? 360
+  const PREVIEW_MAX_WIDTH = availableWidth > 0
+    ? Math.min(effectiveMaxWidth, availableWidth)
+    : effectiveMaxWidth
   const previewScale = Math.min(1, PREVIEW_MAX_WIDTH / dimensions.width)
 
   // Reset QR code instance when frameShape or frame changes (affects background transparency)
@@ -174,20 +190,23 @@ export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreview
   const scaledHeight = dimensions.height * previewScale
 
   return (
-    <div className="flex justify-center" style={{ maxWidth: '100%', overflow: 'hidden' }}>
-      <div style={{
-        width: scaledWidth,
-        height: scaledHeight,
-        maxWidth: '100%',
-        overflow: 'hidden',
-        aspectRatio: `${scaledWidth} / ${scaledHeight}`,
-      }}>
+    <div ref={wrapperRef} style={{ width: '100%', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', overflow: 'hidden' }}>
         <div style={{
-          width: dimensions.width,
-          height: dimensions.height,
-          transform: previewScale < 1 ? `scale(${previewScale})` : undefined,
-          transformOrigin: 'top left',
+          width: scaledWidth,
+          height: scaledHeight,
+          maxWidth: '100%',
+          position: 'relative',
         }}>
+          <div style={{
+            width: dimensions.width,
+            height: dimensions.height,
+            transform: previewScale < 1 ? `scale(${previewScale})` : undefined,
+            transformOrigin: 'top left',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}>
           <FrameRenderer frame={frame} size={qrSize} className="relative">
             {hasCustomShape ? (
               <div className="relative" style={{ width: qrSize, height: qrSize }}>
@@ -233,6 +252,7 @@ export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreview
             )}
           </FrameRenderer>
         </div>
+      </div>
       </div>
     </div>
   )

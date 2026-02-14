@@ -1096,10 +1096,10 @@ export function Hero() {
                   </div>
 
                   {/* Live QR Preview */}
-                  <div className="relative mb-6 min-w-0">
+                  <div className="relative mb-6">
                     <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
-                    <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)] min-w-0">
-                      <div className="bg-white rounded-xl p-2 shadow-lg max-w-full min-w-0 overflow-hidden">
+                    <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                      <div className="bg-white rounded-xl p-2 shadow-lg max-w-full overflow-hidden">
                         <QrPreview
                           url={getQRData()}
                           style={style}
