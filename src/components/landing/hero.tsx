@@ -979,27 +979,9 @@ export function Hero() {
           </p>
         </div>
 
-        {/* QR Type Selector - Grid on mobile, horizontal wrap on desktop */}
-        <div className={`mb-8 animate-fade-in-up animate-delay-300 ${mobileStep !== 1 ? 'hidden lg:block' : ''}`}>
-          {/* Mobile: compact grid */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 px-1 lg:hidden">
-            {qrTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  selectedType === type.id
-                    ? 'bg-[#6d28d9] text-white shadow-md'
-                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
-                }`}
-              >
-                <TypeIcon type={type.icon} className="w-4 h-4" />
-                {type.label}
-              </button>
-            ))}
-          </div>
-          {/* Desktop: horizontal wrap */}
-          <div className="hidden lg:flex gap-2 flex-wrap justify-center">
+        {/* QR Type Selector - Desktop only (mobile moved into Step 1) */}
+        <div className={`mb-8 animate-fade-in-up animate-delay-300 hidden lg:block`}>
+          <div className="flex gap-2 flex-wrap justify-center">
             {qrTypes.map((type) => (
               <button
                 key={type.id}
@@ -1022,7 +1004,7 @@ export function Hero() {
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
 
             {/* ===== MOBILE WIZARD (< lg) ===== */}
-            <div className="lg:hidden p-5 sm:p-6">
+            <div className="lg:hidden p-5 sm:p-6 overflow-hidden">
               <MobileStepIndicator currentStep={mobileStep} />
 
               {/* Step 1: Type + Data */}
@@ -1039,6 +1021,23 @@ export function Hero() {
                     {renderForm()}
                   </div>
                   <MobileWizardNav currentStep={1} onGoToStep={goToStep} isFormValid={isFormValid()} />
+                  {/* QR Type selector - below nav on mobile */}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-4">
+                    {qrTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
+                        className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                          selectedType === type.id
+                            ? 'bg-[#6d28d9] text-white shadow-md'
+                            : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
+                        }`}
+                      >
+                        <TypeIcon type={type.icon} className="w-4 h-4" />
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -1099,8 +1098,8 @@ export function Hero() {
                   {/* Live QR Preview */}
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
-                    <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                      <div className="bg-white rounded-xl p-2 shadow-lg">
+                    <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                      <div className="bg-white rounded-xl p-2 shadow-lg max-w-full">
                         <QrPreview
                           url={getQRData()}
                           style={style}
@@ -1444,7 +1443,7 @@ function MobileWizardNav({
             disabled={!isFormValid}
             className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
           >
-            Personalizuj →
+            Dalej →
           </button>
         </>
       )}
