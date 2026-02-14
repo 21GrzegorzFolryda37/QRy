@@ -170,13 +170,17 @@ export function QrPreview({ url, style, logoUrl, logoSize, maxWidth }: QrPreview
     )
   }
 
+  const scaledWidth = dimensions.width * previewScale
+  const scaledHeight = dimensions.height * previewScale
+
   return (
-    <div className="flex justify-center" style={{ maxWidth: '100%' }}>
+    <div className="flex justify-center" style={{ maxWidth: '100%', overflow: 'hidden' }}>
       <div style={{
-        width: dimensions.width * previewScale,
-        height: dimensions.height * previewScale,
+        width: scaledWidth,
+        height: scaledHeight,
         maxWidth: '100%',
         overflow: 'hidden',
+        aspectRatio: `${scaledWidth} / ${scaledHeight}`,
       }}>
         <div style={{
           width: dimensions.width,
