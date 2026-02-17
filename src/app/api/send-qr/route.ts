@@ -64,13 +64,14 @@ export async function POST(request: NextRequest) {
                 Zakodowany link: <span style="color: #6d28d9; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
               </p>
 
-              <!-- 7-day expiration warning -->
-              <div style="margin: 24px auto 0; max-width: 440px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px 20px;">
-                <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
-                  <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
-                  Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
-                </p>
-              </div>
+            </div>
+
+            <!-- 7-day expiration warning -->
+            <div style="background: #fffbeb; border-top: 1px solid #fcd34d; border-bottom: 1px solid #fcd34d; padding: 16px 40px; text-align: center;">
+              <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
+                <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
+                Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
+              </p>
             </div>
 
             <!-- CTA Section -->
