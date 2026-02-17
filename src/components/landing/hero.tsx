@@ -14,7 +14,7 @@ import { generateQrCodeImage } from '@/lib/qr/options'
 import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion } from '@/lib/analytics'
 import type QRCodeStylingType from 'qr-code-styling'
 
-type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'event' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
+type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
 type PersonalizationTab = 'templates' | 'color' | 'shape' | 'corners' | 'frame' | 'logo' | 'more'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
@@ -26,7 +26,6 @@ const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
   { id: 'vcard', label: 'Wizytówka', icon: 'user' },
   { id: 'wifi', label: 'WiFi', icon: 'wifi' },
-  { id: 'event', label: 'Wydarzenie', icon: 'calendar' },
   { id: 'social', label: 'Social media', icon: 'share' },
   { id: 'pdf', label: 'PDF', icon: 'file' },
   { id: 'video', label: 'Wideo', icon: 'play' },
@@ -47,7 +46,6 @@ const typeContent: Record<QRType, { title: string; subtitle: string }> = {
   whatsapp: { title: 'WhatsApp w kodzie QR', subtitle: 'Rozpocznij rozmowę na WhatsApp jednym skanem' },
   vcard: { title: 'Przekształć dane kontaktowe w kod QR vCard', subtitle: 'Rozwój Twojej sieci nigdy nie był łatwiejszy' },
   wifi: { title: 'Udostępnij hasło WiFi przez kod QR', subtitle: 'Goście połączą się jednym skanem' },
-  event: { title: 'Wydarzenie w kodzie QR', subtitle: 'Dodaj wydarzenie do kalendarza jednym skanem' },
   social: { title: 'Wszystkie social media w jednym kodzie QR', subtitle: 'Linki do wszystkich profili w jednym miejscu' },
   pdf: { title: 'Udostępnij plik PDF przez kod QR', subtitle: 'Dokumenty dostępne po zeskanowaniu' },
   video: { title: 'Udostępnij wideo przez kod QR', subtitle: 'Link do YouTube, Vimeo lub własnego wideo' },
@@ -211,7 +209,7 @@ export function Hero() {
   const [logoSize, setLogoSize] = useState(45)
 
   // Active personalization tab
-  const [activeTab, setActiveTab] = useState<PersonalizationTab>('templates')
+  const [activeTab, setActiveTab] = useState<PersonalizationTab>('logo')
 
   // Mobile wizard step
   const [mobileStep, setMobileStep] = useState<1 | 2 | 3>(1)
@@ -336,14 +334,6 @@ export function Hero() {
         return `WIFI:T:${formData.encryption || 'WPA'};S:${formData.ssid || ''};P:${formData.password || ''};;`
       case 'vcard':
         return `BEGIN:VCARD\nVERSION:3.0\nFN:${formData.name || ''}\nORG:${formData.company || ''}\nTEL:${formData.phone || ''}\nEMAIL:${formData.email || ''}\nEND:VCARD`
-      case 'event':
-        const startDate = formData.eventDate && formData.eventTime
-          ? `${formData.eventDate.replace(/-/g, '')}T${formData.eventTime.replace(':', '')}00`
-          : ''
-        const endDate = formData.eventDate && formData.eventEndTime
-          ? `${formData.eventDate.replace(/-/g, '')}T${formData.eventEndTime.replace(':', '')}00`
-          : ''
-        return `BEGIN:VEVENT\nSUMMARY:${formData.eventTitle || ''}\nDTSTART:${startDate}\nDTEND:${endDate}\nLOCATION:${formData.eventLocation || ''}\nEND:VEVENT`
       case 'facebook':
         return `https://facebook.com/${formData.username || ''}`
       case 'instagram':
@@ -452,8 +442,6 @@ export function Hero() {
         return !!formData.name
       case 'wifi':
         return !!formData.ssid
-      case 'event':
-        return !!formData.eventTitle
       case 'facebook':
       case 'instagram':
       case 'twitter':
@@ -538,33 +526,6 @@ export function Hero() {
                 rows={2}
                 className={inputClass}
               />
-            </div>
-          </div>
-        )
-      case 'event':
-        return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Nazwa wydarzenia *</label>
-              <input type="text" value={formData.eventTitle || ''} onChange={(e) => setFormData({ ...formData, eventTitle: e.target.value })} placeholder="Spotkanie biznesowe" className={inputClass} />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Data</label>
-                <input type="date" value={formData.eventDate || ''} onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })} className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Godzina start</label>
-                <input type="time" value={formData.eventTime || ''} onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })} className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Godzina koniec</label>
-                <input type="time" value={formData.eventEndTime || ''} onChange={(e) => setFormData({ ...formData, eventEndTime: e.target.value })} className={inputClass} />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Lokalizacja</label>
-              <input type="text" value={formData.eventLocation || ''} onChange={(e) => setFormData({ ...formData, eventLocation: e.target.value })} placeholder="ul. Przykładowa 1, Warszawa" className={inputClass} />
             </div>
           </div>
         )
@@ -1485,7 +1446,6 @@ function TypeIcon({ type, className }: { type: string; className?: string }) {
     phone: <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />,
     sms: <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />,
     whatsapp: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.556 0 8.25-3.694 8.25-8.25S16.556 3.75 12 3.75 3.75 7.444 3.75 12c0 1.592.467 3.075 1.27 4.32L3.75 20.25l4.02-1.23A8.212 8.212 0 0 0 12 20.25Z" />,
-    calendar: <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />,
     share: <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />,
     user: <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />,
     wifi: <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />,
