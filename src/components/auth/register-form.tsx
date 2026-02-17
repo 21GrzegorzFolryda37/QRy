@@ -82,7 +82,7 @@ export function RegisterForm() {
           className="mt-0.5 h-4 w-4 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]/50 cursor-pointer"
         />
         <span className="text-xs text-[var(--foreground-muted)] leading-relaxed group-hover:text-[var(--foreground)] transition-colors">
-          Chcę otrzymywać porady i nowości od QRenixy (max 2x w miesiącu). Możesz zrezygnować w każdej chwili.
+          Chcę otrzymywać porady i nowości od QRenixy które pomogą mi poprawić wyniki kodów.
         </span>
       </label>
 
