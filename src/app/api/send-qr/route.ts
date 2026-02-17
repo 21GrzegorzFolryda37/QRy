@@ -66,17 +66,10 @@ export async function POST(request: NextRequest) {
 
               <!-- 7-day expiration warning -->
               <div style="margin: 24px auto 0; max-width: 440px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px 20px;">
-                <table style="width: 100%;">
-                  <tr>
-                    <td style="width: 28px; vertical-align: top; padding-top: 2px;">
-                      <span style="font-size: 20px;">&#9200;</span>
-                    </td>
-                    <td style="color: #92400e; font-size: 14px; line-height: 1.5;">
-                      <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
-                      Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
-                    </td>
-                  </tr>
-                </table>
+                <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
+                  <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
+                  Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
+                </p>
               </div>
             </div>
 
