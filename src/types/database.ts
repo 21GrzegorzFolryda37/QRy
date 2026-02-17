@@ -20,6 +20,7 @@ export interface Profile {
   qr_limit: number
   monthly_scan_limit: number
   current_month_scans: number
+  newsletter_consent: boolean
   created_at: string
   updated_at: string
 }

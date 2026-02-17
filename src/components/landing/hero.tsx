@@ -1080,6 +1080,19 @@ export function Hero() {
                         </svg>
                         <p className="text-green-800 font-medium">Kod QR wysłany!</p>
                         <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
+
+                        {/* 7-day expiration warning */}
+                        <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                          <div className="flex items-start gap-2">
+                            <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <p className="text-xs text-amber-800 leading-relaxed">
+                              Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
+                            </p>
+                          </div>
+                        </div>
+
                         <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
                           Wyślij ponownie
                         </button>
@@ -1239,6 +1252,19 @@ export function Hero() {
                       </svg>
                       <p className="text-green-800 font-medium">Kod QR wysłany!</p>
                       <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
+
+                      {/* 7-day expiration warning */}
+                      <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                        <div className="flex items-start gap-2">
+                          <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                          </svg>
+                          <p className="text-xs text-amber-800 leading-relaxed">
+                            Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
+                          </p>
+                        </div>
+                      </div>
+
                       <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
                         Wyślij ponownie
                       </button>

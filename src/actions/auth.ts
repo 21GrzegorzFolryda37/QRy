@@ -64,13 +64,14 @@ export async function register(
     email: formData.get('email'),
     password: formData.get('password'),
     fullName: formData.get('fullName'),
+    newsletterConsent: formData.get('newsletterConsent') === 'on',
   })
 
   if (!validatedFields.success) {
     return { error: validatedFields.error.issues[0].message }
   }
 
-  const { email, password, fullName } = validatedFields.data
+  const { email, password, fullName, newsletterConsent } = validatedFields.data
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -87,6 +88,19 @@ export async function register(
     return { error: error.message }
   }
 
+  // Save newsletter consent if opted in
+  if (newsletterConsent && data.user?.id) {
+    try {
+      const adminClient = createAdminClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (adminClient.from('profiles') as any)
+        .update({ newsletter_consent: true })
+        .eq('id', data.user.id)
+    } catch (consentError) {
+      console.error('Failed to save newsletter consent (non-blocking):', consentError)
+    }
+  }
+
   // Claim pending QR code if signup token provided
   const signupToken = formData.get('signupToken') as string | null
   if (signupToken && data.user?.id) {
@@ -98,7 +112,7 @@ export async function register(
   }
 
   revalidatePath('/', 'layout')
-  redirect(`/dashboard?signup=success&uid=${data.user?.id || ''}`)
+  return { success: true }
 }
 
 async function claimPendingQrCode(token: string, userId: string): Promise<void> {

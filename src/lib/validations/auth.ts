@@ -9,6 +9,7 @@ export const registerSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   fullName: z.string().min(1, 'Full name is required').max(100, 'Name is too long'),
+  newsletterConsent: z.boolean().default(false),
 })
 
 export const forgotPasswordSchema = z.object({

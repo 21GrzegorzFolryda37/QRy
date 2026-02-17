@@ -63,13 +63,28 @@ export async function POST(request: NextRequest) {
               <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
                 Zakodowany link: <span style="color: #6d28d9; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
               </p>
+
+              <!-- 7-day expiration warning -->
+              <div style="margin: 24px auto 0; max-width: 440px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px 20px;">
+                <table style="width: 100%;">
+                  <tr>
+                    <td style="width: 28px; vertical-align: top; padding-top: 2px;">
+                      <span style="font-size: 20px;">&#9200;</span>
+                    </td>
+                    <td style="color: #92400e; font-size: 14px; line-height: 1.5;">
+                      <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
+                      Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
 
             <!-- CTA Section -->
             <div style="background: #6d28d9; padding: 35px 40px; color: white;">
               <div style="text-align: center; margin-bottom: 28px;">
                 <a href="${registerUrl}" style="display: inline-block; background: white; color: #6d28d9; padding: 18px 48px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-                  Stworz darmowe konto i zobacz:
+                  Zachowaj swoj kod QR — zaloz konto za darmo
                 </a>
               </div>
 
