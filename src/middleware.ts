@@ -16,6 +16,6 @@ export const config = {
      * - r/ (redirect routes - public)
      * - api/webhooks (webhook routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|r/|l/|s/|api/webhooks).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|r/|l/|s/|api/webhooks|auth/callback).*)',
   ],
 }
