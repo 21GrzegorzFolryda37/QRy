@@ -950,7 +950,7 @@ export function Hero() {
               <div className="lg:grid lg:grid-cols-12 lg:gap-8">
 
                 {/* Left / main: wizard content (all screen sizes) */}
-                <div className="lg:col-span-8">
+                <div className="lg:col-span-8 pb-24 lg:pb-0">
                   <StepIndicator currentStep={step} />
 
                   {/* Step 1: Type & Data */}
@@ -1223,6 +1223,13 @@ export function Hero() {
         </div>
       </div>
 
+      {/* Fixed bottom nav - mobile only */}
+      <MobileFixedNav
+        currentStep={step}
+        onGoToStep={goToStep}
+        isFormValid={isFormValid() && !!codeName}
+      />
+
     </section>
   )
 }
@@ -1291,7 +1298,7 @@ function WizardNav({
   isFormValid: boolean
 }) {
   return (
-    <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+    <div className="hidden lg:flex items-center gap-3 mt-6 pt-4 border-t border-[var(--border)]">
       {currentStep === 1 && (
         <button
           onClick={() => onGoToStep(2)}
@@ -1325,6 +1332,62 @@ function WizardNav({
           ← Wstecz
         </button>
       )}
+    </div>
+  )
+}
+
+// Mobile Fixed Bottom Navigation (mobile only)
+function MobileFixedNav({
+  currentStep,
+  onGoToStep,
+  isFormValid,
+}: {
+  currentStep: 1 | 2 | 3
+  onGoToStep: (step: 1 | 2 | 3) => void
+  isFormValid: boolean
+}) {
+  return (
+    <div
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      <div className="bg-white/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3">
+        <div className="flex items-center gap-3 max-w-lg mx-auto">
+          {currentStep === 1 && (
+            <button
+              onClick={() => onGoToStep(2)}
+              disabled={!isFormValid}
+              className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
+            >
+              Dalej →
+            </button>
+          )}
+          {currentStep === 2 && (
+            <>
+              <button
+                onClick={() => onGoToStep(1)}
+                className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
+              >
+                ← Wstecz
+              </button>
+              <button
+                onClick={() => onGoToStep(3)}
+                className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25"
+              >
+                Podgląd →
+              </button>
+            </>
+          )}
+          {currentStep === 3 && (
+            <button
+              onClick={() => onGoToStep(2)}
+              className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
+            >
+              ← Wstecz
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
