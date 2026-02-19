@@ -1202,16 +1202,18 @@ export function Hero() {
                       </div>
                     </div>
 
-                    {/* 7-day expiration notice - always visible on desktop */}
-                    <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
-                      <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                      </svg>
-                      <p className="text-xs text-amber-800 leading-relaxed">
-                        <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                        Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                      </p>
-                    </div>
+                    {/* 7-day expiration notice - only in step 3 on desktop */}
+                    {step === 3 && (
+                      <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
+                        <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                        </svg>
+                        <p className="text-xs text-amber-800 leading-relaxed">
+                          <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
+                          Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
