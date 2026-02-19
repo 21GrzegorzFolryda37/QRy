@@ -1,21 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
-import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from '@/components/qr/shape-selector'
-import { FrameSelector } from '@/components/qr/frame-selector'
-import { GradientEditor } from '@/components/qr/gradient-editor'
-import { LogoUploader, brandLogos } from '@/components/qr/logo-uploader'
-import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
-import { generateQrCodeImage } from '@/lib/qr/options'
-import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion } from '@/lib/analytics'
-import type QRCodeStylingType from 'qr-code-styling'
+import { heroQRStarted, heroQRUrlEntered } from '@/lib/analytics'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
-type PersonalizationTab = 'templates' | 'color' | 'shape' | 'corners' | 'frame' | 'logo' | 'more'
 
 const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'website', label: 'Strona www', icon: 'globe' },
@@ -37,230 +28,39 @@ const qrTypes: { id: QRType; label: string; icon: string }[] = [
   { id: 'appstore', label: 'Aplikacje', icon: 'download' },
 ]
 
-const typeContent: Record<QRType, { title: string; subtitle: string }> = {
-  website: { title: 'Przekształć link do strony w kod QR', subtitle: 'Udostępniaj swoją stronę internetową w prosty sposób' },
-  text: { title: 'Przekształć tekst w kod QR', subtitle: 'Udostępniaj dowolny tekst po zeskanowaniu' },
-  email: { title: 'Przekształć adres e-mail w kod QR', subtitle: 'Pozwól klientom szybko się z Tobą skontaktować' },
-  phone: { title: 'Numer telefonu w kodzie QR', subtitle: 'Jeden skan i połączenie gotowe' },
-  sms: { title: 'Wiadomość SMS w kodzie QR', subtitle: 'Wypełniona wiadomość SMS po zeskanowaniu' },
-  whatsapp: { title: 'WhatsApp w kodzie QR', subtitle: 'Rozpocznij rozmowę na WhatsApp jednym skanem' },
-  vcard: { title: 'Przekształć dane kontaktowe w kod QR vCard', subtitle: 'Rozwój Twojej sieci nigdy nie był łatwiejszy' },
-  wifi: { title: 'Udostępnij hasło WiFi przez kod QR', subtitle: 'Goście połączą się jednym skanem' },
-  social: { title: 'Wszystkie social media w jednym kodzie QR', subtitle: 'Linki do wszystkich profili w jednym miejscu' },
-  pdf: { title: 'Udostępnij plik PDF przez kod QR', subtitle: 'Dokumenty dostępne po zeskanowaniu' },
-  video: { title: 'Udostępnij wideo przez kod QR', subtitle: 'Link do YouTube, Vimeo lub własnego wideo' },
-  facebook: { title: 'Link do Facebooka w kodzie QR', subtitle: 'Zwiększ liczbę obserwujących' },
-  instagram: { title: 'Link do Instagrama w kodzie QR', subtitle: 'Rozwijaj swoje konto Instagram' },
-  twitter: { title: 'Link do Twitter/X w kodzie QR', subtitle: 'Połącz się ze swoimi obserwatorami' },
-  bitcoin: { title: 'Adres Bitcoin w kodzie QR', subtitle: 'Przyjmuj płatności kryptowalutowe' },
-  mp3: { title: 'Udostępnij plik audio przez kod QR', subtitle: 'Muzyka i podcasty po zeskanowaniu' },
-  appstore: { title: 'Link do aplikacji w kodzie QR', subtitle: 'App Store i Google Play w jednym kodzie' },
+const typeContent: Record<QRType, { subtitle: string }> = {
+  website: { subtitle: 'Udostępniaj swoją stronę internetową w prosty sposób' },
+  text: { subtitle: 'Udostępniaj dowolny tekst po zeskanowaniu' },
+  email: { subtitle: 'Pozwól klientom szybko się z Tobą skontaktować' },
+  phone: { subtitle: 'Jeden skan i połączenie gotowe' },
+  sms: { subtitle: 'Wypełniona wiadomość SMS po zeskanowaniu' },
+  whatsapp: { subtitle: 'Rozpocznij rozmowę na WhatsApp jednym skanem' },
+  vcard: { subtitle: 'Rozwój Twojej sieci nigdy nie był łatwiejszy' },
+  wifi: { subtitle: 'Goście połączą się jednym skanem' },
+  social: { subtitle: 'Linki do wszystkich profili w jednym miejscu' },
+  pdf: { subtitle: 'Dokumenty dostępne po zeskanowaniu' },
+  video: { subtitle: 'Link do YouTube, Vimeo lub własnego wideo' },
+  facebook: { subtitle: 'Zwiększ liczbę obserwujących' },
+  instagram: { subtitle: 'Rozwijaj swoje konto Instagram' },
+  twitter: { subtitle: 'Połącz się ze swoimi obserwatorami' },
+  bitcoin: { subtitle: 'Przyjmuj płatności kryptowalutowe' },
+  mp3: { subtitle: 'Muzyka i podcasty po zeskanowaniu' },
+  appstore: { subtitle: 'App Store i Google Play w jednym kodzie' },
 }
-
-const personalizationTabs: { id: PersonalizationTab; label: string }[] = [
-  { id: 'templates', label: 'Szablony' },
-  { id: 'color', label: 'Kolor' },
-  { id: 'shape', label: 'Kształt' },
-  { id: 'corners', label: 'Rogi' },
-  { id: 'frame', label: 'Ramka' },
-  { id: 'logo', label: 'Logo' },
-  { id: 'more', label: 'Więcej' },
-]
-
-// Gotowe szablony marek - identyczne jak w qr-form.tsx
-interface BrandTemplate {
-  id: string
-  name: string
-  logoId: string
-  color: string
-  style: Partial<QrStyle>
-}
-
-const brandTemplates: BrandTemplate[] = [
-  {
-    id: 'instagram',
-    name: 'Instagram',
-    logoId: 'instagram',
-    color: '#E1306C',
-    style: {
-      foregroundColor: '#E1306C',
-      dotsType: 'random-dot',
-      dotsGradient: { type: 'linear', rotation: 225, colorStops: [{ offset: 0, color: '#f77737' }, { offset: 0.4, color: '#fd5949' }, { offset: 0.7, color: '#d6249f' }, { offset: 1, color: '#405de6' }] },
-      cornersSquareType: 'extra-rounded',
-      cornersSquareColor: '#d6249f',
-      cornersDotType: 'dot',
-      cornersDotColor: '#fd5949',
-    },
-  },
-  {
-    id: 'spotify',
-    name: 'Spotify',
-    logoId: 'spotify',
-    color: '#1DB954',
-    style: {
-      foregroundColor: '#1DB954',
-      dotsType: 'dots',
-      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#1DB954' }, { offset: 1, color: '#191414' }] },
-      cornersSquareType: 'dot',
-      cornersSquareColor: '#1DB954',
-      cornersDotType: 'dot',
-      cornersDotColor: '#191414',
-    },
-  },
-  {
-    id: 'facebook',
-    name: 'Facebook',
-    logoId: 'facebook',
-    color: '#1877F2',
-    style: {
-      foregroundColor: '#1877F2',
-      dotsType: 'rounded',
-      dotsGradient: null,
-      cornersSquareType: 'extra-rounded',
-      cornersSquareColor: '#1877F2',
-      cornersDotType: 'dot',
-      cornersDotColor: '#1877F2',
-    },
-  },
-  {
-    id: 'youtube',
-    name: 'YouTube',
-    logoId: 'youtube',
-    color: '#FF0000',
-    style: {
-      foregroundColor: '#FF0000',
-      dotsType: 'dots',
-      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#FF0000' }, { offset: 1, color: '#282828' }] },
-      cornersSquareType: 'extra-rounded',
-      cornersSquareColor: '#FF0000',
-      cornersDotType: 'dot',
-      cornersDotColor: '#FF0000',
-    },
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok',
-    logoId: 'tiktok',
-    color: '#00f2ea',
-    style: {
-      foregroundColor: '#000000',
-      dotsType: 'rounded',
-      dotsGradient: { type: 'linear', rotation: 135, colorStops: [{ offset: 0, color: '#4de8e0' }, { offset: 0.4, color: '#2b2b2b' }, { offset: 0.6, color: '#2b2b2b' }, { offset: 1, color: '#e0345b' }] },
-      cornersSquareType: 'classy-rounded',
-      cornersSquareColor: '#000000',
-      cornersDotType: 'dot',
-      cornersDotColor: '#000000',
-    },
-  },
-  {
-    id: 'whatsapp',
-    name: 'WhatsApp',
-    logoId: 'whatsapp',
-    color: '#25D366',
-    style: {
-      foregroundColor: '#25D366',
-      dotsType: 'rounded',
-      dotsGradient: { type: 'linear', rotation: 180, colorStops: [{ offset: 0, color: '#25D366' }, { offset: 1, color: '#128C7E' }] },
-      cornersSquareType: 'extra-rounded',
-      cornersSquareColor: '#25D366',
-      cornersDotType: 'dot',
-      cornersDotColor: '#128C7E',
-    },
-  },
-  {
-    id: 'linkedin',
-    name: 'LinkedIn',
-    logoId: 'linkedin',
-    color: '#0A66C2',
-    style: {
-      foregroundColor: '#0A66C2',
-      dotsType: 'square',
-      dotsGradient: null,
-      cornersSquareType: 'square',
-      cornersSquareColor: '#0A66C2',
-      cornersDotType: 'square',
-      cornersDotColor: '#0A66C2',
-    },
-  },
-  {
-    id: 'x',
-    name: 'X',
-    logoId: 'x',
-    color: '#000000',
-    style: {
-      foregroundColor: '#000000',
-      dotsType: 'square',
-      dotsGradient: null,
-      cornersSquareType: 'square',
-      cornersSquareColor: '#000000',
-      cornersDotType: 'square',
-      cornersDotColor: '#000000',
-    },
-  },
-]
 
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [codeName, setCodeName] = useState('')
 
-  // QR Style state
-  const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
-  const [logoUrl, setLogoUrl] = useState<string | null>(null)
-  const [logoSize, setLogoSize] = useState(45)
-
-  // Active personalization tab
-  const [activeTab, setActiveTab] = useState<PersonalizationTab>('logo')
-
-  // Wizard step (unified for all screen sizes)
-  const [step, setStep] = useState<1 | 2 | 3>(1)
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  const goToStep = (s: 1 | 2 | 3) => {
-    setStep(s)
-    setTimeout(() => {
-      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 50)
-  }
-
-  // QRCodeStyling library for generating QR
-  const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
-
-  // Email sending state
-  const [userEmail, setUserEmail] = useState('')
-  const [isSending, setIsSending] = useState(false)
-  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
-
   // Analytics timing
-  const [startTime, setStartTime] = useState<number | null>(null)
   const hasTrackedStart = useRef(false)
-
-  // Personalization tracking
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('none')
-  const [customizationClicks, setCustomizationClicks] = useState(0)
-
-  const getCustomizationData = () => ({
-    selectedTemplate,
-    hasFrame: !!style.frame,
-    hasLogo: !!logoUrl,
-    qrColor: style.foregroundColor,
-    bgColor: style.backgroundColor,
-    frameStyle: style.frame?.style || 'none',
-  })
 
   const trackStart = useCallback(() => {
     if (!hasTrackedStart.current) {
       hasTrackedStart.current = true
-      setStartTime(Date.now())
       heroQRStarted()
     }
-  }, [])
-
-  // Load QRCodeStyling library
-  useEffect(() => {
-    import('qr-code-styling').then((module) => {
-      setQRCodeStyling(() => module.default)
-    })
   }, [])
 
   // Particle animation
@@ -310,13 +110,7 @@ export function Hero() {
     }
   }, [])
 
-  // Helper to update style
-  const updateStyle = (updates: Partial<QrStyle>) => {
-    setStyle(prev => ({ ...prev, ...updates }))
-    setCustomizationClicks(prev => prev + 1)
-  }
-
-  // Generate QR data based on selected type
+  // Generate QR data for live preview
   const getQRData = () => {
     switch (selectedType) {
       case 'website':
@@ -324,17 +118,17 @@ export function Hero() {
       case 'text':
         return formData.text || 'Przykładowy tekst'
       case 'email':
-        return `mailto:${formData.email || ''}?subject=${encodeURIComponent(formData.subject || '')}&body=${encodeURIComponent(formData.body || '')}`
+        return `mailto:${formData.email || ''}?subject=${encodeURIComponent(formData.subject || '')}`
       case 'phone':
         return `tel:${formData.phone || ''}`
       case 'sms':
-        return `sms:${formData.phone || ''}${formData.message ? `?body=${encodeURIComponent(formData.message)}` : ''}`
+        return `sms:${formData.phone || ''}`
       case 'whatsapp':
-        return `https://wa.me/${formData.phone || ''}${formData.message ? `?text=${encodeURIComponent(formData.message)}` : ''}`
+        return `https://wa.me/${formData.phone || ''}`
       case 'wifi':
         return `WIFI:T:${formData.encryption || 'WPA'};S:${formData.ssid || ''};P:${formData.password || ''};;`
       case 'vcard':
-        return `BEGIN:VCARD\nVERSION:3.0\nFN:${formData.name || ''}\nORG:${formData.company || ''}\nTEL:${formData.phone || ''}\nEMAIL:${formData.email || ''}\nEND:VCARD`
+        return `BEGIN:VCARD\nVERSION:3.0\nFN:${formData.name || ''}\nEND:VCARD`
       case 'facebook':
         return `https://facebook.com/${formData.username || ''}`
       case 'instagram':
@@ -342,116 +136,24 @@ export function Hero() {
       case 'twitter':
         return `https://twitter.com/${formData.username || ''}`
       case 'bitcoin':
-        return `bitcoin:${formData.address || ''}${formData.amount ? `?amount=${formData.amount}` : ''}`
+        return `bitcoin:${formData.address || ''}`
       default:
         return formData.url || 'https://example.com'
     }
   }
 
-  // Send email handler — two-step flow:
-  // 1. Create pending QR (gets shortCode + signupToken)
-  // 2. Generate QR image encoding /r/[shortCode] (trackable redirect)
-  // 3. Send email with QR image + registration link with token
-  const handleSendEmail = async () => {
-    if (!userEmail || !userEmail.includes('@')) {
-      return
-    }
-
-    const emailSubmitTime = startTime ? Date.now() - startTime : 0
-    heroQREmailSubmitted(userEmail, emailSubmitTime, getCustomizationData())
-
-    setIsSending(true)
-    setSendStatus('idle')
-
-    try {
-      // Step 1: Create pending QR code
-      const pendingRes = await fetch('/api/pending-qr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          destinationUrl: getQRData(),
-          qrType: selectedType,
-          style,
-          logoUrl: logoUrl || null,
-          logoSize,
-          email: userEmail,
-        }),
-      })
-
-      if (!pendingRes.ok) {
-        setSendStatus('error')
-        return
-      }
-
-      const { redirectUrl, signupToken } = await pendingRes.json()
-
-      // Step 2: Generate QR image that encodes the /r/[shortCode] redirect URL
-      const dataUrl = await generateQrCodeImage(QRCodeStyling, {
-        url: redirectUrl,
-        style,
-        size: style.width,
-        logoUrl: logoUrl || undefined,
-        logoSize,
-      })
-
-      if (dataUrl) {
-        // Step 3: Send email with signupToken for registration link
-        const response = await fetch('/api/send-qr', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: userEmail,
-            qrCodeBase64: dataUrl,
-            url: getQRData(),
-            signupToken,
-          }),
-        })
-
-        if (response.ok) {
-          const totalTime = startTime ? Date.now() - startTime : 0
-          heroQRSent(userEmail, 'hero-qr', totalTime, getCustomizationData(), customizationClicks)
-          gtagReportConversion()
-          setSendStatus('success')
-          setUserEmail('')
-        } else {
-          setSendStatus('error')
-        }
-      }
-    } catch (error) {
-      console.error('Error sending QR code:', error)
-      setSendStatus('error')
-    } finally {
-      setIsSending(false)
-    }
-  }
-
-  const isFormValid = () => {
-    switch (selectedType) {
-      case 'website':
-        return !!formData.url
-      case 'text':
-        return !!formData.text
-      case 'email':
-        return !!formData.email
-      case 'phone':
-        return !!formData.phone
-      case 'sms':
-        return !!formData.phone
-      case 'whatsapp':
-        return !!formData.phone
-      case 'vcard':
-        return !!formData.name
-      case 'wifi':
-        return !!formData.ssid
-      case 'facebook':
-      case 'instagram':
-      case 'twitter':
-        return !!formData.username
-      case 'bitcoin':
-        return !!formData.address
-      default:
-        return !!formData.url
-    }
+  // Build URL for /generator page with pre-filled params
+  const buildGeneratorUrl = () => {
+    const params = new URLSearchParams({ type: selectedType })
+    if (formData.url) params.set('url', formData.url)
+    if (formData.phone) params.set('phone', formData.phone)
+    if (formData.username) params.set('username', formData.username)
+    if (formData.text) params.set('text', formData.text)
+    if (formData.email) params.set('email', formData.email)
+    if (formData.ssid) params.set('ssid', formData.ssid)
+    if (formData.address) params.set('address', formData.address)
+    if (codeName) params.set('name', codeName)
+    return `/generator?${params.toString()}`
   }
 
   const renderForm = () => {
@@ -463,7 +165,7 @@ export function Hero() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres URL strony</label>
-              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) heroQRUrlEntered(e.target.value, selectedTemplate) }} placeholder="https://twoja-strona.pl" className={inputClass} />
+              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) heroQRUrlEntered(e.target.value, 'none') }} placeholder="https://twoja-strona.pl" className={inputClass} />
             </div>
           </div>
         )
@@ -498,16 +200,6 @@ export function Hero() {
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Numer telefonu *</label>
               <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+48 123 456 789" className={inputClass} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Treść wiadomości (opcjonalnie)</label>
-              <textarea
-                value={formData.message || ''}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Treść SMS..."
-                rows={2}
-                className={inputClass}
-              />
-            </div>
           </div>
         )
       case 'whatsapp':
@@ -518,16 +210,6 @@ export function Hero() {
               <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="48123456789" className={inputClass} />
               <p className="text-xs text-[var(--foreground-subtle)] mt-1">Bez + i spacji, np. 48123456789</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Wiadomość (opcjonalnie)</label>
-              <textarea
-                value={formData.message || ''}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Cześć! Chciałbym..."
-                rows={2}
-                className={inputClass}
-              />
-            </div>
           </div>
         )
       case 'email':
@@ -536,16 +218,6 @@ export function Hero() {
             <div>
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres e-mail</label>
               <input type="email" value={formData.email || ''} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="kontakt@firma.pl" className={inputClass} />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Temat (opcjonalnie)</label>
-                <input type="text" value={formData.subject || ''} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} placeholder="Temat wiadomości" className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Treść (opcjonalnie)</label>
-                <input type="text" value={formData.body || ''} onChange={(e) => setFormData({ ...formData, body: e.target.value })} placeholder="Treść wiadomości" className={inputClass} />
-              </div>
             </div>
           </div>
         )
@@ -558,18 +230,8 @@ export function Hero() {
                 <input type="text" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Jan Kowalski" className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Firma</label>
-                <input type="text" value={formData.company || ''} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="Nazwa firmy" className={inputClass} />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
                 <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Telefon</label>
                 <input type="tel" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+48 123 456 789" className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">E-mail</label>
-                <input type="email" value={formData.email || ''} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="jan@firma.pl" className={inputClass} />
               </div>
             </div>
           </div>
@@ -586,14 +248,6 @@ export function Hero() {
                 <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Hasło</label>
                 <input type="text" value={formData.password || ''} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder="haslo123" className={inputClass} />
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Szyfrowanie</label>
-              <select value={formData.encryption || 'WPA'} onChange={(e) => setFormData({ ...formData, encryption: e.target.value })} className={inputClass}>
-                <option value="WPA">WPA/WPA2</option>
-                <option value="WEP">WEP</option>
-                <option value="nopass">Brak hasła</option>
-              </select>
             </div>
           </div>
         )
@@ -618,10 +272,6 @@ export function Hero() {
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres Bitcoin *</label>
               <input type="text" value={formData.address || ''} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2" className={inputClass} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Kwota (opcjonalnie)</label>
-              <input type="text" value={formData.amount || ''} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} placeholder="0.001" className={inputClass} />
-            </div>
           </div>
         )
       default:
@@ -633,286 +283,6 @@ export function Hero() {
             </div>
           </div>
         )
-    }
-  }
-
-  // Apply template - identyczne jak w qr-form.tsx
-  const applyTemplate = (template: BrandTemplate) => {
-    const brandLogo = brandLogos.find(b => b.id === template.logoId)
-    setStyle({ ...DEFAULT_QR_STYLE, ...template.style })
-    setLogoUrl(brandLogo?.svg || '')
-    setSelectedTemplate(template.id)
-    setCustomizationClicks(prev => prev + 1)
-  }
-
-  const renderPersonalizationContent = () => {
-    switch (activeTab) {
-      case 'templates':
-        return (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-500 mb-2">Wybierz gotowy szablon</p>
-            <div className="grid grid-cols-4 gap-2">
-              {brandTemplates.map((template) => {
-                const brandLogo = brandLogos.find(b => b.id === template.logoId)
-                return (
-                  <button
-                    key={template.id}
-                    onClick={() => applyTemplate(template)}
-                    className="group relative flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all"
-                  >
-                    {/* Brand icon */}
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden"
-                      style={{ backgroundColor: template.color + '15' }}
-                    >
-                      {brandLogo?.svg ? (
-                        <img src={brandLogo.svg} alt={template.name} className="w-8 h-8 object-contain" />
-                      ) : (
-                        <div
-                          className="w-8 h-8 rounded"
-                          style={{ backgroundColor: template.color }}
-                        />
-                      )}
-                    </div>
-                    <span className="text-[10px] font-medium text-gray-700 group-hover:text-gray-900 truncate w-full text-center">{template.name}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )
-
-      case 'color':
-        return (
-          <div className="space-y-4">
-            {/* Foreground Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor kropek</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={style.foregroundColor}
-                  onChange={(e) => updateStyle({ foregroundColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={style.foregroundColor}
-                  onChange={(e) => updateStyle({ foregroundColor: e.target.value })}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            {/* Dots Gradient */}
-            <GradientEditor
-              label="Gradient kropek"
-              value={style.dotsGradient}
-              onChange={(gradient) => updateStyle({ dotsGradient: gradient })}
-              baseColor={style.foregroundColor}
-            />
-
-            {/* Background Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor tła</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={style.backgroundColor}
-                  onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={style.backgroundColor}
-                  onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            {/* Background Gradient */}
-            <GradientEditor
-              label="Gradient tła"
-              value={style.backgroundGradient}
-              onChange={(gradient) => updateStyle({ backgroundGradient: gradient })}
-              baseColor={style.backgroundColor}
-            />
-          </div>
-        )
-
-      case 'shape':
-        return (
-          <div className="space-y-4">
-            <ShapeSelector
-              value={style.dotsType}
-              onChange={(value: DotsType) => updateStyle({ dotsType: value })}
-              options={dotsTypeOptions}
-              label="Kształt kropek"
-            />
-          </div>
-        )
-
-      case 'corners':
-        return (
-          <div className="space-y-6">
-            {/* Corners Square */}
-            <ShapeSelector
-              value={style.cornersSquareType}
-              onChange={(value: CornersSquareType) => updateStyle({ cornersSquareType: value })}
-              options={cornersSquareTypeOptions}
-              label="Zewnętrzne rogi"
-            />
-
-            {/* Corners Square Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor zewnętrznych rogów</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={style.cornersSquareColor || style.foregroundColor}
-                  onChange={(e) => updateStyle({ cornersSquareColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={style.cornersSquareColor || style.foregroundColor}
-                  onChange={(e) => updateStyle({ cornersSquareColor: e.target.value })}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            {/* Corners Square Gradient */}
-            <GradientEditor
-              label="Gradient zewnętrznych rogów"
-              value={style.cornersSquareGradient}
-              onChange={(gradient) => updateStyle({ cornersSquareGradient: gradient })}
-              baseColor={style.cornersSquareColor || style.foregroundColor}
-            />
-
-            {/* Corners Dot */}
-            <ShapeSelector
-              value={style.cornersDotType}
-              onChange={(value: CornersDotType) => updateStyle({ cornersDotType: value })}
-              options={cornersDotTypeOptions}
-              label="Wewnętrzne rogi"
-            />
-
-            {/* Corners Dot Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kolor wewnętrznych rogów</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={style.cornersDotColor || style.foregroundColor}
-                  onChange={(e) => updateStyle({ cornersDotColor: e.target.value })}
-                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={style.cornersDotColor || style.foregroundColor}
-                  onChange={(e) => updateStyle({ cornersDotColor: e.target.value })}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            {/* Corners Dot Gradient */}
-            <GradientEditor
-              label="Gradient wewnętrznych rogów"
-              value={style.cornersDotGradient}
-              onChange={(gradient) => updateStyle({ cornersDotGradient: gradient })}
-              baseColor={style.cornersDotColor || style.foregroundColor}
-            />
-          </div>
-        )
-
-      case 'frame':
-        return (
-          <FrameSelector
-            value={style.frame}
-            onChange={(frame) => updateStyle({ frame })}
-          />
-        )
-
-      case 'logo':
-        return (
-          <div className="space-y-4">
-            <LogoUploader
-              value={logoUrl || ''}
-              onChange={(url) => { setLogoUrl(url); setCustomizationClicks(prev => prev + 1) }}
-              onClear={() => { setLogoUrl(null); setCustomizationClicks(prev => prev + 1) }}
-            />
-
-            {logoUrl && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rozmiar logo: {logoSize}%
-                </label>
-                <input
-                  type="range"
-                  min="10"
-                  max="40"
-                  value={logoSize}
-                  onChange={(e) => setLogoSize(Number(e.target.value))}
-                  className="w-full accent-gray-900"
-                />
-              </div>
-            )}
-          </div>
-        )
-
-      case 'more':
-        return (
-          <div className="space-y-4">
-            {/* Error Correction Level */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Poziom korekcji błędów</label>
-              <select
-                value={style.errorCorrectionLevel}
-                onChange={(e) => updateStyle({ errorCorrectionLevel: e.target.value as 'L' | 'M' | 'Q' | 'H' })}
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900"
-              >
-                <option value="L">Niski (L) - 7%</option>
-                <option value="M">Średni (M) - 15%</option>
-                <option value="Q">Wysoki (Q) - 25%</option>
-                <option value="H">Najwyższy (H) - 30%</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">Wyższy poziom = lepsze skanowanie z logo</p>
-            </div>
-
-            {/* Margin */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Margines: {style.margin}
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                value={style.margin}
-                onChange={(e) => updateStyle({ margin: Number(e.target.value) })}
-                className="w-full accent-gray-900"
-              />
-            </div>
-
-            {/* Width */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rozmiar: {style.width}px
-              </label>
-              <input
-                type="range"
-                min="200"
-                max="600"
-                step="50"
-                value={style.width}
-                onChange={(e) => updateStyle({ width: Number(e.target.value) })}
-                className="w-full accent-gray-900"
-              />
-            </div>
-          </div>
-        )
-
-      default:
-        return null
     }
   }
 
@@ -928,7 +298,7 @@ export function Hero() {
       {/* Particles */}
       <div ref={particlesRef} className="absolute inset-0 overflow-hidden pointer-events-none z-[1]" />
 
-      {/* Content wrapper - above the gradient */}
+      {/* Content wrapper */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -941,279 +311,85 @@ export function Hero() {
           </p>
         </div>
 
-        {/* Generator Card */}
-        <div ref={cardRef} className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
+        {/* Teaser Card */}
+        <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
             <div className="p-5 sm:p-6 lg:p-8">
 
-              {/* Unified 2-col layout on desktop, single col on mobile */}
               <div className="lg:grid lg:grid-cols-12 lg:gap-8">
 
-                {/* Left / main: wizard content (all screen sizes) */}
-                <div className="lg:col-span-8 pb-24 lg:pb-0">
-                  <StepIndicator currentStep={step} />
-
-                  {/* Step 1: Type & Data */}
-                  {step === 1 && (
-                    <div key="step-1" className="animate-fade-in-scale">
-                      <div className="flex items-center gap-3 mb-5">
-                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
-                        <div>
-                          <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Rodzaj i dane kodu</h2>
-                          <p className="text-sm text-[var(--foreground-muted)]">{typeContent[selectedType].subtitle}</p>
-                        </div>
-                      </div>
-
-                      {/* QR Type grid */}
-                      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-2 mb-5">
-                        {qrTypes.map((type) => (
-                          <button
-                            key={type.id}
-                            onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                            className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl text-xs font-medium transition-all ${
-                              selectedType === type.id
-                                ? 'bg-[#6d28d9] text-white shadow-md ring-2 ring-[#6d28d9]/30'
-                                : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
-                            }`}
-                          >
-                            <TypeIcon type={type.icon} className="w-4 h-4" />
-                            {type.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Form for selected type */}
-                      <div className="mb-5" onFocus={trackStart}>
-                        {renderForm()}
-                      </div>
-
-                      {/* Code name input */}
-                      <div>
-                        <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">
-                          Nazwa kodu <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={codeName}
-                          onChange={(e) => setCodeName(e.target.value)}
-                          placeholder="np. Mój sklep"
-                          className="w-full px-4 py-3 rounded-xl bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
-                        />
-                      </div>
+                {/* Left: type selector + form + code name + CTA */}
+                <div className="lg:col-span-8 pb-20 lg:pb-0">
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
+                    <div>
+                      <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Rodzaj i dane kodu</h2>
+                      <p className="text-sm text-[var(--foreground-muted)]">{typeContent[selectedType].subtitle}</p>
                     </div>
-                  )}
+                  </div>
 
-                  {/* Step 2: Personalization */}
-                  {step === 2 && (
-                    <div key="step-2" className="animate-fade-in-scale">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
-                        <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
-                      </div>
+                  {/* QR Type grid */}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-2 mb-5">
+                    {qrTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
+                        className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl text-xs font-medium transition-all ${
+                          selectedType === type.id
+                            ? 'bg-[#6d28d9] text-white shadow-md ring-2 ring-[#6d28d9]/30'
+                            : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
+                        }`}
+                      >
+                        <TypeIcon type={type.icon} className="w-4 h-4" />
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
 
-                      {/* Personalization Tabs */}
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {personalizationTabs.map((tab) => (
-                          <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                              activeTab === tab.id
-                                ? 'bg-gray-900 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
-                          >
-                            {tab.label}
-                          </button>
-                        ))}
-                      </div>
+                  {/* Form for selected type */}
+                  <div className="mb-5" onFocus={trackStart}>
+                    {renderForm()}
+                  </div>
 
-                      <div className="max-h-[350px] overflow-y-auto pr-2 scrollbar-thin">
-                        {renderPersonalizationContent()}
-                      </div>
+                  {/* Code name input */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">
+                      Nazwa kodu <span className="text-[var(--foreground-subtle)] font-normal">(opcjonalnie)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={codeName}
+                      onChange={(e) => setCodeName(e.target.value)}
+                      placeholder="np. Mój sklep"
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
+                    />
+                  </div>
 
-                      {/* Mini QR Preview - mobile only */}
-                      <div className="mt-5 flex justify-center lg:hidden">
-                        <div className="bg-white rounded-xl p-2 shadow-md border border-[var(--border)]">
-                          <QrPreview
-                            url={getQRData()}
-                            style={{ ...style, width: 128 }}
-                            logoUrl={logoUrl || undefined}
-                            logoSize={logoSize}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Send */}
-                  {step === 3 && (
-                    <div key="step-3" className="animate-fade-in-scale">
-                      <div className="flex items-center gap-3 mb-6">
-                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
-                        <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Wyślij kod na email</h2>
-                      </div>
-
-                      {/* Live QR Preview - mobile only */}
-                      <div className="relative mb-6 lg:hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
-                        <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                          <div className="bg-white rounded-xl p-2 shadow-lg max-w-full overflow-hidden">
-                            <QrPreview
-                              url={getQRData()}
-                              style={style}
-                              logoUrl={logoUrl || undefined}
-                              logoSize={logoSize}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Email form */}
-                      <div className="space-y-3">
-                        {sendStatus === 'success' ? (
-                          <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
-                            <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p className="text-green-800 font-medium">Kod QR wysłany!</p>
-                            <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
-
-                            {/* 7-day expiration warning */}
-                            <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                              <div className="flex items-start gap-2">
-                                <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <p className="text-xs text-amber-800 leading-relaxed">
-                                  Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
-                                </p>
-                              </div>
-                            </div>
-
-                            <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
-                              Wyślij ponownie
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            {/* Amber notice - mobile only (desktop shows it in right panel) */}
-                            <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300 lg:hidden">
-                              <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                              </svg>
-                              <p className="text-xs text-amber-800 leading-relaxed">
-                                <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                                Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                              </p>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Twój adres e-mail</label>
-                              <input
-                                type="email"
-                                value={userEmail}
-                                onChange={(e) => setUserEmail(e.target.value)}
-                                placeholder="jan@example.com"
-                                className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
-                              />
-                            </div>
-
-                            {sendStatus === 'error' && (
-                              <p className="text-sm text-red-600 text-center">Wystąpił błąd. Spróbuj ponownie.</p>
-                            )}
-
-                            <Button
-                              variant="gradient"
-                              size="lg"
-                              className="w-full shadow-lg"
-                              onClick={handleSendEmail}
-                              disabled={isSending || !userEmail || !userEmail.includes('@')}
-                              style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                            >
-                              <span className="flex items-center justify-center gap-2">
-                                {isSending ? (
-                                  <>
-                                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                    </svg>
-                                    Wysyłanie...
-                                  </>
-                                ) : (
-                                  <>
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                    Wyślij kod QR na e-mail
-                                  </>
-                                )}
-                              </span>
-                            </Button>
-                          </>
-                        )}
-
-                        <Link href="/qr-codes/new" className="block">
-                          <Button variant="outline" size="lg" className="w-full">
-                            <span className="flex items-center justify-center gap-2">
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                              </svg>
-                              Stwórz konto i zapisz
-                            </span>
-                          </Button>
-                        </Link>
-                      </div>
-
-                      {/* Trust badge */}
-                      <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                        <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
-                          <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                          </svg>
-                          <span>100% darmowe, bez limitu</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Wizard Navigation */}
-                  <WizardNav
-                    currentStep={step}
-                    onGoToStep={goToStep}
-                    isFormValid={isFormValid() && !!codeName}
-                  />
+                  {/* Desktop CTA */}
+                  <div className="pt-4 border-t border-[var(--border)] hidden lg:block">
+                    <Link href={buildGeneratorUrl()}>
+                      <button className="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] transition-all shadow-md shadow-[#6d28d9]/25">
+                        Stwórz kod QR →
+                      </button>
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Right: sticky QR preview - desktop only, visible on all 3 steps */}
+                {/* Right: live QR preview - desktop only */}
                 <div className="hidden lg:flex lg:col-span-4 items-start justify-center pt-4">
                   <div className="sticky top-8 w-full">
-                    <div className="relative mb-4">
+                    <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
                       <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
                         <div className="bg-white rounded-xl p-2 shadow-lg">
                           <QrPreview
                             url={getQRData()}
-                            style={style}
-                            logoUrl={logoUrl || undefined}
-                            logoSize={logoSize}
+                            style={DEFAULT_QR_STYLE}
                           />
                         </div>
                       </div>
                     </div>
-
-                    {/* 7-day expiration notice - only in step 3 on desktop */}
-                    {step === 3 && (
-                      <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
-                        <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <p className="text-xs text-amber-800 leading-relaxed">
-                          <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                          Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                        </p>
-                      </div>
-                    )}
+                    <p className="mt-3 text-center text-xs text-[var(--foreground-subtle)]">Podgląd na żywo</p>
                   </div>
                 </div>
 
@@ -1223,172 +399,21 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Fixed bottom nav - mobile only */}
-      <MobileFixedNav
-        currentStep={step}
-        onGoToStep={goToStep}
-        isFormValid={isFormValid() && !!codeName}
-      />
-
-    </section>
-  )
-}
-
-// Step Indicator component (all screen sizes)
-function StepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
-  const steps = [
-    { num: 1, label: 'Rodzaj & dane' },
-    { num: 2, label: 'Wygląd' },
-    { num: 3, label: 'Wyślij' },
-  ] as const
-
-  return (
-    <div className="flex items-center justify-between px-2 mb-6">
-      {steps.map((step, i) => (
-        <div key={step.num} className="flex items-center flex-1">
-          {/* Circle */}
-          <div className="flex flex-col items-center">
-            <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                currentStep > step.num
-                  ? 'bg-[#6d28d9] text-white'
-                  : currentStep === step.num
-                    ? 'bg-[#6d28d9] text-white shadow-lg shadow-[#6d28d9]/40'
-                    : 'bg-gray-200 text-gray-500'
-              }`}
-            >
-              {currentStep > step.num ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                step.num
-              )}
-            </div>
-            <span className={`text-xs mt-1.5 font-medium ${
-              currentStep >= step.num ? 'text-[#6d28d9]' : 'text-gray-400'
-            }`}>
-              {step.label}
-            </span>
-          </div>
-
-          {/* Connecting line */}
-          {i < steps.length - 1 && (
-            <div className="flex-1 h-0.5 mx-2 mb-5 rounded-full bg-gray-200 overflow-hidden">
-              <div
-                className="h-full bg-[#6d28d9] rounded-full transition-all duration-300"
-                style={{ width: currentStep > step.num ? '100%' : '0%' }}
-              />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// Wizard Navigation component (all screen sizes)
-function WizardNav({
-  currentStep,
-  onGoToStep,
-  isFormValid,
-}: {
-  currentStep: 1 | 2 | 3
-  onGoToStep: (step: 1 | 2 | 3) => void
-  isFormValid: boolean
-}) {
-  return (
-    <div className="hidden lg:flex items-center gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-      {currentStep === 1 && (
-        <button
-          onClick={() => onGoToStep(2)}
-          disabled={!isFormValid}
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
-        >
-          Dalej →
-        </button>
-      )}
-      {currentStep === 2 && (
-        <>
-          <button
-            onClick={() => onGoToStep(1)}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
-          >
-            ← Wstecz
-          </button>
-          <button
-            onClick={() => onGoToStep(3)}
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] transition-all shadow-md shadow-[#6d28d9]/25"
-          >
-            Podgląd →
-          </button>
-        </>
-      )}
-      {currentStep === 3 && (
-        <button
-          onClick={() => onGoToStep(2)}
-          className="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
-        >
-          ← Wstecz
-        </button>
-      )}
-    </div>
-  )
-}
-
-// Mobile Fixed Bottom Navigation (mobile only)
-function MobileFixedNav({
-  currentStep,
-  onGoToStep,
-  isFormValid,
-}: {
-  currentStep: 1 | 2 | 3
-  onGoToStep: (step: 1 | 2 | 3) => void
-  isFormValid: boolean
-}) {
-  return (
-    <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-    >
-      <div className="bg-white/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3">
-        <div className="flex items-center gap-3 max-w-lg mx-auto">
-          {currentStep === 1 && (
-            <button
-              onClick={() => onGoToStep(2)}
-              disabled={!isFormValid}
-              className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
-            >
-              Dalej →
+      {/* Mobile fixed bottom bar */}
+      <div
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="bg-white/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3">
+          <Link href={buildGeneratorUrl()}>
+            <button className="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25">
+              Stwórz kod QR →
             </button>
-          )}
-          {currentStep === 2 && (
-            <>
-              <button
-                onClick={() => onGoToStep(1)}
-                className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
-              >
-                ← Wstecz
-              </button>
-              <button
-                onClick={() => onGoToStep(3)}
-                className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25"
-              >
-                Podgląd →
-              </button>
-            </>
-          )}
-          {currentStep === 3 && (
-            <button
-              onClick={() => onGoToStep(2)}
-              className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
-            >
-              ← Wstecz
-            </button>
-          )}
+          </Link>
         </div>
       </div>
-    </div>
+
+    </section>
   )
 }
 
