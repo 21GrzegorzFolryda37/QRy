@@ -202,6 +202,7 @@ const brandTemplates: BrandTemplate[] = [
 export function Hero() {
   const [selectedType, setSelectedType] = useState<QRType>('website')
   const [formData, setFormData] = useState<Record<string, string>>({})
+  const [codeName, setCodeName] = useState('')
 
   // QR Style state
   const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
@@ -211,12 +212,12 @@ export function Hero() {
   // Active personalization tab
   const [activeTab, setActiveTab] = useState<PersonalizationTab>('logo')
 
-  // Mobile wizard step
-  const [mobileStep, setMobileStep] = useState<1 | 2 | 3>(1)
+  // Wizard step (unified for all screen sizes)
+  const [step, setStep] = useState<1 | 2 | 3>(1)
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const goToStep = (step: 1 | 2 | 3) => {
-    setMobileStep(step)
+  const goToStep = (s: 1 | 2 | 3) => {
+    setStep(s)
     setTimeout(() => {
       cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 50)
@@ -940,424 +941,282 @@ export function Hero() {
           </p>
         </div>
 
-        {/* QR Type Selector - Desktop only (mobile moved into Step 1) */}
-        <div className={`mb-8 animate-fade-in-up animate-delay-300 hidden lg:block`}>
-          <div className="flex gap-2 flex-wrap justify-center">
-            {qrTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  selectedType === type.id
-                    ? 'bg-[#6d28d9] text-white shadow-md'
-                    : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 hover:text-[var(--foreground)] shadow-sm'
-                }`}
-              >
-                <TypeIcon type={type.icon} className="w-4 h-4" />
-                {type.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Generator Card */}
         <div ref={cardRef} className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
+            <div className="p-5 sm:p-6 lg:p-8">
 
-            {/* ===== MOBILE WIZARD (< lg) ===== */}
-            <div className="lg:hidden p-5 sm:p-6 overflow-hidden">
-              <MobileStepIndicator currentStep={mobileStep} />
+              {/* Unified 2-col layout on desktop, single col on mobile */}
+              <div className="lg:grid lg:grid-cols-12 lg:gap-8">
 
-              {/* Step 1: Type + Data */}
-              {mobileStep === 1 && (
-                <div key="mobile-step-1" className="animate-fade-in-scale">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
-                    <div>
-                      <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Wprowadź dane</h2>
-                      <p className="text-sm text-[var(--foreground-muted)]">{typeContent[selectedType].subtitle}</p>
-                    </div>
-                  </div>
-                  <div onFocus={trackStart}>
-                    {renderForm()}
-                  </div>
-                  <MobileWizardNav currentStep={1} onGoToStep={goToStep} isFormValid={isFormValid()} />
-                  {/* QR Type selector - below nav on mobile */}
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-4">
-                    {qrTypes.map((type) => (
-                      <button
-                        key={type.id}
-                        onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                        className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                          selectedType === type.id
-                            ? 'bg-[#6d28d9] text-white shadow-md'
-                            : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
-                        }`}
-                      >
-                        <TypeIcon type={type.icon} className="w-4 h-4" />
-                        {type.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                {/* Left / main: wizard content (all screen sizes) */}
+                <div className="lg:col-span-8">
+                  <StepIndicator currentStep={step} />
 
-              {/* Step 2: Personalization + Mini Preview */}
-              {mobileStep === 2 && (
-                <div key="mobile-step-2" className="animate-fade-in-scale">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
-                    <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj</h2>
-                  </div>
-
-                  {/* Personalization Tabs */}
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {personalizationTabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                          activeTab === tab.id
-                            ? 'bg-gray-900 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Tab Content */}
-                  <div className="max-h-[350px] overflow-y-auto pr-2 scrollbar-thin">
-                    {renderPersonalizationContent()}
-                  </div>
-
-                  {/* Mini QR Preview */}
-                  <div className="mt-5 flex justify-center">
-                    <div className="bg-white rounded-xl p-2 shadow-md border border-[var(--border)]">
-                      <QrPreview
-                        url={getQRData()}
-                        style={{ ...style, width: 128 }}
-                        logoUrl={logoUrl || undefined}
-                        logoSize={logoSize}
-                      />
-                    </div>
-                  </div>
-
-                  <MobileWizardNav currentStep={2} onGoToStep={goToStep} isFormValid={true} />
-                </div>
-              )}
-
-              {/* Step 3: Full Preview + Email + Send */}
-              {mobileStep === 3 && (
-                <div key="mobile-step-3" className="animate-fade-in-scale">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
-                    <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Podgląd</h2>
-                  </div>
-
-                  {/* Live QR Preview */}
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
-                    <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                      <div className="bg-white rounded-xl p-2 shadow-lg max-w-full overflow-hidden">
-                        <QrPreview
-                          url={getQRData()}
-                          style={style}
-                          logoUrl={logoUrl || undefined}
-                          logoSize={logoSize}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Email form */}
-                  <div className="space-y-3">
-                    {sendStatus === 'success' ? (
-                      <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
-                        <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-green-800 font-medium">Kod QR wysłany!</p>
-                        <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
-
-                        {/* 7-day expiration warning */}
-                        <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                          <div className="flex items-start gap-2">
-                            <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <p className="text-xs text-amber-800 leading-relaxed">
-                              Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
-                            </p>
-                          </div>
-                        </div>
-
-                        <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
-                          Wyślij ponownie
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        {/* 7-day expiration notice */}
-                        <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
-                          <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                          </svg>
-                          <p className="text-xs text-amber-800 leading-relaxed">
-                            <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                            Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                          </p>
-                        </div>
-
+                  {/* Step 1: Type & Data */}
+                  {step === 1 && (
+                    <div key="step-1" className="animate-fade-in-scale">
+                      <div className="flex items-center gap-3 mb-5">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
                         <div>
-                          <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Twój adres e-mail</label>
-                          <input
-                            type="email"
-                            value={userEmail}
-                            onChange={(e) => setUserEmail(e.target.value)}
-                            placeholder="jan@example.com"
-                            className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
-                          />
-                        </div>
-
-                        {sendStatus === 'error' && (
-                          <p className="text-sm text-red-600 text-center">Wystąpił błąd. Spróbuj ponownie.</p>
-                        )}
-
-                        <Button
-                          variant="gradient"
-                          size="lg"
-                          className="w-full shadow-lg"
-                          onClick={handleSendEmail}
-                          disabled={isSending || !userEmail || !userEmail.includes('@')}
-                          style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                        >
-                          <span className="flex items-center justify-center gap-2">
-                            {isSending ? (
-                              <>
-                                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                                Wysyłanie...
-                              </>
-                            ) : (
-                              <>
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                Wyślij kod QR na e-mail
-                              </>
-                            )}
-                          </span>
-                        </Button>
-                      </>
-                    )}
-
-                    <Link href="/qr-codes/new" className="block">
-                      <Button variant="outline" size="lg" className="w-full">
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                          </svg>
-                          Stwórz konto i zapisz
-                        </span>
-                      </Button>
-                    </Link>
-                  </div>
-
-                  {/* Trust badge */}
-                  <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                    <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
-                      <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                      </svg>
-                      <span>100% darmowe, bez limitu</span>
-                    </div>
-                  </div>
-
-                  <MobileWizardNav currentStep={3} onGoToStep={goToStep} isFormValid={true} />
-                </div>
-              )}
-            </div>
-
-            {/* ===== DESKTOP LAYOUT (>= lg) - unchanged ===== */}
-            <div className="hidden lg:grid lg:grid-cols-12 lg:items-start">
-              {/* Left Column - Form */}
-              <div className="lg:col-span-4 p-6 lg:p-8 space-y-6 lg:rounded-l-3xl lg:border-r border-[var(--border)]">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">1</span>
-                    <div>
-                      <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Wprowadź dane</h2>
-                      <p className="text-sm text-[var(--foreground-muted)]">{typeContent[selectedType].subtitle}</p>
-                    </div>
-                  </div>
-                  <div className="animate-fade-in-scale" onFocus={trackStart}>
-                    {renderForm()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Middle Column - Personalization */}
-              <div className="lg:col-span-4 p-6 lg:p-8 space-y-4 lg:border-r border-[var(--border)]">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
-                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj</h2>
-                </div>
-
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {personalizationTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                        activeTab === tab.id
-                          ? 'bg-gray-900 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
-                  {renderPersonalizationContent()}
-                </div>
-              </div>
-
-              {/* Right Column - Preview & CTA */}
-              <div className="lg:col-span-4 p-6 lg:p-8 bg-gradient-to-br from-[var(--background-surface)] to-[var(--background-elevated)] lg:rounded-r-3xl">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
-                  <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Podgląd</h2>
-                </div>
-
-                {/* Live QR Preview */}
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
-                  <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-                    <div className="bg-white rounded-xl p-2 shadow-lg">
-                      <QrPreview
-                        url={getQRData()}
-                        style={style}
-                        logoUrl={logoUrl || undefined}
-                        logoSize={logoSize}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Email form to receive QR */}
-                <div className="space-y-3">
-                  {sendStatus === 'success' ? (
-                    <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
-                      <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <p className="text-green-800 font-medium">Kod QR wysłany!</p>
-                      <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
-
-                      {/* 7-day expiration warning */}
-                      <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                        <div className="flex items-start gap-2">
-                          <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                          </svg>
-                          <p className="text-xs text-amber-800 leading-relaxed">
-                            Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
-                          </p>
+                          <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Rodzaj i dane kodu</h2>
+                          <p className="text-sm text-[var(--foreground-muted)]">{typeContent[selectedType].subtitle}</p>
                         </div>
                       </div>
 
-                      <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
-                        Wyślij ponownie
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      {/* 7-day expiration notice */}
-                      <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
-                        <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <p className="text-xs text-amber-800 leading-relaxed">
-                          <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                          Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                        </p>
+                      {/* QR Type grid */}
+                      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-2 mb-5">
+                        {qrTypes.map((type) => (
+                          <button
+                            key={type.id}
+                            onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
+                            className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl text-xs font-medium transition-all ${
+                              selectedType === type.id
+                                ? 'bg-[#6d28d9] text-white shadow-md ring-2 ring-[#6d28d9]/30'
+                                : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
+                            }`}
+                          >
+                            <TypeIcon type={type.icon} className="w-4 h-4" />
+                            {type.label}
+                          </button>
+                        ))}
                       </div>
 
+                      {/* Form for selected type */}
+                      <div className="mb-5" onFocus={trackStart}>
+                        {renderForm()}
+                      </div>
+
+                      {/* Code name input */}
                       <div>
-                        <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Twój adres e-mail</label>
+                        <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">
+                          Nazwa kodu <span className="text-red-500">*</span>
+                        </label>
                         <input
-                          type="email"
-                          value={userEmail}
-                          onChange={(e) => setUserEmail(e.target.value)}
-                          placeholder="jan@example.com"
-                          className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
+                          type="text"
+                          value={codeName}
+                          onChange={(e) => setCodeName(e.target.value)}
+                          placeholder="np. Mój sklep"
+                          className="w-full px-4 py-3 rounded-xl bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
                         />
                       </div>
-
-                      {sendStatus === 'error' && (
-                        <p className="text-sm text-red-600 text-center">Wystąpił błąd. Spróbuj ponownie.</p>
-                      )}
-
-                      <Button
-                        variant="gradient"
-                        size="lg"
-                        className="w-full shadow-lg"
-                        onClick={handleSendEmail}
-                        disabled={isSending || !userEmail || !userEmail.includes('@')}
-                        style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                      >
-                        <span className="flex items-center justify-center gap-2">
-                          {isSending ? (
-                            <>
-                              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                              </svg>
-                              Wysyłanie...
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-                              Wyślij kod QR na e-mail
-                            </>
-                          )}
-                        </span>
-                      </Button>
-                    </>
+                    </div>
                   )}
 
-                  <Link href="/qr-codes/new" className="block">
-                    <Button variant="outline" size="lg" className="w-full">
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                        </svg>
-                        Stwórz konto i zapisz
-                      </span>
-                    </Button>
-                  </Link>
+                  {/* Step 2: Personalization */}
+                  {step === 2 && (
+                    <div key="step-2" className="animate-fade-in-scale">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
+                        <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
+                      </div>
+
+                      {/* Personalization Tabs */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {personalizationTabs.map((tab) => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                              activeTab === tab.id
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="max-h-[350px] overflow-y-auto pr-2 scrollbar-thin">
+                        {renderPersonalizationContent()}
+                      </div>
+
+                      {/* Mini QR Preview - mobile only */}
+                      <div className="mt-5 flex justify-center lg:hidden">
+                        <div className="bg-white rounded-xl p-2 shadow-md border border-[var(--border)]">
+                          <QrPreview
+                            url={getQRData()}
+                            style={{ ...style, width: 128 }}
+                            logoUrl={logoUrl || undefined}
+                            logoSize={logoSize}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3: Send */}
+                  {step === 3 && (
+                    <div key="step-3" className="animate-fade-in-scale">
+                      <div className="flex items-center gap-3 mb-6">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--success)] to-[#059669] text-white text-sm font-bold shadow-lg shadow-[var(--success)]/25">3</span>
+                        <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Wyślij kod na email</h2>
+                      </div>
+
+                      {/* Live QR Preview - mobile only */}
+                      <div className="relative mb-6 lg:hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
+                        <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                          <div className="bg-white rounded-xl p-2 shadow-lg max-w-full overflow-hidden">
+                            <QrPreview
+                              url={getQRData()}
+                              style={style}
+                              logoUrl={logoUrl || undefined}
+                              logoSize={logoSize}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Email form */}
+                      <div className="space-y-3">
+                        {sendStatus === 'success' ? (
+                          <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
+                            <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-green-800 font-medium">Kod QR wysłany!</p>
+                            <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
+
+                            {/* 7-day expiration warning */}
+                            <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                              <div className="flex items-start gap-2">
+                                <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <p className="text-xs text-amber-800 leading-relaxed">
+                                  Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
+                                </p>
+                              </div>
+                            </div>
+
+                            <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
+                              Wyślij ponownie
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            {/* Amber notice - mobile only (desktop shows it in right panel) */}
+                            <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300 lg:hidden">
+                              <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                              </svg>
+                              <p className="text-xs text-amber-800 leading-relaxed">
+                                <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
+                                Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Twój adres e-mail</label>
+                              <input
+                                type="email"
+                                value={userEmail}
+                                onChange={(e) => setUserEmail(e.target.value)}
+                                placeholder="jan@example.com"
+                                className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
+                              />
+                            </div>
+
+                            {sendStatus === 'error' && (
+                              <p className="text-sm text-red-600 text-center">Wystąpił błąd. Spróbuj ponownie.</p>
+                            )}
+
+                            <Button
+                              variant="gradient"
+                              size="lg"
+                              className="w-full shadow-lg"
+                              onClick={handleSendEmail}
+                              disabled={isSending || !userEmail || !userEmail.includes('@')}
+                              style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                            >
+                              <span className="flex items-center justify-center gap-2">
+                                {isSending ? (
+                                  <>
+                                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                    Wysyłanie...
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    Wyślij kod QR na e-mail
+                                  </>
+                                )}
+                              </span>
+                            </Button>
+                          </>
+                        )}
+
+                        <Link href="/qr-codes/new" className="block">
+                          <Button variant="outline" size="lg" className="w-full">
+                            <span className="flex items-center justify-center gap-2">
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                              </svg>
+                              Stwórz konto i zapisz
+                            </span>
+                          </Button>
+                        </Link>
+                      </div>
+
+                      {/* Trust badge */}
+                      <div className="mt-4 pt-4 border-t border-[var(--border)]">
+                        <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
+                          <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                          </svg>
+                          <span>100% darmowe, bez limitu</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Wizard Navigation */}
+                  <WizardNav
+                    currentStep={step}
+                    onGoToStep={goToStep}
+                    isFormValid={isFormValid() && !!codeName}
+                  />
                 </div>
 
-                {/* Trust badge */}
-                <div className="mt-6 pt-4 border-t border-[var(--border)]">
-                  <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
-                    <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                    </svg>
-                    <span>100% darmowe, bez limitu</span>
+                {/* Right: sticky QR preview - desktop only, visible on all 3 steps */}
+                <div className="hidden lg:flex lg:col-span-4 items-start justify-center pt-4">
+                  <div className="sticky top-8 w-full">
+                    <div className="relative mb-4">
+                      <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
+                      <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+                        <div className="bg-white rounded-xl p-2 shadow-lg">
+                          <QrPreview
+                            url={getQRData()}
+                            style={style}
+                            logoUrl={logoUrl || undefined}
+                            logoSize={logoSize}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 7-day expiration notice - always visible on desktop */}
+                    <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300">
+                      <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      <p className="text-xs text-amber-800 leading-relaxed">
+                        <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
+                        Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
+                      </p>
+                    </div>
                   </div>
                 </div>
+
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -1366,11 +1225,11 @@ export function Hero() {
   )
 }
 
-// Mobile Step Indicator component
-function MobileStepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
+// Step Indicator component (all screen sizes)
+function StepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   const steps = [
-    { num: 1, label: 'Dane' },
-    { num: 2, label: 'Styl' },
+    { num: 1, label: 'Rodzaj & dane' },
+    { num: 2, label: 'Wygląd' },
     { num: 3, label: 'Wyślij' },
   ] as const
 
@@ -1419,8 +1278,8 @@ function MobileStepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   )
 }
 
-// Mobile Wizard Navigation component
-function MobileWizardNav({
+// Wizard Navigation component (all screen sizes)
+function WizardNav({
   currentStep,
   onGoToStep,
   isFormValid,
@@ -1432,21 +1291,13 @@ function MobileWizardNav({
   return (
     <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[var(--border)]">
       {currentStep === 1 && (
-        <>
-          <button
-            onClick={() => onGoToStep(3)}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
-          >
-            Pomiń
-          </button>
-          <button
-            onClick={() => onGoToStep(2)}
-            disabled={!isFormValid}
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
-          >
-            Dalej →
-          </button>
-        </>
+        <button
+          onClick={() => onGoToStep(2)}
+          disabled={!isFormValid}
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
+        >
+          Dalej →
+        </button>
       )}
       {currentStep === 2 && (
         <>
