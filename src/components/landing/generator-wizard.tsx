@@ -945,12 +945,22 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-sm text-[var(--foreground-muted)]">
+            <div className="flex items-center gap-3 text-sm text-[var(--foreground-muted)] mb-5">
               <svg className="w-5 h-5 text-[var(--success)] shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
               </svg>
-              Twój kod QR jest gotowy! Kliknij przycisk poniżej aby go pobrać.
+              Twój kod QR jest gotowy!
             </div>
+
+            <button
+              onClick={() => setShowSaveModal(true)}
+              className="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Pobierz swój kod QR
+            </button>
           </div>
         )}
 
