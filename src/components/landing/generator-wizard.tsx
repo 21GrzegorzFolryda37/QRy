@@ -1031,55 +1031,60 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 </p>
               </div>
 
-              {/* Consents */}
-              <div className="mb-6 space-y-3 rounded-xl border border-[var(--border)] p-4 bg-gray-50/60">
-                {/* Master checkbox */}
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={allChecked}
-                    onChange={toggleAll}
-                    className="w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
-                  />
-                  <span className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[#6d28d9] transition-colors">
-                    Akceptuję wszystkie poniższe zgody
-                  </span>
-                </label>
+              <UnifiedAuthForm
+                signupToken={saveToken}
+                redirectTo="/dashboard"
+                disabled={!consents.terms}
+                marketingConsent={consents.marketing}
+                consentBlock={
+                  <div className="space-y-2 rounded-lg border border-[var(--border)] p-3 bg-gray-50/60">
+                    {/* Master checkbox */}
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={allChecked}
+                        onChange={toggleAll}
+                        className="w-3.5 h-3.5 rounded border-gray-300 accent-[#6d28d9] cursor-pointer shrink-0"
+                      />
+                      <span className="text-xs font-semibold text-[var(--foreground)] group-hover:text-[#6d28d9] transition-colors">
+                        Akceptuję wszystkie poniższe zgody
+                      </span>
+                    </label>
 
-                <div className="border-t border-[var(--border)] pt-3 space-y-3">
-                  {/* Required — terms */}
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={consents.terms}
-                      onChange={(e) => setConsents(c => ({ ...c, terms: e.target.checked }))}
-                      className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
-                    />
-                    <span className="text-xs text-[var(--foreground-muted)] leading-relaxed">
-                      Akceptuję{' '}
-                      <Link href="/terms" target="_blank" className="underline hover:text-[#6d28d9]">Regulamin serwisu QRenixy</Link>
-                      {' '}oraz zapoznałem/am się z{' '}
-                      <Link href="/privacy" target="_blank" className="underline hover:text-[#6d28d9]">Polityką prywatności</Link>.{' '}
-                      <span className="text-[var(--error)] font-medium">*</span>
-                    </span>
-                  </label>
+                    <div className="border-t border-[var(--border)] pt-2 space-y-2">
+                      {/* Required — terms */}
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={consents.terms}
+                          onChange={(e) => setConsents(c => ({ ...c, terms: e.target.checked }))}
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#6d28d9] cursor-pointer shrink-0"
+                        />
+                        <span className="text-[11px] text-[var(--foreground-muted)] leading-relaxed">
+                          Akceptuję{' '}
+                          <Link href="/terms" target="_blank" className="underline hover:text-[#6d28d9]">Regulamin serwisu QRenixy</Link>
+                          {' '}oraz zapoznałem/am się z{' '}
+                          <Link href="/privacy" target="_blank" className="underline hover:text-[#6d28d9]">Polityką prywatności</Link>.{' '}
+                          <span className="text-[var(--error)] font-medium">*</span>
+                        </span>
+                      </label>
 
-                  {/* Optional — marketing */}
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={consents.marketing}
-                      onChange={(e) => setConsents(c => ({ ...c, marketing: e.target.checked }))}
-                      className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
-                    />
-                    <span className="text-xs text-[var(--foreground-muted)] leading-relaxed">
-                      Wyrażam zgodę na otrzymywanie od QRenixy informacji marketingowych dotyczących produktów i usług.
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" disabled={!consents.terms} marketingConsent={consents.marketing} />
+                      {/* Optional — marketing */}
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={consents.marketing}
+                          onChange={(e) => setConsents(c => ({ ...c, marketing: e.target.checked }))}
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#6d28d9] cursor-pointer shrink-0"
+                        />
+                        <span className="text-[11px] text-[var(--foreground-muted)] leading-relaxed">
+                          Wyrażam zgodę na otrzymywanie od QRenixy informacji marketingowych dotyczących produktów i usług.
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                }
+              />
             </div>
 
             {/* Right — QR preview */}
