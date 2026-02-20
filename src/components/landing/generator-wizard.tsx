@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
+import { createPortal } from 'react-dom'
 import { Input } from '@/components/ui'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
@@ -987,10 +988,10 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       isFormValid={isFormValid() && !!codeName}
     />
 
-    {/* Save modal — fixed center, stays on screen while scrolling */}
-    {showSaveModal && (
+    {/* Save modal — rendered via portal into document.body so fixed positioning works correctly */}
+    {showSaveModal && createPortal(
       <div
-        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
         style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
         onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
       >
@@ -1042,7 +1043,8 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
 
     </>
