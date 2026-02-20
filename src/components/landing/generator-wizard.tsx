@@ -877,7 +877,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
         {/* Step 2: Personalization */}
         {step === 2 && (
-          <div key="step-2" className="animate-fade-in-scale">
+          <div key="step-2" className="animate-fade-in-scale overflow-y-auto max-h-[480px] pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
             <div className="flex items-center gap-3 mb-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
               <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>

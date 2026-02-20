@@ -6,7 +6,6 @@ import { GeneratorWizard, type GeneratorWizardHandle } from '@/components/landin
 export function Hero() {
   const wizardRef = useRef<GeneratorWizardHandle>(null)
   const particlesRef = useRef<HTMLDivElement>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const container = particlesRef.current
@@ -79,17 +78,10 @@ export function Hero() {
         </div>
 
         {/* Wizard Card */}
-        <div ref={cardRef} className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
+        <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
             <div className="p-5 sm:p-6 lg:p-8">
-              <GeneratorWizard
-                ref={wizardRef}
-                onStepChange={() => {
-                  setTimeout(() => {
-                    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }, 50)
-                }}
-              />
+              <GeneratorWizard ref={wizardRef} />
             </div>
           </div>
 
