@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
+import { UnifiedAuthForm } from '@/components/auth'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { heroQRStarted, heroQRUrlEntered } from '@/lib/analytics'
 
@@ -53,6 +54,12 @@ export function Hero() {
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [codeName, setCodeName] = useState('')
 
+  // Save modal state
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [saveToken, setSaveToken] = useState<string | undefined>()
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
   // Analytics timing
   const hasTrackedStart = useRef(false)
 
@@ -62,6 +69,32 @@ export function Hero() {
       heroQRStarted()
     }
   }, [])
+
+  const handleOpenModal = async () => {
+    setIsSaving(true)
+    setSaveError('')
+    try {
+      const res = await fetch('/api/pending-qr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destinationUrl: getQRData(),
+          qrType: selectedType,
+          style: DEFAULT_QR_STYLE,
+          logoUrl: null,
+          logoSize: 45,
+        }),
+      })
+      if (!res.ok) { setSaveError('Wystąpił błąd. Spróbuj ponownie.'); return }
+      const { signupToken } = await res.json()
+      setSaveToken(signupToken)
+      setShowSaveModal(true)
+    } catch {
+      setSaveError('Wystąpił błąd. Spróbuj ponownie.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   // Particle animation
   const particlesRef = useRef<HTMLDivElement>(null)
@@ -367,11 +400,16 @@ export function Hero() {
 
                   {/* Desktop CTA */}
                   <div className="pt-4 border-t border-[var(--border)] hidden lg:block">
-                    <Link href={buildGeneratorUrl()}>
-                      <button className="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] transition-all shadow-md shadow-[#6d28d9]/25">
-                        Stwórz kod QR →
-                      </button>
-                    </Link>
+                    {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
+                    <button
+                      onClick={handleOpenModal}
+                      disabled={isSaving}
+                      className="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] disabled:opacity-60 transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
+                    >
+                      {isSaving ? (
+                        <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Ładowanie...</>
+                      ) : 'Stwórz kod QR →'}
+                    </button>
                   </div>
                 </div>
 
@@ -405,13 +443,75 @@ export function Hero() {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="bg-white/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3">
-          <Link href={buildGeneratorUrl()}>
-            <button className="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25">
-              Stwórz kod QR →
-            </button>
-          </Link>
+          <button
+            onClick={handleOpenModal}
+            disabled={isSaving}
+            className="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] disabled:opacity-60 transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
+          >
+            {isSaving ? (
+              <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Ładowanie...</>
+            ) : 'Stwórz kod QR →'}
+          </button>
         </div>
       </div>
+
+      {/* Save modal */}
+      {showSaveModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
+        >
+          <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+            <button
+              onClick={() => setShowSaveModal(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              {/* Left — auth */}
+              <div className="p-8 flex flex-col justify-center">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">
+                    Twój kod QR jest gotowy!
+                  </h2>
+                  <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
+                    Podaj email żeby go zapisać na stałe. Zero hasła, zero formalności.
+                  </p>
+                </div>
+                <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
+                <p className="mt-5 text-xs text-[var(--foreground-subtle)] text-center">
+                  Zakładając konto akceptujesz{' '}
+                  <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
+                  {' '}i{' '}
+                  <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
+                </p>
+              </div>
+
+              {/* Right — QR preview */}
+              <div className="hidden lg:flex flex-col items-center justify-center gap-5 p-8 border-l border-[var(--border)]" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' }}>
+                <p className="text-[var(--foreground-subtle)] text-xs font-medium tracking-widest uppercase">Podgląd</p>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-violet-400 rounded-3xl blur-2xl opacity-25" />
+                  <div className="relative bg-white rounded-2xl p-4 shadow-xl">
+                    <QrPreview
+                      url={getQRData()}
+                      style={{ ...DEFAULT_QR_STYLE, width: 200 }}
+                    />
+                  </div>
+                </div>
+                <p className="text-[var(--foreground-subtle)] text-xs text-center max-w-[180px] truncate">
+                  {getQRData().length > 35 ? getQRData().slice(0, 35) + '…' : getQRData()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </section>
   )

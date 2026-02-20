@@ -203,7 +203,7 @@ export async function resetPassword(
   const { email } = validatedFields.data
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/reset-password`,
   })
 
   if (error) {
@@ -230,6 +230,7 @@ export async function updatePassword(
 
   const { password } = validatedFields.data
 
+  const { data: userData } = await supabase.auth.getUser()
   const { error } = await supabase.auth.updateUser({
     password,
   })
@@ -238,6 +239,75 @@ export async function updatePassword(
     return { error: error.message }
   }
 
+  // Mark has_password = true in profile
+  if (userData?.user?.id) {
+    try {
+      const adminClient = createAdminClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (adminClient.from('profiles') as any)
+        .update({ has_password: true })
+        .eq('id', userData.user.id)
+    } catch (e) {
+      console.error('Failed to set has_password (non-blocking):', e)
+    }
+  }
+
+  revalidatePath('/', 'layout')
+
+  // If called from settings page, return success without redirecting
+  if (formData.get('noRedirect') === 'true') {
+    return { success: true }
+  }
+
+  redirect('/dashboard')
+}
+
+export async function signupInstant(
+  email: string,
+  signupToken?: string
+): Promise<ActionResponse> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password: crypto.randomUUID(),
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  if (signupToken && data.user?.id) {
+    try {
+      await claimPendingQrCode(signupToken, data.user.id)
+    } catch (claimError) {
+      console.error('Failed to claim pending QR (non-blocking):', claimError)
+    }
+  }
+
   revalidatePath('/', 'layout')
   redirect('/dashboard')
+}
+
+export async function sendMagicLink(
+  email: string,
+  redirectTo?: string
+): Promise<ActionResponse> {
+  const supabase = await createClient()
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL
+
+  const next = redirectTo ?? '/dashboard'
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${APP_URL}/auth/callback?next=${next}`,
+      shouldCreateUser: false,
+    },
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
 }

@@ -21,6 +21,7 @@ export interface Profile {
   monthly_scan_limit: number
   current_month_scans: number
   newsletter_consent: boolean
+  has_password: boolean
   created_at: string
   updated_at: string
 }

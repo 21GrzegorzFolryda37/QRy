@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button, Input } from '@/components/ui'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
+import { UnifiedAuthForm } from '@/components/auth'
 import { ShapeSelector, dotsTypeOptions, cornersSquareTypeOptions, cornersDotTypeOptions } from '@/components/qr/shape-selector'
 import { FrameSelector } from '@/components/qr/frame-selector'
 import { GradientEditor } from '@/components/qr/gradient-editor'
@@ -201,20 +202,22 @@ const brandTemplates: BrandTemplate[] = [
 interface GeneratorWizardProps {
   initialType?: QRType
   initialUrl?: string
+  initialFormData?: Record<string, string>
+  initialName?: string
 }
 
-export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProps) {
+export function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName }: GeneratorWizardProps) {
   const [selectedType, setSelectedType] = useState<QRType>(initialType ?? 'website')
-  const [formData, setFormData] = useState<Record<string, string>>({})
-  const [codeName, setCodeName] = useState('')
+  const [formData, setFormData] = useState<Record<string, string>>(initialFormData ?? (initialUrl ? { url: initialUrl } : {}))
+  const [codeName, setCodeName] = useState(initialName ?? '')
 
   // QR Style state
   const [style, setStyle] = useState<QrStyle>(DEFAULT_QR_STYLE)
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const [logoSize, setLogoSize] = useState(45)
 
-  // Active personalization tab
-  const [activeTab, setActiveTab] = useState<PersonalizationTab>('logo')
+  // Active accordion section (one open at a time)
+  const [activeAccordion, setActiveAccordion] = useState<PersonalizationTab | null>('logo')
 
   // Wizard step
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -230,10 +233,11 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
   // QRCodeStyling library for generating QR
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
 
-  // Email sending state
-  const [userEmail, setUserEmail] = useState('')
-  const [isSending, setIsSending] = useState(false)
-  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  // Save modal state
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [saveToken, setSaveToken] = useState<string | undefined>()
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   // Analytics timing
   const [startTime, setStartTime] = useState<number | null>(null)
@@ -242,11 +246,6 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
   // Personalization tracking
   const [selectedTemplate, setSelectedTemplate] = useState<string>('none')
   const [customizationClicks, setCustomizationClicks] = useState(0)
-
-  // Pre-fill URL from prop
-  useEffect(() => {
-    if (initialUrl) setFormData({ url: initialUrl })
-  }, [initialUrl])
 
   const getCustomizationData = () => ({
     selectedTemplate,
@@ -310,16 +309,9 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
     }
   }
 
-  const handleSendEmail = async () => {
-    if (!userEmail || !userEmail.includes('@')) {
-      return
-    }
-
-    const emailSubmitTime = startTime ? Date.now() - startTime : 0
-    heroQREmailSubmitted(userEmail, emailSubmitTime, getCustomizationData())
-
-    setIsSending(true)
-    setSendStatus('idle')
+  const handleOpenSaveModal = async () => {
+    setIsSaving(true)
+    setSaveError('')
 
     try {
       const pendingRes = await fetch('/api/pending-qr', {
@@ -331,52 +323,21 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
           style,
           logoUrl: logoUrl || null,
           logoSize,
-          email: userEmail,
         }),
       })
 
       if (!pendingRes.ok) {
-        setSendStatus('error')
+        setSaveError('Wystąpił błąd. Spróbuj ponownie.')
         return
       }
 
-      const { redirectUrl, signupToken } = await pendingRes.json()
-
-      const dataUrl = await generateQrCodeImage(QRCodeStyling, {
-        url: redirectUrl,
-        style,
-        size: style.width,
-        logoUrl: logoUrl || undefined,
-        logoSize,
-      })
-
-      if (dataUrl) {
-        const response = await fetch('/api/send-qr', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: userEmail,
-            qrCodeBase64: dataUrl,
-            url: getQRData(),
-            signupToken,
-          }),
-        })
-
-        if (response.ok) {
-          const totalTime = startTime ? Date.now() - startTime : 0
-          heroQRSent(userEmail, 'hero-qr', totalTime, getCustomizationData(), customizationClicks)
-          gtagReportConversion()
-          setSendStatus('success')
-          setUserEmail('')
-        } else {
-          setSendStatus('error')
-        }
-      }
-    } catch (error) {
-      console.error('Error sending QR code:', error)
-      setSendStatus('error')
+      const { signupToken } = await pendingRes.json()
+      setSaveToken(signupToken)
+      setShowSaveModal(true)
+    } catch {
+      setSaveError('Wystąpił błąd. Spróbuj ponownie.')
     } finally {
-      setIsSending(false)
+      setIsSaving(false)
     }
   }
 
@@ -599,8 +560,8 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
     setCustomizationClicks(prev => prev + 1)
   }
 
-  const renderPersonalizationContent = () => {
-    switch (activeTab) {
+  const renderPersonalizationContent = (tab: PersonalizationTab) => {
+    switch (tab) {
       case 'templates':
         return (
           <div className="space-y-3">
@@ -922,25 +883,29 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
               <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
             </div>
 
-            {/* Personalization Tabs */}
-            <div className="flex flex-wrap gap-1 mb-4">
+            {/* Personalization Accordion */}
+            <div className="border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
               {personalizationTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {tab.label}
-                </button>
+                <div key={tab.id}>
+                  <button
+                    onClick={() => setActiveAccordion(activeAccordion === tab.id ? null : tab.id)}
+                    className="w-full flex items-center justify-between px-4 py-3.5 text-sm font-medium text-[var(--foreground)] hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <span>{tab.label}</span>
+                    <svg
+                      className={`w-4 h-4 text-[var(--foreground-muted)] transition-transform duration-200 shrink-0 ${activeAccordion === tab.id ? 'rotate-180' : ''}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {activeAccordion === tab.id && (
+                    <div className="px-4 pb-5 pt-2 bg-gray-50/50">
+                      {renderPersonalizationContent(tab.id)}
+                    </div>
+                  )}
+                </div>
               ))}
-            </div>
-
-            <div className="max-h-[350px] overflow-y-auto pr-2 scrollbar-thin">
-              {renderPersonalizationContent()}
             </div>
 
             {/* Mini QR Preview - mobile only */}
@@ -980,108 +945,33 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
               </div>
             </div>
 
-            {/* Email form */}
+            {/* CTA */}
             <div className="space-y-3">
-              {sendStatus === 'success' ? (
-                <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
-                  <svg className="w-10 h-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-green-800 font-medium">Kod QR wysłany!</p>
-                  <p className="text-green-600 text-sm mt-1">Sprawdź swoją skrzynkę mailową</p>
-
-                  <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                    <div className="flex items-start gap-2">
-                      <svg className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                      <p className="text-xs text-amber-800 leading-relaxed">
-                        Kod QR wygasa za <strong>7 dni</strong>. Załóż darmowe konto, aby zachować go na stałe!
-                      </p>
-                    </div>
-                  </div>
-
-                  <button onClick={() => setSendStatus('idle')} className="mt-3 text-sm text-green-700 underline hover:no-underline">
-                    Wyślij ponownie
-                  </button>
-                </div>
-              ) : (
-                <>
-                  {/* Amber notice - mobile only */}
-                  <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-300 lg:hidden">
-                    <svg className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-xs text-amber-800 leading-relaxed">
-                      <span className="font-semibold">Twój kod będzie ważny 7 dni.</span>{' '}
-                      Załóż darmowe konto i twórz kody bez ograniczeń czasowych.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Twój adres e-mail</label>
-                    <input
-                      type="email"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      placeholder="jan@example.com"
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
-                    />
-                  </div>
-
-                  {sendStatus === 'error' && (
-                    <p className="text-sm text-red-600 text-center">Wystąpił błąd. Spróbuj ponownie.</p>
-                  )}
-
-                  <Button
-                    variant="gradient"
-                    size="lg"
-                    className="w-full shadow-lg"
-                    onClick={handleSendEmail}
-                    disabled={isSending || !userEmail || !userEmail.includes('@')}
-                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      {isSending ? (
-                        <>
-                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                          Wysyłanie...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          Wyślij kod QR na e-mail
-                        </>
-                      )}
-                    </span>
-                  </Button>
-                </>
+              {saveError && (
+                <p className="text-sm text-red-600 text-center">{saveError}</p>
               )}
 
-              <Link href="/qr-codes/new" className="block">
-                <Button variant="outline" size="lg" className="w-full">
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
-                    Stwórz konto i zapisz
-                  </span>
-                </Button>
-              </Link>
-            </div>
+              <Button
+                variant="gradient"
+                size="lg"
+                className="w-full shadow-lg"
+                onClick={handleOpenSaveModal}
+                isLoading={isSaving}
+                style={{ background: 'linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%)' }}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                  Zapisz kod QR →
+                </span>
+              </Button>
 
-            {/* Trust badge */}
-            <div className="mt-4 pt-4 border-t border-[var(--border)]">
-              <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)]">
-                <svg className="w-4 h-4 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
+              <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)] pt-1">
+                <svg className="w-3.5 h-3.5 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
-                <span>100% darmowe, bez limitu</span>
+                <span>Darmowe konto — bez karty kredytowej</span>
               </div>
             </div>
           </div>
@@ -1100,11 +990,11 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
         <div className="sticky top-8 w-full">
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
-            <div className="relative flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
-              <div className="bg-white rounded-xl p-2 shadow-lg">
+            <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+              <div className="bg-white rounded-xl p-3 shadow-lg">
                 <QrPreview
                   url={getQRData()}
-                  style={style}
+                  style={{ ...style, width: 320 }}
                   logoUrl={logoUrl || undefined}
                   logoSize={logoSize}
                 />
@@ -1134,6 +1024,67 @@ export function GeneratorWizard({ initialType, initialUrl }: GeneratorWizardProp
       onGoToStep={goToStep}
       isFormValid={isFormValid() && !!codeName}
     />
+
+    {/* Save modal */}
+    {showSaveModal && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+        onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
+      >
+        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+          {/* Close button */}
+          <button
+            onClick={() => setShowSaveModal(false)}
+            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          >
+            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Left — auth */}
+            <div className="p-8 flex flex-col justify-center">
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">
+                  Twój kod QR jest gotowy!
+                </h2>
+                <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
+                  Podaj email żeby go zapisać na stałe. Zero hasła, zero formalności.
+                </p>
+              </div>
+              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
+              <p className="mt-5 text-xs text-[var(--foreground-subtle)] text-center">
+                Zakładając konto akceptujesz{' '}
+                <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
+                {' '}i{' '}
+                <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
+              </p>
+            </div>
+
+            {/* Right — QR preview */}
+            <div className="hidden lg:flex flex-col items-center justify-center gap-5 p-8 border-l border-[var(--border)]" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' }}>
+              <p className="text-[var(--foreground-subtle)] text-xs font-medium tracking-widest uppercase">Podgląd</p>
+              <div className="relative">
+                <div className="absolute inset-0 bg-violet-400 rounded-3xl blur-2xl opacity-25" />
+                <div className="relative bg-white rounded-2xl p-4 shadow-xl">
+                  <QrPreview
+                    url={getQRData()}
+                    style={{ ...style, width: 200 }}
+                    logoUrl={logoUrl || undefined}
+                    logoSize={logoSize}
+                  />
+                </div>
+              </div>
+              <p className="text-[var(--foreground-subtle)] text-xs text-center max-w-[180px] truncate">
+                {getQRData().length > 35 ? getQRData().slice(0, 35) + '…' : getQRData()}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   )
 }

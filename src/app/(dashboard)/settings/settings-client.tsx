@@ -19,6 +19,7 @@ import {
 import { useToast } from '@/components/ui/toast'
 import { Profile } from '@/types/database'
 import { updateProfile, deleteAccount, type ProfileActionResponse } from '@/actions/profile'
+import { updatePassword, type ActionResponse } from '@/actions/auth'
 
 interface SettingsClientProps {
   profile: Profile | null
@@ -34,6 +35,26 @@ export function SettingsClient({ profile, userId }: SettingsClientProps) {
 
   // Track previous state to detect changes
   const prevUpdateStateRef = useRef<ProfileActionResponse | null>(null)
+  const prevPasswordStateRef = useRef<ActionResponse | null>(null)
+
+  // Password update form state
+  const [passwordState, passwordAction, isPasswordPending] = useActionState<ActionResponse | null, FormData>(
+    async (prevState, formData) => {
+      const result = await updatePassword(prevState, formData)
+      return result
+    },
+    null
+  )
+
+  // Handle password result
+  if (passwordState && passwordState !== prevPasswordStateRef.current) {
+    prevPasswordStateRef.current = passwordState
+    if (passwordState.success) {
+      success('Hasło zostało zaktualizowane')
+    } else if (passwordState.error) {
+      error(passwordState.error)
+    }
+  }
 
   // Profile update form state
   const [updateState, updateAction, isUpdating] = useActionState<ProfileActionResponse | null, FormData>(
@@ -194,6 +215,50 @@ export function SettingsClient({ profile, userId }: SettingsClientProps) {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Bezpieczeństwo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={passwordAction} className="space-y-4">
+            <input type="hidden" name="noRedirect" value="true" />
+            {profile?.has_password && (
+              <Input
+                name="currentPassword"
+                type="password"
+                label="Stare hasło"
+                placeholder="Wpisz stare hasło"
+                autoComplete="current-password"
+              />
+            )}
+            <Input
+              name="password"
+              type="password"
+              label={profile?.has_password ? 'Nowe hasło' : 'Hasło'}
+              placeholder="Minimum 8 znaków"
+              required
+              autoComplete="new-password"
+            />
+            <Input
+              name="confirmPassword"
+              type="password"
+              label="Potwierdź hasło"
+              placeholder="Powtórz hasło"
+              required
+              autoComplete="new-password"
+            />
+            {passwordState?.error && (
+              <div className="rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/30 p-3">
+                <p className="text-sm text-[var(--error)]">{passwordState.error}</p>
+              </div>
+            )}
+            <Button type="submit" variant="primary" isLoading={isPasswordPending}>
+              {profile?.has_password ? 'Zmień hasło' : 'Ustaw hasło'}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
