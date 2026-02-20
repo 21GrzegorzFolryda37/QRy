@@ -12,9 +12,10 @@ interface UnifiedAuthFormProps {
   redirectTo?: string
   signupToken?: string
   disabled?: boolean
+  marketingConsent?: boolean
 }
 
-export function UnifiedAuthForm({ redirectTo, signupToken, disabled }: UnifiedAuthFormProps) {
+export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingConsent }: UnifiedAuthFormProps) {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -49,7 +50,7 @@ export function UnifiedAuthForm({ redirectTo, signupToken, disabled }: UnifiedAu
 
         if (!data.exists) {
           // New user — instant signup
-          await signupInstant(formEmail, signupToken)
+          await signupInstant(formEmail, signupToken, marketingConsent)
         } else if (data.hasPassword) {
           setStep('password')
         } else {

@@ -264,7 +264,8 @@ export async function updatePassword(
 
 export async function signupInstant(
   email: string,
-  signupToken?: string
+  signupToken?: string,
+  marketingConsent?: boolean
 ): Promise<ActionResponse> {
   const supabase = await createClient()
 
@@ -275,6 +276,13 @@ export async function signupInstant(
 
   if (error) {
     return { error: error.message }
+  }
+
+  if (data.user?.id && marketingConsent) {
+    await supabase
+      .from('profiles')
+      .update({ newsletter_consent: true })
+      .eq('id', data.user.id)
   }
 
   if (signupToken && data.user?.id) {

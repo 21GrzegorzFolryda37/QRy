@@ -1079,7 +1079,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 </div>
               </div>
 
-              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" disabled={!consents.terms} />
+              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" disabled={!consents.terms} marketingConsent={consents.marketing} />
             </div>
 
             {/* Right — QR preview */}
