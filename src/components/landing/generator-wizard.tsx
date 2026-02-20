@@ -205,6 +205,7 @@ interface GeneratorWizardProps {
   initialUrl?: string
   initialFormData?: Record<string, string>
   initialName?: string
+  onStepChange?: (step: 1 | 2 | 3) => void
 }
 
 export interface GeneratorWizardHandle {
@@ -212,7 +213,7 @@ export interface GeneratorWizardHandle {
 }
 
 export const GeneratorWizard = forwardRef<GeneratorWizardHandle, GeneratorWizardProps>(
-function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName }, ref) {
+function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName, onStepChange }, ref) {
   const [selectedType, setSelectedType] = useState<QRType>(initialType ?? 'website')
   const [formData, setFormData] = useState<Record<string, string>>(initialFormData ?? (initialUrl ? { url: initialUrl } : {}))
   const [codeName, setCodeName] = useState(initialName ?? '')
@@ -231,6 +232,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   const goToStep = (s: 1 | 2 | 3) => {
     setStep(s)
+    onStepChange?.(s)
     setTimeout(() => {
       cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 50)
@@ -992,7 +994,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     {showSaveModal && createPortal(
       <div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }}
         onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
       >
         <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">

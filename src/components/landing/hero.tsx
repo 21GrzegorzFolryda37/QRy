@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GeneratorWizard, type GeneratorWizardHandle } from '@/components/landing/generator-wizard'
 
 export function Hero() {
   const wizardRef = useRef<GeneratorWizardHandle>(null)
   const particlesRef = useRef<HTMLDivElement>(null)
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1)
 
   useEffect(() => {
     const container = particlesRef.current
@@ -81,12 +82,12 @@ export function Hero() {
         <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
             <div className="p-5 sm:p-6 lg:p-8">
-              <GeneratorWizard ref={wizardRef} />
+              <GeneratorWizard ref={wizardRef} onStepChange={setWizardStep} />
             </div>
           </div>
 
-          {/* CTA below card */}
-          <div className="mt-6 flex flex-col items-center gap-3">
+          {/* CTA below card — only visible at step 3 */}
+          <div className={`mt-6 flex flex-col items-center gap-3 transition-all duration-300 ${wizardStep === 3 ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none -translate-y-2'}`}>
             <button
               onClick={() => wizardRef.current?.openSaveModal()}
               className="px-8 py-4 rounded-2xl text-base font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-xl shadow-[#6d28d9]/40 flex items-center gap-2.5"
