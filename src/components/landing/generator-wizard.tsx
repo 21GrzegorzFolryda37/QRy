@@ -228,14 +228,9 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   // Wizard step
   const [step, setStep] = useState<1 | 2 | 3>(1)
-  const cardRef = useRef<HTMLDivElement>(null)
-
   const goToStep = (s: 1 | 2 | 3) => {
     setStep(s)
     onStepChange?.(s)
-    setTimeout(() => {
-      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 50)
   }
 
   // QRCodeStyling library for generating QR
@@ -824,7 +819,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   return (
     <>
-    <div ref={cardRef} className="lg:grid lg:grid-cols-12 lg:gap-8">
+    <div className="lg:grid lg:grid-cols-12 lg:gap-8">
 
       {/* Left / main: wizard content */}
       <div className="lg:col-span-8 pb-24 lg:pb-0">
