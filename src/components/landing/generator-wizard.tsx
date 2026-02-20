@@ -239,6 +239,13 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
   // Save state — token auto-created with debounce, modal opened via ref
   const [saveToken, setSaveToken] = useState<string | undefined>()
   const [showSaveModal, setShowSaveModal] = useState(false)
+  const [consents, setConsents] = useState({ terms: false, marketing: false })
+
+  const allChecked = consents.terms && consents.marketing
+  function toggleAll() {
+    const next = !allChecked
+    setConsents({ terms: next, marketing: next })
+  }
 
   useImperativeHandle(ref, () => ({
     openSaveModal: () => setShowSaveModal(true),
@@ -1002,11 +1009,11 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       <div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
         style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }}
-        onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
+        onClick={(e) => { if (e.target === e.currentTarget) { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
       >
         <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">
           <button
-            onClick={() => setShowSaveModal(false)}
+            onClick={() => { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1017,19 +1024,62 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
           <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Left — auth */}
             <div className="p-8 flex flex-col justify-center">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-[var(--foreground)] font-display mb-3">Twój kod QR jest gotowy!</h2>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-[var(--foreground)] font-display mb-2">Twój kod QR jest gotowy!</h2>
                 <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
                   Utwórz darmowe konto aby go odebrać.
                 </p>
               </div>
-              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
-              <p className="mt-5 text-xs text-[var(--foreground-subtle)] text-center">
-                Akceptujesz{' '}
-                <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
-                {' '}i{' '}
-                <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
-              </p>
+
+              {/* Consents */}
+              <div className="mb-6 space-y-3 rounded-xl border border-[var(--border)] p-4 bg-gray-50/60">
+                {/* Master checkbox */}
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    onChange={toggleAll}
+                    className="w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
+                  />
+                  <span className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[#6d28d9] transition-colors">
+                    Akceptuję wszystkie poniższe zgody
+                  </span>
+                </label>
+
+                <div className="border-t border-[var(--border)] pt-3 space-y-3">
+                  {/* Required — terms */}
+                  <label className="flex items-start gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={consents.terms}
+                      onChange={(e) => setConsents(c => ({ ...c, terms: e.target.checked }))}
+                      className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
+                    />
+                    <span className="text-xs text-[var(--foreground-muted)] leading-relaxed">
+                      Akceptuję{' '}
+                      <Link href="/terms" target="_blank" className="underline hover:text-[#6d28d9]">Regulamin serwisu QRenixy</Link>
+                      {' '}oraz zapoznałem/am się z{' '}
+                      <Link href="/privacy" target="_blank" className="underline hover:text-[#6d28d9]">Polityką prywatności</Link>.{' '}
+                      <span className="text-[var(--error)] font-medium">*</span>
+                    </span>
+                  </label>
+
+                  {/* Optional — marketing */}
+                  <label className="flex items-start gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={consents.marketing}
+                      onChange={(e) => setConsents(c => ({ ...c, marketing: e.target.checked }))}
+                      className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6d28d9] accent-[#6d28d9] cursor-pointer shrink-0"
+                    />
+                    <span className="text-xs text-[var(--foreground-muted)] leading-relaxed">
+                      Wyrażam zgodę na otrzymywanie od QRenixy informacji marketingowych dotyczących produktów i usług.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" disabled={!consents.terms} />
             </div>
 
             {/* Right — QR preview */}

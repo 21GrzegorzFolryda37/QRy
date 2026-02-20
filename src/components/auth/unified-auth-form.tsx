@@ -11,9 +11,10 @@ type Step = 'email' | 'password' | 'magic-link-sent'
 interface UnifiedAuthFormProps {
   redirectTo?: string
   signupToken?: string
+  disabled?: boolean
 }
 
-export function UnifiedAuthForm({ redirectTo, signupToken }: UnifiedAuthFormProps) {
+export function UnifiedAuthForm({ redirectTo, signupToken, disabled }: UnifiedAuthFormProps) {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -139,7 +140,7 @@ export function UnifiedAuthForm({ redirectTo, signupToken }: UnifiedAuthFormProp
           </div>
         )}
 
-        <Button type="submit" variant="gradient" className="w-full" isLoading={isLoginPending}>
+        <Button type="submit" variant="gradient" className="w-full" isLoading={isLoginPending} disabled={disabled}>
           Zaloguj się
         </Button>
 
@@ -175,7 +176,7 @@ export function UnifiedAuthForm({ redirectTo, signupToken }: UnifiedAuthFormProp
         </div>
       )}
 
-      <Button type="submit" variant="gradient" className="w-full" isLoading={isPending}>
+      <Button type="submit" variant="gradient" className="w-full" isLoading={isPending} disabled={disabled}>
         Kontynuuj →
       </Button>
     </form>
