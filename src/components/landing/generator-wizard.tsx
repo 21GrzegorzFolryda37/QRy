@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button, Input } from '@/components/ui'
+import { Input } from '@/components/ui'
 import Link from 'next/link'
 import { QrPreview } from '@/components/qr/qr-preview'
 import { UnifiedAuthForm } from '@/components/auth'
@@ -233,11 +233,8 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
   // QRCodeStyling library for generating QR
   const [QRCodeStyling, setQRCodeStyling] = useState<typeof QRCodeStylingType | null>(null)
 
-  // Save modal state
-  const [showSaveModal, setShowSaveModal] = useState(false)
+  // Save state — token is auto-created with debounce
   const [saveToken, setSaveToken] = useState<string | undefined>()
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
 
   // Analytics timing
   const [startTime, setStartTime] = useState<number | null>(null)
@@ -309,37 +306,32 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
     }
   }
 
-  const handleOpenSaveModal = async () => {
-    setIsSaving(true)
-    setSaveError('')
-
-    try {
-      const pendingRes = await fetch('/api/pending-qr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          destinationUrl: getQRData(),
-          qrType: selectedType,
-          style,
-          logoUrl: logoUrl || null,
-          logoSize,
-        }),
-      })
-
-      if (!pendingRes.ok) {
-        setSaveError('Wystąpił błąd. Spróbuj ponownie.')
-        return
+  // Auto-create pending QR with debounce whenever data/style changes
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/pending-qr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            destinationUrl: getQRData(),
+            qrType: selectedType,
+            style,
+            logoUrl: logoUrl || null,
+            logoSize,
+          }),
+        })
+        if (res.ok) {
+          const { signupToken } = await res.json()
+          setSaveToken(signupToken)
+        }
+      } catch {
+        // silent fail
       }
-
-      const { signupToken } = await pendingRes.json()
-      setSaveToken(signupToken)
-      setShowSaveModal(true)
-    } catch {
-      setSaveError('Wystąpił błąd. Spróbuj ponownie.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+    }, 600)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, selectedType, style, logoUrl, logoSize])
 
   const isFormValid = () => {
     switch (selectedType) {
@@ -922,10 +914,10 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
           </div>
         )}
 
-        {/* Step 3: Send */}
+        {/* Step 3: Save — mobile shows auth form inline, desktop uses right panel */}
         {step === 3 && (
           <div key="step-3" className="animate-fade-in-scale">
-            {/* Live QR Preview - mobile only */}
+            {/* Mobile QR preview */}
             <div className="relative mb-6 lg:hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
               <div className="relative flex items-center justify-center p-4 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
@@ -940,34 +932,27 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="space-y-3">
-              {saveError && (
-                <p className="text-sm text-red-600 text-center">{saveError}</p>
-              )}
-
-              <Button
-                variant="gradient"
-                size="lg"
-                className="w-full shadow-lg"
-                onClick={handleOpenSaveModal}
-                isLoading={isSaving}
-                style={{ background: 'linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%)' }}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                  Pobierz kod QR →
-                </span>
-              </Button>
-
-              <div className="flex items-center justify-center gap-2 text-xs text-[var(--foreground-subtle)] pt-1">
-                <svg className="w-3.5 h-3.5 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                </svg>
-                <span>Darmowe konto — bez karty kredytowej</span>
+            {/* Mobile: auth form inline */}
+            <div className="lg:hidden space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--foreground)] font-display mb-1">Twój kod QR jest gotowy!</h2>
+                <p className="text-sm text-[var(--foreground-muted)]">Podaj email — zero hasła, zero formalności.</p>
               </div>
+              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
+              <p className="text-xs text-[var(--foreground-subtle)] text-center">
+                Zakładając konto akceptujesz{' '}
+                <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
+                {' '}i{' '}
+                <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
+              </p>
+            </div>
+
+            {/* Desktop: just a pointer — form is always visible in right panel */}
+            <div className="hidden lg:flex items-center gap-3 text-sm text-[var(--foreground-muted)]">
+              <svg className="w-5 h-5 text-[var(--success)] shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+              </svg>
+              Twój kod QR jest gotowy! Wpisz email po prawej stronie →
             </div>
           </div>
         )}
@@ -980,16 +965,17 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
         />
       </div>
 
-      {/* Right: sticky QR preview - desktop only */}
+      {/* Right: sticky QR preview + always-visible auth form - desktop only */}
       <div className="hidden lg:flex lg:col-span-4 items-start justify-center pt-4">
-        <div className="sticky top-8 w-full">
-          <div className="relative mb-4">
+        <div className="sticky top-8 w-full space-y-4">
+          {/* QR preview */}
+          <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
             <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
               <div className="bg-white rounded-xl p-3 shadow-lg">
                 <QrPreview
                   url={getQRData()}
-                  style={{ ...style, width: 320 }}
+                  style={{ ...style, width: 260 }}
                   logoUrl={logoUrl || undefined}
                   logoSize={logoSize}
                 />
@@ -997,6 +983,18 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
             </div>
           </div>
 
+          {/* Always-visible save form */}
+          <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-1">Pobierz kod QR</h3>
+            <p className="text-xs text-[var(--foreground-muted)] mb-4">Podaj email — zero hasła, zero formalności.</p>
+            <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
+            <p className="mt-4 text-[10px] text-[var(--foreground-subtle)] text-center leading-relaxed">
+              Akceptujesz{' '}
+              <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
+              {' '}i{' '}
+              <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -1008,66 +1006,6 @@ export function GeneratorWizard({ initialType, initialUrl, initialFormData, init
       isFormValid={isFormValid() && !!codeName}
     />
 
-    {/* Save modal */}
-    {showSaveModal && (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
-        onClick={(e) => { if (e.target === e.currentTarget) setShowSaveModal(false) }}
-      >
-        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">
-          {/* Close button */}
-          <button
-            onClick={() => setShowSaveModal(false)}
-            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left — auth */}
-            <div className="p-8 flex flex-col justify-center">
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">
-                  Twój kod QR jest gotowy!
-                </h2>
-                <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
-                  Podaj email żeby go zapisać na stałe. Zero hasła, zero formalności.
-                </p>
-              </div>
-              <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
-              <p className="mt-5 text-xs text-[var(--foreground-subtle)] text-center">
-                Zakładając konto akceptujesz{' '}
-                <Link href="/terms" className="underline hover:text-[var(--foreground-muted)]">regulamin</Link>
-                {' '}i{' '}
-                <Link href="/privacy" className="underline hover:text-[var(--foreground-muted)]">politykę prywatności</Link>.
-              </p>
-            </div>
-
-            {/* Right — QR preview */}
-            <div className="hidden lg:flex flex-col items-center justify-center gap-5 p-8 border-l border-[var(--border)]" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' }}>
-              <p className="text-[var(--foreground-subtle)] text-xs font-medium tracking-widest uppercase">Podgląd</p>
-              <div className="relative">
-                <div className="absolute inset-0 bg-violet-400 rounded-3xl blur-2xl opacity-25" />
-                <div className="relative bg-white rounded-2xl p-4 shadow-xl">
-                  <QrPreview
-                    url={getQRData()}
-                    style={{ ...style, width: 200 }}
-                    logoUrl={logoUrl || undefined}
-                    logoSize={logoSize}
-                  />
-                </div>
-              </div>
-              <p className="text-[var(--foreground-subtle)] text-xs text-center max-w-[180px] truncate">
-                {getQRData().length > 35 ? getQRData().slice(0, 35) + '…' : getQRData()}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
     </>
   )
 }
