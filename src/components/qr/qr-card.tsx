@@ -8,6 +8,7 @@ import { QrCode } from '@/types/database'
 import { deleteQrCode } from '@/actions/qr'
 import { getRedirectUrl } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { QrPreview } from '@/components/qr/qr-preview'
 
 interface QrCardProps {
   qrCode: QrCode & { scan_count: number }
@@ -39,8 +40,13 @@ export function QrCard({ qrCode }: QrCardProps) {
                 unoptimized
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-[var(--foreground-subtle)]">
-                Brak obrazu
+              <div className="flex h-full items-center justify-center p-1">
+                <QrPreview
+                  url={qrCode.destination_url}
+                  style={{ ...qrCode.style, width: 112 }}
+                  logoUrl={qrCode.logo_url || undefined}
+                  logoSize={qrCode.logo_size || 45}
+                />
               </div>
             )}
           </div>
