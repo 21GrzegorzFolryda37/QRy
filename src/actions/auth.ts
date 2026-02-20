@@ -279,8 +279,7 @@ export async function signupInstant(
   }
 
   if (data.user?.id && marketingConsent) {
-    await supabase
-      .from('profiles')
+    await (supabase.from('profiles') as any)
       .update({ newsletter_consent: true })
       .eq('id', data.user.id)
   }
