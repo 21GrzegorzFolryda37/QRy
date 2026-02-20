@@ -1020,10 +1020,10 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
           <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Left — auth */}
             <div className="p-8 flex flex-col justify-center">
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-[var(--foreground)] font-display mb-2">Twój kod QR jest gotowy!</h2>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-[var(--foreground)] font-display mb-3">Twój kod QR jest gotowy!</h2>
                 <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
-                  Podaj email — zero hasła, zero formalności.
+                  Utwórz darmowe konto aby go odebrać.
                 </p>
               </div>
               <UnifiedAuthForm signupToken={saveToken} redirectTo="/dashboard" />
