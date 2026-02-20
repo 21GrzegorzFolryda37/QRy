@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { GeneratorWizard } from '@/components/landing/generator-wizard'
+import { GeneratorWizard, type GeneratorWizardHandle } from '@/components/landing/generator-wizard'
 
 export function Hero() {
+  const wizardRef = useRef<GeneratorWizardHandle>(null)
   const particlesRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -80,8 +81,22 @@ export function Hero() {
         <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
             <div className="p-5 sm:p-6 lg:p-8">
-              <GeneratorWizard />
+              <GeneratorWizard ref={wizardRef} />
             </div>
+          </div>
+
+          {/* CTA below card */}
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <button
+              onClick={() => wizardRef.current?.openSaveModal()}
+              className="px-8 py-4 rounded-2xl text-base font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-xl shadow-[#6d28d9]/40 flex items-center gap-2.5"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Pobierz swój kod QR
+            </button>
+            <p className="text-white/50 text-xs">Darmowe konto — bez karty kredytowej</p>
           </div>
         </div>
       </div>
