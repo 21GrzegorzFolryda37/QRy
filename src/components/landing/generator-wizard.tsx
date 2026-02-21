@@ -229,6 +229,31 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
   // Wizard step
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const wizardContainerRef = useRef<HTMLDivElement>(null)
+  const accordionRef = useRef<HTMLDivElement>(null)
+
+  // On mobile: chain accordion scroll to page when reaching top/bottom boundary
+  useEffect(() => {
+    const el = accordionRef.current
+    if (!el) return
+    let startY = 0
+    const onTouchStart = (e: TouchEvent) => { startY = e.touches[0].clientY }
+    const onTouchMove = (e: TouchEvent) => {
+      const dy = startY - e.touches[0].clientY
+      const atTop = el.scrollTop === 0
+      const atBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 1
+      if ((dy < 0 && atTop) || (dy > 0 && atBottom)) {
+        // boundary reached — let page handle this scroll
+        e.preventDefault()
+        window.scrollBy({ top: dy, behavior: 'auto' })
+      }
+    }
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [step])
   const goToStep = (s: 1 | 2 | 3) => {
     setStep(s)
     onStepChange?.(s)
@@ -947,7 +972,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
 
             {/* Personalization Accordion — only this part scrolls on mobile */}
-            <div className="overflow-y-auto max-h-[45vh] lg:max-h-[400px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+            <div ref={accordionRef} className="overflow-y-auto max-h-[45vh] lg:max-h-[400px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
               <div className="border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
                 {personalizationTabs.map((tab) => (
                   <div key={tab.id}>
