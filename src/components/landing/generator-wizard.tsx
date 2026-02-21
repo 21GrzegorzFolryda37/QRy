@@ -863,7 +863,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     <div ref={wizardContainerRef} className="lg:grid lg:grid-cols-12 lg:gap-10">
 
       {/* Left / main: wizard content */}
-      <div className="lg:col-span-7 pb-24 lg:pb-0 flex flex-col min-h-[500px]">
+      <div className="lg:col-span-7 flex flex-col min-h-[500px]">
         <StepIndicator currentStep={step} />
 
         {/* Step 1: Type & Data */}
@@ -912,6 +912,16 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 placeholder="np. Mój sklep"
                 className="w-full px-4 py-3 rounded-xl bg-[var(--background-surface)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] transition-all shadow-sm"
               />
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-[var(--border)]">
+              <button
+                onClick={() => goToStep(2)}
+                disabled={!isFormValid() || !codeName}
+                className="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
+              >
+                Dalej →
+              </button>
             </div>
           </div>
         )}
@@ -963,6 +973,21 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               </div>
             </div>
 
+            <div className="mt-4 pt-4 border-t border-[var(--border)] flex gap-3">
+              <button
+                onClick={() => goToStep(1)}
+                className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
+              >
+                ← Wstecz
+              </button>
+              <button
+                onClick={() => goToStep(3)}
+                className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25"
+              >
+                Podgląd →
+              </button>
+            </div>
+
           </div>
         )}
 
@@ -991,10 +1016,16 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               <p className="text-xl font-semibold text-[var(--foreground)]">Twój kod QR jest gotowy!</p>
             </div>
 
-            <div className="flex justify-center">
+            <div className="mt-5 pt-4 border-t border-[var(--border)] flex gap-3">
+              <button
+                onClick={() => goToStep(2)}
+                className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
+              >
+                ← Wstecz
+              </button>
               <button
                 onClick={() => { setShowSaveModal(true); uploadQrImageForPending() }}
-                className="px-8 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center gap-2"
+                className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -1034,12 +1065,6 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       </div>
 
     </div>
-
-    <MobileFixedNav
-      currentStep={step}
-      onGoToStep={goToStep}
-      isFormValid={isFormValid() && !!codeName}
-    />
 
     {/* Save modal — rendered via portal into document.body so fixed positioning works correctly */}
     {showSaveModal && createPortal(
@@ -1285,62 +1310,6 @@ function WizardNav({
           ← Wstecz
         </button>
       )}
-    </div>
-  )
-}
-
-// Mobile Fixed Bottom Navigation
-function MobileFixedNav({
-  currentStep,
-  onGoToStep,
-  isFormValid,
-}: {
-  currentStep: 1 | 2 | 3
-  onGoToStep: (step: 1 | 2 | 3) => void
-  isFormValid: boolean
-}) {
-  return (
-    <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-    >
-      <div className="bg-white/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3">
-        <div className="flex items-center gap-3 max-w-lg mx-auto">
-          {currentStep === 1 && (
-            <button
-              onClick={() => onGoToStep(2)}
-              disabled={!isFormValid}
-              className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-[#6d28d9]/25"
-            >
-              Dalej →
-            </button>
-          )}
-          {currentStep === 2 && (
-            <>
-              <button
-                onClick={() => onGoToStep(1)}
-                className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
-              >
-                ← Wstecz
-              </button>
-              <button
-                onClick={() => onGoToStep(3)}
-                className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25"
-              >
-                Podgląd →
-              </button>
-            </>
-          )}
-          {currentStep === 3 && (
-            <button
-              onClick={() => onGoToStep(2)}
-              className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] bg-white hover:bg-gray-50 active:bg-gray-100 transition-all"
-            >
-              ← Wstecz
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   )
 }
