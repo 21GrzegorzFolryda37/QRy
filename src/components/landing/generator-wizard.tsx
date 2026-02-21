@@ -1009,7 +1009,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 onClick={() => goToStep(3)}
                 className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25"
               >
-                Podgląd →
+                Dalej →
               </button>
             </div>
 
@@ -1323,7 +1323,7 @@ function WizardNav({
             onClick={() => onGoToStep(3)}
             className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] transition-all shadow-md shadow-[#6d28d9]/25"
           >
-            Podgląd →
+            Dalej →
           </button>
         </>
       )}
