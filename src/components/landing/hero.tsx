@@ -53,7 +53,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="hero-section relative flex flex-col justify-start pt-24 pb-16 overflow-x-hidden">
+    <section className="hero-section relative flex flex-col justify-start pt-24 pb-16" style={{ overflowX: 'clip' }}>
       {/* Dark gradient background */}
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%)' }} />
 
