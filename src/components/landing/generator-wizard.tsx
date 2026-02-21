@@ -864,22 +864,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
       {/* Left / main: wizard content */}
       <div className="lg:col-span-7 pb-24 lg:pb-0 flex flex-col min-h-[500px]">
-        {/* Step indicator — sticky on mobile when in step 2 so QR preview stays visible while scrolling */}
-        <div className={step === 2 ? 'sticky top-[76px] z-20 bg-white -mx-6 sm:-mx-8 lg:mx-0 px-6 sm:px-8 lg:px-0 border-b border-gray-100 lg:border-none shadow-sm lg:shadow-none lg:static pb-3 lg:pb-0' : ''}>
-          <StepIndicator currentStep={step} />
-          {step === 2 && (
-            <div className="lg:hidden mt-2 mb-1 flex justify-center">
-              <div className="bg-white rounded-xl p-2 border border-[var(--border)] shadow-md">
-                <QrPreview
-                  url={getQRData()}
-                  style={{ ...style, width: 160 }}
-                  logoUrl={logoUrl || undefined}
-                  logoSize={logoSize}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <StepIndicator currentStep={step} />
 
         {/* Step 1: Type & Data */}
         {step === 1 && (
@@ -933,35 +918,49 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
         {/* Step 2: Personalization */}
         {step === 2 && (
-          <div key="step-2" className="animate-fade-in-scale lg:overflow-y-auto lg:max-h-[560px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+          <div key="step-2" className="animate-fade-in-scale flex flex-col">
             <div className="flex items-center gap-3 mb-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
               <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
             </div>
 
-            {/* Personalization Accordion */}
-            <div className="border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
-              {personalizationTabs.map((tab) => (
-                <div key={tab.id}>
-                  <button
-                    onClick={() => setActiveAccordion(activeAccordion === tab.id ? null : tab.id)}
-                    className="w-full flex items-center justify-between px-4 py-3.5 text-sm font-medium text-[var(--foreground)] hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <span>{tab.label}</span>
-                    <svg
-                      className={`w-4 h-4 text-[var(--foreground-muted)] transition-transform duration-200 shrink-0 ${activeAccordion === tab.id ? 'rotate-180' : ''}`}
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            {/* QR preview — mobile only, static above accordion so it never scrolls away */}
+            <div className="lg:hidden flex justify-center mb-3">
+              <div className="rounded-xl p-2 border border-[var(--border)] shadow-sm bg-white">
+                <QrPreview
+                  url={getQRData()}
+                  style={{ ...style, width: 160 }}
+                  logoUrl={logoUrl || undefined}
+                  logoSize={logoSize}
+                />
+              </div>
+            </div>
+
+            {/* Personalization Accordion — only this part scrolls on mobile */}
+            <div className="overflow-y-auto max-h-[45vh] lg:max-h-[400px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+              <div className="border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
+                {personalizationTabs.map((tab) => (
+                  <div key={tab.id}>
+                    <button
+                      onClick={() => setActiveAccordion(activeAccordion === tab.id ? null : tab.id)}
+                      className="w-full flex items-center justify-between px-4 py-3.5 text-sm font-medium text-[var(--foreground)] hover:bg-gray-50 transition-colors text-left"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {activeAccordion === tab.id && (
-                    <div className="px-4 pb-5 pt-2 bg-gray-50/50">
-                      {renderPersonalizationContent(tab.id)}
-                    </div>
-                  )}
-                </div>
-              ))}
+                      <span>{tab.label}</span>
+                      <svg
+                        className={`w-4 h-4 text-[var(--foreground-muted)] transition-transform duration-200 shrink-0 ${activeAccordion === tab.id ? 'rotate-180' : ''}`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {activeAccordion === tab.id && (
+                      <div className="px-4 pb-5 pt-2 bg-gray-50/50">
+                        {renderPersonalizationContent(tab.id)}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>
