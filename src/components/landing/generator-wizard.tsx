@@ -1045,10 +1045,13 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     {/* Save modal — rendered via portal into document.body so fixed positioning works correctly */}
     {showSaveModal && createPortal(
       <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[9999] overflow-y-auto"
         style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
-        onClick={(e) => { if (e.target === e.currentTarget) { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
       >
+        <div
+          className="flex min-h-full items-center justify-center p-4 py-8"
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
+        >
         <div className="w-full bg-white shadow-2xl overflow-hidden relative" style={{ maxWidth: 940, borderRadius: 20 }}>
 
           {/* X button */}
@@ -1155,9 +1158,9 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               </div>
             </div>
 
-            {/* Right — QR preview */}
+            {/* Right — QR preview (hidden on mobile to keep modal compact) */}
             <div
-              className="flex flex-col items-center justify-center gap-5 border-t md:border-t-0 md:border-l"
+              className="hidden md:flex flex-col items-center justify-center gap-5 md:border-l"
               style={{ background: 'linear-gradient(135deg, #f8f7ff 0%, #f0ecff 100%)', borderColor: '#eee8ff', padding: '40px 32px' }}
             >
               <div style={{ background: '#7c3aed', color: 'white', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '5px 14px', borderRadius: 8 }}>
@@ -1177,6 +1180,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
 
           </div>
+        </div>
         </div>
       </div>,
       document.body
