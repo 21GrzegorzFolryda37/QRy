@@ -19,6 +19,16 @@ interface QrCodeRecord {
   is_active: boolean
 }
 
+function normalizeUrl(url: string): string | null {
+  if (!url) return null
+  // Already a valid http/https URL
+  if (/^https?:\/\//i.test(url)) return url
+  // Non-web QR data (WiFi, VCard, tel:, mailto:, etc.) — not redirectable via HTTP
+  if (/^(tel:|mailto:|sms:|WIFI:|BEGIN:VCARD|bitcoin:)/i.test(url)) return null
+  // Plain domain/path without protocol — add https://
+  return `https://${url}`
+}
+
 async function getQrCodeCached(shortCode: string, supabase: ReturnType<typeof createAdminClient>): Promise<QrCodeRecord | null> {
   const cached = qrCodeCache.get(shortCode)
   const now = Date.now()
@@ -57,7 +67,12 @@ export async function GET(
     // Found in qr_codes — redirect with tracking
     const requestUrl = new URL(request.url)
     const utmParams = extractUtmParams(requestUrl)
-    const destinationUrl = appendUtmParams(qrCode.destination_url, utmParams)
+    const rawUrl = appendUtmParams(qrCode.destination_url, utmParams)
+    const destinationUrl = normalizeUrl(rawUrl)
+
+    if (!destinationUrl) {
+      return NextResponse.redirect(new URL('/not-found', request.url))
+    }
 
     after(async () => {
       await trackScan(request, qrCode, supabase)
@@ -75,7 +90,11 @@ export async function GET(
     .single()
 
   if (pendingQr) {
-    return NextResponse.redirect(pendingQr.destination_url, 302)
+    const pendingDestination = normalizeUrl(pendingQr.destination_url)
+    if (!pendingDestination) {
+      return NextResponse.redirect(new URL('/not-found', request.url))
+    }
+    return NextResponse.redirect(pendingDestination, 302)
   }
 
   // Nothing found — 404
