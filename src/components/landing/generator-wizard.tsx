@@ -228,9 +228,16 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   // Wizard step
   const [step, setStep] = useState<1 | 2 | 3>(1)
+  const wizardContainerRef = useRef<HTMLDivElement>(null)
   const goToStep = (s: 1 | 2 | 3) => {
     setStep(s)
     onStepChange?.(s)
+    // Scroll to top of generator on mobile
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setTimeout(() => {
+        wizardContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    }
   }
 
   // QRCodeStyling library for generating QR
@@ -853,11 +860,26 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   return (
     <>
-    <div className="lg:grid lg:grid-cols-12 lg:gap-10">
+    <div ref={wizardContainerRef} className="lg:grid lg:grid-cols-12 lg:gap-10">
 
       {/* Left / main: wizard content */}
       <div className="lg:col-span-7 pb-24 lg:pb-0 flex flex-col min-h-[500px]">
-        <StepIndicator currentStep={step} />
+        {/* Step indicator — sticky on mobile when in step 2 so QR preview stays visible while scrolling */}
+        <div className={step === 2 ? 'sticky top-[76px] z-20 bg-white -mx-6 sm:-mx-8 lg:mx-0 px-6 sm:px-8 lg:px-0 border-b border-gray-100 lg:border-none shadow-sm lg:shadow-none lg:static pb-3 lg:pb-0' : ''}>
+          <StepIndicator currentStep={step} />
+          {step === 2 && (
+            <div className="lg:hidden mt-2 mb-1 flex justify-center">
+              <div className="bg-white rounded-xl p-2 border border-[var(--border)] shadow-md">
+                <QrPreview
+                  url={getQRData()}
+                  style={{ ...style, width: 160 }}
+                  logoUrl={logoUrl || undefined}
+                  logoSize={logoSize}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Step 1: Type & Data */}
         {step === 1 && (
@@ -911,7 +933,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
         {/* Step 2: Personalization */}
         {step === 2 && (
-          <div key="step-2" className="animate-fade-in-scale overflow-y-auto max-h-[560px] pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+          <div key="step-2" className="animate-fade-in-scale lg:overflow-y-auto lg:max-h-[560px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
             <div className="flex items-center gap-3 mb-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
               <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
@@ -942,17 +964,6 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               ))}
             </div>
 
-            {/* Mini QR Preview - mobile only */}
-            <div className="mt-5 flex justify-center lg:hidden">
-              <div className="bg-white rounded-xl p-2 shadow-md border border-[var(--border)]">
-                <QrPreview
-                  url={getQRData()}
-                  style={{ ...style, width: 128 }}
-                  logoUrl={logoUrl || undefined}
-                  logoSize={logoSize}
-                />
-              </div>
-            </div>
           </div>
         )}
 
