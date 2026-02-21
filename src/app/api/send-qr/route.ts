@@ -39,66 +39,48 @@ export async function POST(request: NextRequest) {
         <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
           <div style="max-width: 600px; margin: 0 auto; background: white;">
 
-            <!-- Header -->
-            <div style="background: white; padding: 30px 40px; border-bottom: 1px solid #e5e7eb;">
-              <table style="width: 100%;">
+            <!-- Header: logo + brand name -->
+            <div style="background: white; padding: 20px 32px; border-bottom: 1px solid #e5e7eb;">
+              <table style="border-collapse: collapse;">
                 <tr>
-                  <td style="width: 50px; vertical-align: middle;">
-                    <img src="https://qrenixy.com/logo.png" alt="QRenixy" width="44" height="44" style="display: block; border-radius: 10px;" />
+                  <td style="vertical-align: middle; padding-right: 10px;">
+                    <img src="https://qrenixy.com/logo.png" alt="QRenixy" width="36" height="36" style="display: block; border-radius: 8px;" />
                   </td>
-                  <td style="vertical-align: middle; text-align: center;">
-                    <h1 style="color: #6d28d9; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
-                      Twoj kod QR jest gotowy!
-                    </h1>
+                  <td style="vertical-align: middle;">
+                    <span style="color: #6d28d9; font-size: 20px; font-weight: 700; line-height: 1;">QRenixy</span>
                   </td>
-                  <td style="width: 50px;"></td>
                 </tr>
               </table>
             </div>
 
             <!-- QR Code -->
-            <div style="padding: 40px 20px; text-align: center;">
+            <div style="padding: 40px 20px; text-align: center; background: white;">
               <img src="cid:qrcode" alt="Twoj QR kod" style="max-width: 300px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);" />
-
               <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
-                Zakodowany link: <span style="color: #6d28d9; font-weight: 500;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                Zakodowany link: <a href="${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}" style="color: #6d28d9; font-weight: 500; text-decoration: none;">${url.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</a>
               </p>
-
             </div>
 
             <!-- 7-day expiration warning -->
-            <div style="background: #fffbeb; border-top: 1px solid #fcd34d; border-bottom: 1px solid #fcd34d; padding: 16px 40px; text-align: center;">
-              <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
-                <strong>Ten kod QR wygasa za 7 dni.</strong><br/>
-                Zaloz darmowe konto, aby zachowac go na stale i sledzic statystyki skanowania.
+            <div style="background: #fffbeb; border-top: 1px solid #fcd34d; border-bottom: 1px solid #fcd34d; padding: 14px 32px; text-align: center;">
+              <p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5;">
+                <strong>Ten kod QR wygasa za 7 dni.</strong> Zaloz darmowe konto, aby zachowac go na stale.
               </p>
             </div>
 
             <!-- CTA Section -->
-            <div style="background: #6d28d9; padding: 35px 40px; color: white;">
-              <div style="text-align: center; margin-bottom: 28px;">
-                <a href="${registerUrl}" style="display: inline-block; background: white; color: #6d28d9; padding: 18px 48px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-                  Zachowaj swoj kod QR — zaloz konto za darmo
-                </a>
-              </div>
-
-              <table style="width: 100%; color: white; margin-bottom: 20px;">
-                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Ile razy zeskanowano twoj kod</td></tr>
-                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Lokalizacje uzytkownikow na mapie</td></tr>
-                <tr><td style="padding: 10px 0; font-size: 17px; text-align: center;">Urzadzenia (telefon/komputer/tablet)</td></tr>
-              </table>
-
-              <p style="text-align: center; margin: 20px 0 0 0; font-size: 14px; opacity: 0.9;">
-                Darmowe konto · Bez karty kredytowej · Gotowe w 30 sekund
-              </p>
+            <div style="background: #6d28d9; padding: 36px 32px; text-align: center;">
+              <a href="${registerUrl}" style="display: inline-block; background: white; color: #6d28d9; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
+                Zobacz ile osob zeskanowalo twoj kod
+              </a>
             </div>
 
             <!-- Footer -->
-            <div style="padding: 30px 20px; text-align: center; color: #9ca3af; font-size: 14px; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0 0 8px 0;">
+            <div style="padding: 28px 20px; text-align: center; color: #9ca3af; font-size: 13px; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 6px 0;">
                 Masz pytania? Napisz do nas: <a href="mailto:contact@qrenixy.com" style="color: #6d28d9; text-decoration: none;">contact@qrenixy.com</a>
               </p>
-              <p style="margin: 8px 0 0 0; font-size: 12px;">
+              <p style="margin: 0; font-size: 12px;">
                 &copy; ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzezone.
               </p>
             </div>

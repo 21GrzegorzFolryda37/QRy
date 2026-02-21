@@ -249,7 +249,10 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
   }
 
   useImperativeHandle(ref, () => ({
-    openSaveModal: () => setShowSaveModal(true),
+    openSaveModal: () => {
+      setShowSaveModal(true)
+      uploadQrImageForPending()
+    },
   }))
 
   // Analytics timing
@@ -319,6 +322,28 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
         return `bitcoin:${formData.address || ''}${formData.amount ? `?amount=${formData.amount}` : ''}`
       default:
         return formData.url || 'https://example.com'
+    }
+  }
+
+  // Upload client-side QR image to pending record (fire & forget)
+  const uploadQrImageForPending = async () => {
+    if (!saveToken || !QRCodeStyling) return
+    try {
+      const dataUrl = await generateQrCodeImage(QRCodeStyling, {
+        url: getQRData(),
+        style: { ...style, width: 600 },
+        size: 600,
+        logoUrl: logoUrl || undefined,
+        logoSize,
+      })
+      if (!dataUrl) return
+      await fetch('/api/pending-qr/image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signupToken: saveToken, qrCodeBase64: dataUrl }),
+      })
+    } catch {
+      // non-blocking — silent fail
     }
   }
 
@@ -958,7 +983,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
             <div className="flex justify-center">
               <button
-                onClick={() => setShowSaveModal(true)}
+                onClick={() => { setShowSaveModal(true); uploadQrImageForPending() }}
                 className="px-8 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
