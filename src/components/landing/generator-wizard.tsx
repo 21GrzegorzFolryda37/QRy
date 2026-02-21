@@ -1035,38 +1035,43 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     {showSaveModal && createPortal(
       <div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }}
+        style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
         onClick={(e) => { if (e.target === e.currentTarget) { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
       >
-        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+        <div className="w-full bg-white shadow-2xl overflow-hidden relative" style={{ maxWidth: 940, borderRadius: 20 }}>
+
+          {/* X button */}
           <button
             onClick={() => { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
-            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[rgba(124,58,237,0.15)]"
+            style={{ background: 'rgba(124,58,237,0.08)' }}
           >
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4" style={{ color: '#7c3aed' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left — auth */}
-            <div className="p-8 flex flex-col justify-center">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-[var(--foreground)] font-display mb-2">Twój kod QR jest gotowy!</h2>
-                <p className="text-[var(--foreground-muted)] text-sm leading-relaxed">
-                  Utwórz darmowe konto aby go odebrać.
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2">
+
+            {/* Left — form + benefits */}
+            <div style={{ padding: '44px 40px' }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e1b2e', marginBottom: 6, lineHeight: 1.3 }}>
+                Twój kod QR jest gotowy!
+              </h2>
+              <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 24 }}>
+                Utwórz darmowe konto aby go odebrać.
+              </p>
 
               <UnifiedAuthForm
                 signupToken={saveToken}
                 redirectTo="/dashboard"
                 disabled={!consents.terms}
                 marketingConsent={consents.marketing}
+                buttonLabel="Odbierz kod i utwórz konto →"
                 consentBlock={
-                  <div className="space-y-2 rounded-lg border border-[var(--border)] p-3 bg-gray-50/60">
+                  <div style={{ marginTop: 16 }} className="rounded-lg border border-[var(--border)] p-3 bg-gray-50/60">
                     {/* Master checkbox */}
-                    <label className="flex items-center gap-2 cursor-pointer group">
+                    <label className="flex items-center gap-2 cursor-pointer group" style={{ marginBottom: 8 }}>
                       <input
                         type="checkbox"
                         checked={allChecked}
@@ -1078,7 +1083,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                       </span>
                     </label>
 
-                    <div className="border-t border-[var(--border)] pt-2 space-y-2">
+                    <div className="border-t border-[var(--border)] pt-2" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {/* Required — terms */}
                       <label className="flex items-start gap-2 cursor-pointer">
                         <input
@@ -1112,26 +1117,54 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                   </div>
                 }
               />
+
+              {/* Benefits section */}
+              <div style={{ borderTop: '1px solid #e5e7eb', marginTop: 24, paddingTop: 20 }}>
+                <p style={{ fontSize: 17, fontWeight: 700, color: '#1e1b2e', marginBottom: 16 }}>
+                  Co zyskujesz z darmowym kontem?
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[
+                    { bold: '5 kodów QR', rest: ' — twórz i zarządzaj kodami' },
+                    { bold: '1 000 skanów miesięcznie', rest: ' — śledzenie aktywności' },
+                    { bold: 'Własne kolory', rest: ' — personalizacja kolorystyki kodu' },
+                    { bold: 'Podstawowa analityka', rest: ' — wgląd w statystyki skanowania' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#ede9fe', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 700 }}>
+                        ✓
+                      </div>
+                      <span style={{ fontSize: 14.5 }}>
+                        <strong style={{ color: '#1e1b2e' }}>{item.bold}</strong>
+                        <span style={{ color: '#6b7280' }}>{item.rest}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Right — QR preview */}
-            <div className="hidden lg:flex flex-col items-center justify-center gap-5 p-8 border-l border-[var(--border)]" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' }}>
-              <p className="text-[var(--foreground-subtle)] text-xs font-medium tracking-widest uppercase">Podgląd</p>
-              <div className="relative">
-                <div className="absolute inset-0 bg-violet-400 rounded-3xl blur-2xl opacity-25" />
-                <div className="relative bg-white rounded-2xl p-4 shadow-xl">
-                  <QrPreview
-                    url={pendingRedirectUrl || getQRData()}
-                    style={{ ...style, width: 200 }}
-                    logoUrl={logoUrl || undefined}
-                    logoSize={logoSize}
-                  />
-                </div>
+            <div
+              className="flex flex-col items-center justify-center gap-5 border-t md:border-t-0 md:border-l"
+              style={{ background: 'linear-gradient(135deg, #f8f7ff 0%, #f0ecff 100%)', borderColor: '#eee8ff', padding: '40px 32px' }}
+            >
+              <div style={{ background: '#7c3aed', color: 'white', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '5px 14px', borderRadius: 8 }}>
+                Twój kod QR:
               </div>
-              <p className="text-[var(--foreground-subtle)] text-xs text-center max-w-[180px] truncate">
-                {getQRData().length > 35 ? getQRData().slice(0, 35) + '…' : getQRData()}
+              <div style={{ background: 'white', borderRadius: 16, padding: 24, boxShadow: '0 4px 24px rgba(109,40,217,0.12)' }}>
+                <QrPreview
+                  url={pendingRedirectUrl || getQRData()}
+                  style={{ ...style, width: 280 }}
+                  logoUrl={logoUrl || undefined}
+                  logoSize={logoSize}
+                />
+              </div>
+              <p style={{ fontSize: 11, fontFamily: 'monospace', color: '#9ca3af', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                {getQRData().length > 42 ? getQRData().slice(0, 42) + '…' : getQRData()}
               </p>
             </div>
+
           </div>
         </div>
       </div>,

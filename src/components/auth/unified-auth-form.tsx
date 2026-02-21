@@ -14,9 +14,10 @@ interface UnifiedAuthFormProps {
   disabled?: boolean
   marketingConsent?: boolean
   consentBlock?: React.ReactNode
+  buttonLabel?: string
 }
 
-export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingConsent, consentBlock }: UnifiedAuthFormProps) {
+export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingConsent, consentBlock, buttonLabel }: UnifiedAuthFormProps) {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -181,7 +182,7 @@ export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingCo
       {consentBlock}
 
       <Button type="submit" variant="gradient" className="w-full" isLoading={isPending} disabled={disabled}>
-        Kontynuuj →
+        {buttonLabel ?? 'Kontynuuj →'}
       </Button>
     </form>
   )
