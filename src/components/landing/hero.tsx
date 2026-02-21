@@ -78,9 +78,9 @@ export function Hero() {
         </div>
 
         {/* Wizard Card */}
-        <div className="max-w-6xl mx-auto animate-fade-in-up animate-delay-400">
+        <div className="max-w-7xl mx-auto animate-fade-in-up animate-delay-400">
           <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
-            <div className="p-5 sm:p-6 lg:p-8">
+            <div className="p-6 sm:p-8 lg:p-10">
               <GeneratorWizard ref={wizardRef} />
             </div>
           </div>

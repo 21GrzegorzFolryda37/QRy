@@ -853,10 +853,10 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   return (
     <>
-    <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+    <div className="lg:grid lg:grid-cols-12 lg:gap-10">
 
       {/* Left / main: wizard content */}
-      <div className="lg:col-span-8 pb-24 lg:pb-0 flex flex-col min-h-[420px]">
+      <div className="lg:col-span-7 pb-24 lg:pb-0 flex flex-col min-h-[500px]">
         <StepIndicator currentStep={step} />
 
         {/* Step 1: Type & Data */}
@@ -871,18 +871,18 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
 
             {/* QR Type grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-2 mb-5">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2.5 mb-6">
               {qrTypes.map((type) => (
                 <button
                   key={type.id}
                   onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
-                  className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl text-xs font-medium transition-all ${
+                  className={`flex flex-col items-center gap-2 px-2 py-3.5 rounded-xl text-sm font-medium transition-all ${
                     selectedType === type.id
                       ? 'bg-[#6d28d9] text-white shadow-md ring-2 ring-[#6d28d9]/30'
                       : 'bg-white border border-[var(--border)] text-[var(--foreground-muted)] hover:border-[#6d28d9]/50 shadow-sm'
                   }`}
                 >
-                  <TypeIcon type={type.icon} className="w-4 h-4" />
+                  <TypeIcon type={type.icon} className="w-5 h-5" />
                   {type.label}
                 </button>
               ))}
@@ -911,7 +911,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
         {/* Step 2: Personalization */}
         {step === 2 && (
-          <div key="step-2" className="animate-fade-in-scale overflow-y-auto max-h-[480px] pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+          <div key="step-2" className="animate-fade-in-scale overflow-y-auto max-h-[560px] pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
             <div className="flex items-center gap-3 mb-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#6d28d9] text-white text-sm font-bold shadow-lg shadow-[#6d28d9]/25">2</span>
               <h2 className="text-lg font-semibold text-[var(--foreground)] font-display">Personalizuj wygląd</h2>
@@ -1004,15 +1004,15 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       </div>
 
       {/* Right: sticky QR preview - desktop only */}
-      <div className="hidden lg:flex lg:col-span-4 items-start justify-center pt-4">
+      <div className="hidden lg:flex lg:col-span-5 items-start justify-center pt-4">
         <div className="sticky top-8 w-full">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20 animate-pulse-glow" />
-            <div className="relative flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
+            <div className="relative flex items-center justify-center p-8 rounded-2xl bg-gradient-to-br from-[var(--primary-muted)] to-[var(--secondary-muted)] border border-[var(--border)]">
               <div className="bg-white rounded-xl p-3 shadow-lg">
                 <QrPreview
                   url={getQRData()}
-                  style={{ ...style, width: 320 }}
+                  style={{ ...style, width: 380 }}
                   logoUrl={logoUrl || undefined}
                   logoSize={logoSize}
                 />
