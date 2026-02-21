@@ -42,7 +42,7 @@ export function QrCard({ qrCode }: QrCardProps) {
             ) : (
               <div className="flex h-full items-center justify-center p-1">
                 <QrPreview
-                  url={qrCode.destination_url}
+                  url={redirectUrl}
                   style={{ ...qrCode.style, width: 112 }}
                   logoUrl={qrCode.logo_url || undefined}
                   logoSize={qrCode.logo_size || 45}

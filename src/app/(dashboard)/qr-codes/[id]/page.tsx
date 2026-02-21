@@ -7,6 +7,7 @@ import { getRedirectUrl } from '@/lib/utils'
 import { QrCodeAnalytics } from '@/components/analytics'
 import { createClient } from '@/lib/supabase/server'
 import type { Plan } from '@/types/database'
+import { QrPreview } from '@/components/qr/qr-preview'
 
 interface QrCodeDetailPageProps {
   params: Promise<{ id: string }>
@@ -74,8 +75,13 @@ export default async function QrCodeDetailPage({ params }: QrCodeDetailPageProps
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-[var(--foreground-subtle)]">
-                  Brak obrazu
+                <div className="flex h-full items-center justify-center p-2">
+                  <QrPreview
+                    url={redirectUrl}
+                    style={{ ...qrCode.style, width: 176 }}
+                    logoUrl={qrCode.logo_url || undefined}
+                    logoSize={qrCode.logo_size || 45}
+                  />
                 </div>
               )}
             </div>

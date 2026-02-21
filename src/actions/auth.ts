@@ -11,6 +11,11 @@ import {
   resetPasswordSchema,
 } from '@/lib/validations/auth'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
+import { getRedirectUrl } from '@/lib/utils'
+import { Resend } from 'resend'
+import sharp from 'sharp'
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export type ActionResponse = {
   error?: string
@@ -105,7 +110,7 @@ export async function register(
   const signupToken = formData.get('signupToken') as string | null
   if (signupToken && data.user?.id) {
     try {
-      await claimPendingQrCode(signupToken, data.user.id)
+      await claimPendingQrCode(signupToken, data.user.id, email)
     } catch (claimError) {
       console.error('Failed to claim pending QR (non-blocking):', claimError)
     }
@@ -115,7 +120,7 @@ export async function register(
   return { success: true }
 }
 
-async function claimPendingQrCode(token: string, userId: string): Promise<void> {
+async function claimPendingQrCode(token: string, userId: string, email?: string): Promise<void> {
   const adminClient = createAdminClient()
 
   // Find unclaimed, non-expired pending QR
@@ -177,6 +182,130 @@ async function claimPendingQrCode(token: string, userId: string): Promise<void> 
   await (adminClient.from('pending_qr_codes') as any)
     .update({ claimed: true, claimed_by: userId })
     .eq('id', pending.id)
+
+  // Generate QR image, upload to storage, send welcome email (non-blocking)
+  if (email && resend) {
+    try {
+      const qrRedirectUrl = getRedirectUrl(pending.short_code as string)
+
+      let pngBuffer: Buffer | null = null
+      let qrImageUrl: string | null = null
+
+      try {
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrenixy.com'
+        const generateRes = await fetch(`${appUrl}/api/qr/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: qrRedirectUrl,
+            style: finalStyle,
+            size: 600,
+            logoUrl: pending.logo_url || undefined,
+            logoSize: pending.logo_size || undefined,
+          }),
+        })
+        if (generateRes.ok) {
+          const { dataUrl } = await generateRes.json()
+          const base64 = (dataUrl as string).replace('data:image/svg+xml;base64,', '')
+          const svgBuffer = Buffer.from(base64, 'base64')
+          pngBuffer = await sharp(svgBuffer).png().toBuffer()
+        }
+      } catch (genErr) {
+        console.error('QR generation/conversion failed:', genErr)
+      }
+
+      if (pngBuffer) {
+        const fileName = `qr-${pending.short_code}-${Date.now()}.png`
+        const { error: uploadError } = await adminClient.storage
+          .from('qr-images')
+          .upload(fileName, pngBuffer, { contentType: 'image/png', upsert: true })
+
+        if (!uploadError) {
+          const { data: urlData } = adminClient.storage.from('qr-images').getPublicUrl(fileName)
+          qrImageUrl = urlData.publicUrl
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (adminClient.from('qr_codes') as any)
+            .update({ qr_image_url: qrImageUrl })
+            .eq('short_code', pending.short_code)
+            .eq('user_id', userId)
+        }
+      }
+
+      const destinationUrl = pending.destination_url as string
+
+      await resend.emails.send({
+        from: 'QRenixy <hello@qrenixy.com>',
+        to: [email],
+        subject: 'Twój kod QR jest gotowy!',
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
+            <div style="max-width: 600px; margin: 0 auto; background: white;">
+
+              <!-- Header -->
+              <div style="background: white; padding: 30px 40px; border-bottom: 1px solid #e5e7eb;">
+                <table style="width: 100%;">
+                  <tr>
+                    <td style="width: 50px; vertical-align: middle;">
+                      <img src="https://qrenixy.com/logo.png" alt="QRenixy" width="44" height="44" style="display: block; border-radius: 10px;" />
+                    </td>
+                    <td style="vertical-align: middle; text-align: center;">
+                      <h1 style="color: #6d28d9; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.2;">
+                        Twoj kod QR jest gotowy!
+                      </h1>
+                    </td>
+                    <td style="width: 50px;"></td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- QR Code -->
+              <div style="padding: 40px 20px; text-align: center;">
+                ${pngBuffer ? '<img src="cid:qrcode" alt="Twoj QR kod" style="max-width: 300px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);" />' : ''}
+                <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
+                  Zakodowany link: <span style="color: #6d28d9; font-weight: 500;">${destinationUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                </p>
+              </div>
+
+              <!-- CTA Section -->
+              <div style="background: #6d28d9; padding: 35px 40px; color: white; text-align: center;">
+                <a href="https://qrenixy.com/dashboard" style="display: inline-block; background: white; color: #6d28d9; padding: 18px 48px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                  Przejdz do swojego panelu
+                </a>
+              </div>
+
+              <!-- Footer -->
+              <div style="padding: 30px 20px; text-align: center; color: #9ca3af; font-size: 14px; border-top: 1px solid #e5e7eb;">
+                <p style="margin: 0 0 8px 0;">
+                  Masz pytania? Napisz do nas: <a href="mailto:contact@qrenixy.com" style="color: #6d28d9; text-decoration: none;">contact@qrenixy.com</a>
+                </p>
+                <p style="margin: 8px 0 0 0; font-size: 12px;">
+                  &copy; ${new Date().getFullYear()} QRenixy. Wszelkie prawa zastrzezone.
+                </p>
+              </div>
+
+            </div>
+          </body>
+          </html>
+        `,
+        ...(pngBuffer ? {
+          attachments: [{
+            filename: 'kod-qr.png',
+            content: pngBuffer,
+            contentId: 'qrcode',
+          }],
+        } : {}),
+      })
+    } catch (emailError) {
+      console.error('Failed to send welcome QR email (non-blocking):', emailError)
+    }
+  }
 }
 
 export async function logout(): Promise<void> {
@@ -286,7 +415,7 @@ export async function signupInstant(
 
   if (signupToken && data.user?.id) {
     try {
-      await claimPendingQrCode(signupToken, data.user.id)
+      await claimPendingQrCode(signupToken, data.user.id, email)
     } catch (claimError) {
       console.error('Failed to claim pending QR (non-blocking):', claimError)
     }

@@ -238,6 +238,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   // Save state — token auto-created with debounce, modal opened via ref
   const [saveToken, setSaveToken] = useState<string | undefined>()
+  const [pendingRedirectUrl, setPendingRedirectUrl] = useState<string | null>(null)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [consents, setConsents] = useState({ terms: false, marketing: false })
 
@@ -337,8 +338,9 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
           }),
         })
         if (res.ok) {
-          const { signupToken } = await res.json()
+          const { signupToken, redirectUrl } = await res.json()
           setSaveToken(signupToken)
+          setPendingRedirectUrl(redirectUrl || null)
         }
       } catch {
         // silent fail
@@ -1094,7 +1096,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 <div className="absolute inset-0 bg-violet-400 rounded-3xl blur-2xl opacity-25" />
                 <div className="relative bg-white rounded-2xl p-4 shadow-xl">
                   <QrPreview
-                    url={getQRData()}
+                    url={pendingRedirectUrl || getQRData()}
                     style={{ ...style, width: 200 }}
                     logoUrl={logoUrl || undefined}
                     logoSize={logoSize}

@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     '@resvg/resvg-js',
     '@undecaf/zbar-wasm',
     'image-js',
+    'sharp',
   ],
 };
 
