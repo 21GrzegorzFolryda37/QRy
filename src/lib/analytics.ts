@@ -197,3 +197,147 @@ function extractDomain(url: string): string {
     return 'invalid'
   }
 }
+
+function secondsSince(start: number): number {
+  return Math.round((Date.now() - start) / 1000)
+}
+
+// ---------- Hero QR Funnel — Step Events ----------
+
+export function trackHeroTypeSelected(qrType: string) {
+  trackEvent('hero_type_selected', { qr_type: qrType })
+}
+
+export function trackHeroStep1DataEntered(qrType: string, inputValue: string) {
+  const params: Record<string, unknown> = { qr_type: qrType }
+  switch (qrType) {
+    case 'website':
+      params.url_domain = extractDomain(inputValue)
+      break
+    case 'email':
+      params.email_domain = inputValue.includes('@') ? inputValue.split('@')[1] : 'unknown'
+      break
+    case 'wifi':
+      params.wifi_encryption = inputValue
+      break
+    default:
+      params.input_length = inputValue.length
+  }
+  trackEvent('hero_step1_data_entered', params)
+}
+
+export function trackHeroStep1Completed(qrType: string, inputValue: string, startTime: number) {
+  const params: Record<string, unknown> = {
+    qr_type: qrType,
+    time_on_step_seconds: startTime > 0 ? secondsSince(startTime) : 0,
+  }
+  if (qrType === 'website') {
+    params.url_domain = extractDomain(inputValue)
+  }
+  trackEvent('hero_step1_completed', params)
+}
+
+export function trackHeroTemplateApplied(templateId: string) {
+  trackEvent('hero_template_applied', { template_id: templateId })
+}
+
+export function trackHeroCustomizationChanged(optionType: string, optionValue: string | number | boolean) {
+  trackEvent('hero_customization_changed', {
+    customization_type: optionType,
+    customization_value: String(optionValue),
+  })
+}
+
+export function trackHeroStep2Completed(params: {
+  qrType: string
+  selectedTemplate: string
+  hasLogo: boolean
+  qrColor: string
+  bgColor: string
+  dotShape: string
+  cornerShape: string
+  hasGradient: boolean
+  customizationClicks: number
+  step2StartTime: number
+  startTime: number
+}) {
+  trackEvent('hero_step2_completed', {
+    qr_type: params.qrType,
+    selected_template: params.selectedTemplate,
+    has_logo: params.hasLogo,
+    qr_color: params.qrColor,
+    bg_color: params.bgColor,
+    dot_shape: params.dotShape,
+    corner_shape: params.cornerShape,
+    has_gradient: params.hasGradient,
+    customization_clicks: params.customizationClicks,
+    time_on_step_seconds: params.step2StartTime > 0 ? secondsSince(params.step2StartTime) : 0,
+    total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
+  })
+}
+
+export function trackHeroSaveModalOpened(params: {
+  qrType: string
+  codeName: string
+  startTime: number
+}) {
+  trackEvent('hero_save_modal_opened', {
+    qr_type: params.qrType,
+    code_name: params.codeName,
+    total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
+  })
+}
+
+export function trackHeroSaveModalClosed(params: {
+  qrType: string
+  startTime: number
+}) {
+  trackEvent('hero_save_modal_closed', {
+    qr_type: params.qrType,
+    total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
+  })
+}
+
+// NOTE: trackHeroAuthCompleted and trackHeroQRSaved should be called from
+// UnifiedAuthForm's onSuccess callback once that component exposes it.
+export function trackHeroAuthCompleted(params: {
+  qrType: string
+  selectedTemplate: string
+  hasLogo: boolean
+  qrColor: string
+  bgColor: string
+  customizationClicks: number
+  codeName: string
+  startTime: number
+  authMethod: string
+}) {
+  trackEvent('hero_auth_completed', {
+    qr_type: params.qrType,
+    selected_template: params.selectedTemplate,
+    has_logo: params.hasLogo,
+    qr_color: params.qrColor,
+    bg_color: params.bgColor,
+    customization_clicks: params.customizationClicks,
+    code_name: params.codeName,
+    total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
+    auth_method: params.authMethod,
+  })
+}
+
+export function trackHeroQRSaved(params: {
+  qrType: string
+  qrId: string
+  selectedTemplate: string
+  hasLogo: boolean
+  customizationClicks: number
+  startTime: number
+}) {
+  trackEvent('hero_qr_saved', {
+    qr_type: params.qrType,
+    qr_id: params.qrId,
+    selected_template: params.selectedTemplate,
+    has_logo: params.hasLogo,
+    customization_clicks: params.customizationClicks,
+    total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
+  })
+}

@@ -13,7 +13,7 @@ import { LogoUploader, brandLogos } from '@/components/qr/logo-uploader'
 import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { generateQrCodeImage } from '@/lib/qr/options'
-import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion } from '@/lib/analytics'
+import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion, trackHeroTypeSelected, trackHeroStep1DataEntered, trackHeroStep1Completed, trackHeroTemplateApplied, trackHeroCustomizationChanged, trackHeroStep2Completed, trackHeroSaveModalOpened, trackHeroSaveModalClosed } from '@/lib/analytics'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
@@ -254,7 +254,39 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       el.removeEventListener('touchmove', onTouchMove)
     }
   }, [step])
+  const getMainInputValue = () => {
+    switch (selectedType) {
+      case 'website': return formData.url || ''
+      case 'email': return formData.email || ''
+      case 'phone': case 'sms': case 'whatsapp': return formData.phone || ''
+      case 'wifi': return formData.ssid || ''
+      case 'vcard': return formData.name || ''
+      case 'facebook': case 'instagram': case 'twitter': return formData.username || ''
+      case 'bitcoin': return formData.address || ''
+      case 'text': return formData.text || ''
+      default: return formData.url || ''
+    }
+  }
+
   const goToStep = (s: 1 | 2 | 3) => {
+    if (s === 2 && step === 1) {
+      trackHeroStep1Completed(selectedType, getMainInputValue(), startTime ?? 0)
+      setStep2StartTime(Date.now())
+    } else if (s === 3 && step === 2) {
+      trackHeroStep2Completed({
+        qrType: selectedType,
+        selectedTemplate,
+        hasLogo: !!logoUrl,
+        qrColor: style.foregroundColor,
+        bgColor: style.backgroundColor,
+        dotShape: style.dotsType,
+        cornerShape: style.cornersSquareType,
+        hasGradient: !!style.dotsGradient,
+        customizationClicks,
+        step2StartTime,
+        startTime: startTime ?? 0,
+      })
+    }
     setStep(s)
     onStepChange?.(s)
     // Scroll to top of generator on mobile
@@ -282,6 +314,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   useImperativeHandle(ref, () => ({
     openSaveModal: () => {
+      trackHeroSaveModalOpened({ qrType: selectedType, codeName, startTime: startTime ?? 0 })
       setShowSaveModal(true)
       uploadQrImageForPending()
     },
@@ -294,6 +327,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
   // Personalization tracking
   const [selectedTemplate, setSelectedTemplate] = useState<string>('none')
   const [customizationClicks, setCustomizationClicks] = useState(0)
+  const [step2StartTime, setStep2StartTime] = useState(0)
 
   const getCustomizationData = () => ({
     selectedTemplate,
@@ -321,6 +355,12 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   // Helper to update style
   const updateStyle = (updates: Partial<QrStyle>) => {
+    const key = Object.keys(updates)[0]
+    const value = Object.values(updates)[0]
+    if (key) {
+      const valueStr = typeof value === 'object' ? (value ? 'custom' : 'none') : String(value)
+      trackHeroCustomizationChanged(key, valueStr)
+    }
     setStyle(prev => ({ ...prev, ...updates }))
     setCustomizationClicks(prev => prev + 1)
   }
@@ -445,7 +485,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1.5">Adres URL strony</label>
-              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) heroQRUrlEntered(e.target.value, selectedTemplate) }} placeholder="https://twoja-strona.pl" className={inputClass} />
+              <input type="url" value={formData.url || ''} onChange={(e) => setFormData({ ...formData, url: e.target.value })} onBlur={(e) => { if (e.target.value) { heroQRUrlEntered(e.target.value, selectedTemplate); trackHeroStep1DataEntered(selectedType, e.target.value) } }} placeholder="https://twoja-strona.pl" className={inputClass} />
             </div>
           </div>
         )
@@ -624,6 +664,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     setLogoUrl(brandLogo?.svg || '')
     setSelectedTemplate(template.id)
     setCustomizationClicks(prev => prev + 1)
+    trackHeroTemplateApplied(template.id)
   }
 
   const renderPersonalizationContent = (tab: PersonalizationTab) => {
@@ -907,7 +948,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               {qrTypes.map((type) => (
                 <button
                   key={type.id}
-                  onClick={() => { setSelectedType(type.id); setFormData({}); trackStart() }}
+                  onClick={() => { setSelectedType(type.id); setFormData({}); trackStart(); trackHeroTypeSelected(type.id) }}
                   className={`flex flex-col items-center gap-2 px-2 py-3.5 rounded-xl text-sm font-medium transition-all ${
                     selectedType === type.id
                       ? 'bg-[#6d28d9] text-white shadow-md ring-2 ring-[#6d28d9]/30'
@@ -921,7 +962,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
 
             {/* Form for selected type */}
-            <div className="mb-5" onFocus={trackStart}>
+            <div className="mb-5" onFocus={trackStart} onBlur={(e) => { const v = (e.target as HTMLInputElement | HTMLTextAreaElement).value; if (v) trackHeroStep1DataEntered(selectedType, v) }}>
               {renderForm()}
             </div>
 
@@ -1049,7 +1090,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 ← Wstecz
               </button>
               <button
-                onClick={() => { setShowSaveModal(true); uploadQrImageForPending() }}
+                onClick={() => { trackHeroSaveModalOpened({ qrType: selectedType, codeName, startTime: startTime ?? 0 }); setShowSaveModal(true); uploadQrImageForPending() }}
                 className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1099,13 +1140,13 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       >
         <div
           className="flex min-h-full items-center justify-center p-4 py-8"
-          onClick={(e) => { if (e.target === e.currentTarget) { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
+          onClick={(e) => { if (e.target === e.currentTarget) { trackHeroSaveModalClosed({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
         >
         <div className="w-full bg-white shadow-2xl overflow-hidden relative" style={{ maxWidth: 940, borderRadius: 20 }}>
 
           {/* X button */}
           <button
-            onClick={() => { setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
+            onClick={() => { trackHeroSaveModalClosed({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[rgba(124,58,237,0.15)]"
             style={{ background: 'rgba(124,58,237,0.08)' }}
           >
