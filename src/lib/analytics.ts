@@ -276,27 +276,39 @@ export function trackHeroStep2Completed(params: {
   })
 }
 
-export function trackHeroSaveModalOpened(params: {
+export function trackHeroDownloadClicked(params: {
   qrType: string
   codeName: string
   startTime: number
 }) {
-  trackEvent('hero_save_modal_opened', {
+  trackEvent('hero_download_clicked', {
     qr_type: params.qrType,
     code_name: params.codeName,
     total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
   })
 }
 
-export function trackHeroSaveModalClosed(params: {
+export function trackHeroDownloadAbandoned(params: {
   qrType: string
   startTime: number
 }) {
-  trackEvent('hero_save_modal_closed', {
+  trackEvent('hero_download_abandoned', {
     qr_type: params.qrType,
     total_time_seconds: params.startTime > 0 ? secondsSince(params.startTime) : 0,
   })
 }
+
+export const trackHeroEmailSubmitted = (params: {
+  qrType: string;
+  emailDomain: string;
+  startTime: number;
+}) => {
+  trackEvent('hero_email_submitted', {
+    qr_type: params.qrType,
+    email_domain: params.emailDomain,
+    total_time_seconds: secondsSince(params.startTime),
+  });
+};
 
 // NOTE: trackHeroAuthCompleted and trackHeroQRSaved should be called from
 // UnifiedAuthForm's onSuccess callback once that component exposes it.

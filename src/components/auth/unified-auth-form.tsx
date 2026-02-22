@@ -15,9 +15,10 @@ interface UnifiedAuthFormProps {
   marketingConsent?: boolean
   consentBlock?: React.ReactNode
   buttonLabel?: string
+  onEmailSubmit?: (email: string) => void
 }
 
-export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingConsent, consentBlock, buttonLabel }: UnifiedAuthFormProps) {
+export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingConsent, consentBlock, buttonLabel, onEmailSubmit }: UnifiedAuthFormProps) {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -49,6 +50,7 @@ export function UnifiedAuthForm({ redirectTo, signupToken, disabled, marketingCo
         }
 
         setEmail(formEmail)
+        onEmailSubmit?.(formEmail)
 
         if (!data.exists) {
           // New user — instant signup

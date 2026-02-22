@@ -13,7 +13,7 @@ import { LogoUploader, brandLogos } from '@/components/qr/logo-uploader'
 import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { generateQrCodeImage } from '@/lib/qr/options'
-import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion, trackHeroTypeSelected, trackHeroStep1DataEntered, trackHeroStep1Completed, trackHeroTemplateApplied, trackHeroCustomizationChanged, trackHeroStep2Completed, trackHeroSaveModalOpened, trackHeroSaveModalClosed } from '@/lib/analytics'
+import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion, trackHeroTypeSelected, trackHeroStep1DataEntered, trackHeroStep1Completed, trackHeroTemplateApplied, trackHeroCustomizationChanged, trackHeroStep2Completed, trackHeroDownloadClicked, trackHeroDownloadAbandoned, trackHeroEmailSubmitted } from '@/lib/analytics'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
@@ -314,7 +314,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   useImperativeHandle(ref, () => ({
     openSaveModal: () => {
-      trackHeroSaveModalOpened({ qrType: selectedType, codeName, startTime: startTime ?? 0 })
+      trackHeroDownloadClicked({ qrType: selectedType, codeName, startTime: startTime ?? 0 })
       setShowSaveModal(true)
       uploadQrImageForPending()
     },
@@ -1090,7 +1090,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 ← Wstecz
               </button>
               <button
-                onClick={() => { trackHeroSaveModalOpened({ qrType: selectedType, codeName, startTime: startTime ?? 0 }); setShowSaveModal(true); uploadQrImageForPending() }}
+                onClick={() => { trackHeroDownloadClicked({ qrType: selectedType, codeName, startTime: startTime ?? 0 }); setShowSaveModal(true); uploadQrImageForPending() }}
                 className="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] active:bg-[#4c1d95] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1140,13 +1140,13 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
       >
         <div
           className="flex min-h-full items-center justify-center p-4 py-8"
-          onClick={(e) => { if (e.target === e.currentTarget) { trackHeroSaveModalClosed({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
+          onClick={(e) => { if (e.target === e.currentTarget) { trackHeroDownloadAbandoned({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) } }}
         >
         <div className="w-full bg-white shadow-2xl overflow-hidden relative" style={{ maxWidth: 940, borderRadius: 20 }}>
 
           {/* X button */}
           <button
-            onClick={() => { trackHeroSaveModalClosed({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
+            onClick={() => { trackHeroDownloadAbandoned({ qrType: selectedType, startTime: startTime ?? 0 }); setShowSaveModal(false); setConsents({ terms: false, marketing: false }) }}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[rgba(124,58,237,0.15)]"
             style={{ background: 'rgba(124,58,237,0.08)' }}
           >
@@ -1172,6 +1172,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 disabled={!consents.terms}
                 marketingConsent={consents.marketing}
                 buttonLabel="Odbierz kod i utwórz konto →"
+                onEmailSubmit={(email) => trackHeroEmailSubmitted({ qrType: selectedType, emailDomain: email.split('@')[1] ?? 'unknown', startTime: startTime ?? 0 })}
                 consentBlock={
                   <div style={{ marginTop: 16 }} className="rounded-lg border border-[var(--border)] p-3 bg-gray-50/60">
                     {/* Master checkbox */}
