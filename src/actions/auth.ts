@@ -243,7 +243,6 @@ async function claimPendingQrCode(token: string, userId: string, email?: string)
       name: pending.destination_url,
       short_code: pending.short_code,
       destination_url: pending.destination_url,
-      content_type: (pending.qr_type as string) || 'website',
       style: finalStyle,
       logo_url: pending.logo_url,
       logo_size: pending.logo_size,
