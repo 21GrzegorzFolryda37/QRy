@@ -407,8 +407,14 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
   const uploadQrImageForPending = async () => {
     if (!saveToken || !QRCodeStyling) return
     try {
+      const rawData = getQRData()
+      // Use /r/[shortCode] redirect URL for web QR types so scans are tracked.
+      // Non-web types (WiFi, vCard, tel:, mailto:, sms:) must encode raw data.
+      const isWebUrl = /^https?:\/\//i.test(rawData)
+      const qrUrl = isWebUrl && pendingRedirectUrl ? pendingRedirectUrl : rawData
+
       const dataUrl = await generateQrCodeImage(QRCodeStyling, {
-        url: getQRData(),
+        url: qrUrl,
         style: { ...style, width: 600 },
         size: 600,
         logoUrl: logoUrl || undefined,
