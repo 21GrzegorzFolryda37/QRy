@@ -3,9 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { generateShortCode } from '@/lib/utils/short-code'
 import { getRedirectUrl } from '@/lib/utils'
 
-// Rate limit: 5 per hour per IP
+// Rate limit: 30 per hour per IP
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 5
+const RATE_LIMIT = 30
 const RATE_WINDOW = 60 * 60 * 1000 // 1 hour
 
 function checkRateLimit(ip: string): boolean {

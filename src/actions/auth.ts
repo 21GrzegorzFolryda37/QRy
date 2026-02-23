@@ -155,33 +155,7 @@ async function claimPendingQrCode(token: string, userId: string, email?: string)
   // Build style: merge with defaults
   const finalStyle = { ...DEFAULT_QR_STYLE, ...(pending.style || {}) }
 
-  // Insert into qr_codes with the SAME short_code
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: insertError } = await (adminClient.from('qr_codes') as any)
-    .insert({
-      user_id: userId,
-      name: pending.destination_url,
-      short_code: pending.short_code,
-      destination_url: pending.destination_url,
-      style: finalStyle,
-      logo_url: pending.logo_url,
-      logo_size: pending.logo_size,
-      qr_image_url: pending.qr_image_url,
-      is_active: true,
-    })
-
-  if (insertError) {
-    console.error('Failed to insert claimed QR code:', insertError)
-    return
-  }
-
-  // Mark pending as claimed
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (adminClient.from('pending_qr_codes') as any)
-    .update({ claimed: true, claimed_by: userId })
-    .eq('id', pending.id)
-
-  // Send welcome email using existing QR image (uploaded client-side when save modal opened)
+  // Send welcome email first (independent of DB insert outcome)
   if (email && resend) {
     try {
       const qrImageUrl = pending.qr_image_url as string | null
@@ -249,6 +223,33 @@ async function claimPendingQrCode(token: string, userId: string, email?: string)
       console.error('Failed to send welcome QR email (non-blocking):', emailError)
     }
   }
+
+  // Insert into qr_codes with the SAME short_code
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: insertError } = await (adminClient.from('qr_codes') as any)
+    .insert({
+      user_id: userId,
+      name: pending.destination_url,
+      short_code: pending.short_code,
+      destination_url: pending.destination_url,
+      content_type: (pending.qr_type as string) || 'website',
+      style: finalStyle,
+      logo_url: pending.logo_url,
+      logo_size: pending.logo_size,
+      qr_image_url: pending.qr_image_url,
+      is_active: true,
+    })
+
+  if (insertError) {
+    console.error('Failed to insert claimed QR code:', JSON.stringify(insertError, null, 2))
+    return
+  }
+
+  // Mark pending as claimed
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (adminClient.from('pending_qr_codes') as any)
+    .update({ claimed: true, claimed_by: userId })
+    .eq('id', pending.id)
 }
 
 export async function logout(): Promise<void> {
