@@ -134,22 +134,33 @@ async function claimPendingQrCode(token: string, userId: string, email?: string)
     return // Token invalid, expired, or already claimed — skip silently
   }
 
-  // Check user's QR limit
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (adminClient.from('profiles') as any)
-    .select('qr_limit')
-    .eq('id', userId)
-    .single()
-
-  if (profile) {
+  // Wait for profile row to exist (Supabase trigger may not have committed yet)
+  // qr_codes.user_id is FK → profiles.id, so insert fails if profile isn't ready
+  let profile: { qr_limit: number } | null = null
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 500))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { count } = await (adminClient.from('qr_codes') as any)
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
+    const { data } = await (adminClient.from('profiles') as any)
+      .select('qr_limit')
+      .eq('id', userId)
+      .single()
+    if (data) { profile = data; break }
+    console.log(`claimPendingQrCode: profile not found yet (attempt ${attempt + 1}/5)`)
+  }
 
-    if (profile.qr_limit !== -1 && (count || 0) >= profile.qr_limit) {
-      return // User at QR limit — skip silently
-    }
+  if (!profile) {
+    console.error('claimPendingQrCode: profile never appeared for userId', userId)
+    return
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { count } = await (adminClient.from('qr_codes') as any)
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+
+  if (profile.qr_limit !== -1 && (count || 0) >= profile.qr_limit) {
+    console.log('claimPendingQrCode: user at QR limit', { qr_limit: profile.qr_limit, count })
+    return
   }
 
   // Build style: merge with defaults
