@@ -67,7 +67,7 @@ export function Hero() {
       {/* Content wrapper */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up animate-delay-100">
             <span className="text-white">Generator Kodów </span>
             <span className="text-[#a78bfa] drop-shadow-lg">QR</span>
@@ -78,13 +78,12 @@ export function Hero() {
         </div>
 
         {/* Wizard Card */}
-        <div className="max-w-7xl mx-auto animate-fade-in-up animate-delay-400">
-          <div className="bg-white rounded-3xl border border-[var(--border)] shadow-xl">
-            <div className="p-6 sm:p-8 lg:p-10">
+        <div className="max-w-[1400px] mx-auto animate-fade-in-up animate-delay-400">
+          <div className="bg-white rounded-3xl border border-[var(--border)] shadow-2xl ring-1 ring-white/10">
+            <div className="p-6 sm:p-10 lg:p-14">
               <GeneratorWizard ref={wizardRef} />
             </div>
           </div>
-
         </div>
       </div>
     </section>
