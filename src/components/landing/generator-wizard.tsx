@@ -926,10 +926,10 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
   return (
     <>
-    <div ref={wizardContainerRef} className="lg:grid lg:grid-cols-12 lg:gap-10">
+    <div ref={wizardContainerRef} className="lg:grid lg:grid-cols-12 lg:gap-14">
 
       {/* Left / main: wizard content */}
-      <div className="lg:col-span-7 flex flex-col min-h-[500px]">
+      <div className="lg:col-span-7 flex flex-col min-h-[600px]">
         <StepIndicator currentStep={step} />
 
         {/* Step 1: Type & Data */}
@@ -1013,7 +1013,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
             </div>
 
             {/* Personalization Accordion — only this part scrolls on mobile */}
-            <div ref={accordionRef} className="overflow-y-auto max-h-[45vh] lg:max-h-[520px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
+            <div ref={accordionRef} className="overflow-y-auto max-h-[45vh] lg:max-h-[620px] lg:pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}>
               <div className="border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
                 {personalizationTabs.map((tab) => (
                   <div key={tab.id}>
@@ -1120,7 +1120,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               <div className="bg-white rounded-xl p-3 shadow-lg">
                 <QrPreview
                   url={getQRData()}
-                  style={{ ...style, width: 440 }}
+                  style={{ ...style, width: 520 }}
                   logoUrl={logoUrl || undefined}
                   logoSize={logoSize}
                 />
