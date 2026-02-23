@@ -1059,7 +1059,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
 
         {/* Step 3: Preview — QR ready, button to save is below the card */}
         {step === 3 && (
-          <div key="step-3" className="animate-fade-in-scale">
+          <div key="step-3" className="animate-fade-in-scale flex flex-col flex-1">
             {/* QR preview - mobile only (desktop has sticky right panel) */}
             <div className="relative mb-5 lg:hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] rounded-2xl blur-xl opacity-20" />
@@ -1075,7 +1075,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-3 text-center mt-10 mb-8">
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
               <svg className="w-8 h-8 text-[var(--success)]" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
               </svg>
