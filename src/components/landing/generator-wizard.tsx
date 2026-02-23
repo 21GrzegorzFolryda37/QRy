@@ -980,7 +980,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               />
             </div>
 
-            <div className="mt-5 pt-4 border-t border-[var(--border)]">
+            <div className="lg:hidden mt-5 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => goToStep(2)}
                 disabled={!isFormValid() || !codeName}
@@ -1039,7 +1039,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-[var(--border)] flex gap-3">
+            <div className="lg:hidden mt-4 pt-4 border-t border-[var(--border)] flex gap-3">
               <button
                 onClick={() => goToStep(1)}
                 className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
@@ -1082,7 +1082,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
               <p className="text-xl font-semibold text-[var(--foreground)]">Twój kod QR jest gotowy!</p>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-[var(--border)] flex gap-3">
+            <div className="lg:hidden mt-5 pt-4 border-t border-[var(--border)] flex gap-3">
               <button
                 onClick={() => goToStep(2)}
                 className="px-4 py-3 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
@@ -1107,6 +1107,7 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
           currentStep={step}
           onGoToStep={goToStep}
           isFormValid={isFormValid() && !!codeName}
+          onDownload={() => { trackHeroDownloadClicked({ qrType: selectedType, codeName, startTime: startTime ?? 0 }); setShowSaveModal(true); uploadQrImageForPending() }}
         />
       </div>
 
@@ -1337,10 +1338,12 @@ function WizardNav({
   currentStep,
   onGoToStep,
   isFormValid,
+  onDownload,
 }: {
   currentStep: 1 | 2 | 3
   onGoToStep: (step: 1 | 2 | 3) => void
   isFormValid: boolean
+  onDownload: () => void
 }) {
   return (
     <div className="hidden lg:flex items-center gap-3 mt-auto pt-4 border-t border-[var(--border)]">
@@ -1370,12 +1373,23 @@ function WizardNav({
         </>
       )}
       {currentStep === 3 && (
-        <button
-          onClick={() => onGoToStep(2)}
-          className="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
-        >
-          ← Wstecz
-        </button>
+        <>
+          <button
+            onClick={() => onGoToStep(2)}
+            className="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-gray-50 transition-all"
+          >
+            ← Wstecz
+          </button>
+          <button
+            onClick={onDownload}
+            className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] transition-all shadow-md shadow-[#6d28d9]/25 flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Pobierz swój kod QR
+          </button>
+        </>
       )}
     </div>
   )
