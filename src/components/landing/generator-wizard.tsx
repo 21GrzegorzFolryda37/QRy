@@ -13,7 +13,7 @@ import { LogoUploader, brandLogos } from '@/components/qr/logo-uploader'
 import { QrStyle, DotsType, CornersSquareType, CornersDotType } from '@/types/database'
 import { DEFAULT_QR_STYLE } from '@/types/qr'
 import { generateQrCodeImage } from '@/lib/qr/options'
-import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion, trackHeroTypeSelected, trackHeroStep1DataEntered, trackHeroStep1Completed, trackHeroTemplateApplied, trackHeroCustomizationChanged, trackHeroStep2Completed, trackHeroDownloadClicked, trackHeroDownloadAbandoned, trackHeroEmailSubmitted } from '@/lib/analytics'
+import { heroQRStarted, heroQRUrlEntered, heroQREmailSubmitted, heroQRSent, gtagReportConversion, trackHeroTypeSelected, trackHeroStep1DataEntered, trackHeroStep1Completed, trackHeroTemplateApplied, trackHeroCustomizationChanged, trackHeroStep2Completed, trackHeroDownloadClicked, trackHeroDownloadAbandoned, trackHeroEmailSubmitted, trackHeroAuthCompleted } from '@/lib/analytics'
 import type QRCodeStylingType from 'qr-code-styling'
 
 type QRType = 'website' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'vcard' | 'wifi' | 'social' | 'pdf' | 'video' | 'facebook' | 'instagram' | 'twitter' | 'bitcoin' | 'mp3' | 'appstore'
@@ -338,13 +338,19 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
     frameStyle: style.frame?.style || 'none',
   })
 
+  const hasTrackedTypeSelected = useRef(false)
   const trackStart = useCallback(() => {
     if (!hasTrackedStart.current) {
       hasTrackedStart.current = true
       setStartTime(Date.now())
       heroQRStarted()
     }
-  }, [])
+    // Fire type_selected on first interaction (covers default type — no click)
+    if (!hasTrackedTypeSelected.current) {
+      hasTrackedTypeSelected.current = true
+      trackHeroTypeSelected(selectedType)
+    }
+  }, [selectedType])
 
   // Load QRCodeStyling library
   useEffect(() => {
@@ -1174,6 +1180,17 @@ function GeneratorWizard({ initialType, initialUrl, initialFormData, initialName
                 marketingConsent={consents.marketing}
                 buttonLabel="Odbierz kod i utwórz konto →"
                 onEmailSubmit={(email) => trackHeroEmailSubmitted({ qrType: selectedType, emailDomain: email.split('@')[1] ?? 'unknown', startTime: startTime ?? 0 })}
+                onSuccess={(authMethod) => trackHeroAuthCompleted({
+                  qrType: selectedType,
+                  selectedTemplate,
+                  hasLogo: !!logoUrl,
+                  qrColor: style.foregroundColor,
+                  bgColor: style.backgroundColor,
+                  customizationClicks,
+                  codeName,
+                  startTime: startTime ?? 0,
+                  authMethod,
+                })}
                 consentBlock={
                   <div style={{ marginTop: 16 }} className="rounded-lg border border-[var(--border)] p-3 bg-gray-50/60">
                     {/* Master checkbox */}
